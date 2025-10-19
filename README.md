@@ -17,13 +17,13 @@ population_labor_market/
 │   ├── raw/                 # Raw data (never modified)
 │   └── processed/           # Cleaned and processed data
 ├── scripts/                 # R scripts and functions
-│   ├── utils.R
-│   └── clean_data.R
+│   ├── utils.R              # custom R functions that are used more than once in the project
+│   └── clean_data.R         # data preprocessing script (/raw -> /processed)
 ├── analysis/
 │   ├── report.qmd           # Quarto report
 │   ├── presentation.qmd     # Quarto presentation
 │   └── outliers.R           # some analysis that did not end up in the final report
-├── results/
+├── results/                 # rendered outputs from analysis scripts
 │   ├── figures/
 │   └── tables/
 ├── report.pdf
