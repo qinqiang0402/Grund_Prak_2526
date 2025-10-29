@@ -42,7 +42,7 @@ df_time_bezirk <- df_merge %>%
     mean_arb = mean(Indikatorwert_arb, na.rm = TRUE)
   )
 
-# 2️⃣ 把数据“长格式化”，方便 ggplot 绘图
+# 
 df_long <- df_time_bezirk %>%
   pivot_longer(
     cols = c(mean_ha, mean_arb),
@@ -54,7 +54,7 @@ df_long <- df_time_bezirk %>%
 ggplot(df_long, aes(x = Jahr, y = Wert, color = Indikator)) +
   geom_line(size = 1) +
   geom_point(size = 1.5) +
-  facet_wrap(~ Raumbezug, scales = "free_y") +   # 每个区单独一张图
+  facet_wrap(~ Raumbezug, scales = "free_y") +   
   labs(
     title = "Entwicklung von Alleinerziehendenhaushalten (w) und Arbeitslosenquote (w)",
     subtitle = "nach Stadtbezirken in München",
@@ -76,7 +76,7 @@ ggplot(df_long, aes(x = Jahr, y = Wert, color = Indikator)) +
 
 
 
-——————————————————————————————————————————————————
+
 
 # 1) ausgewählt Spalten
 plot_dat <- df_merge %>%
