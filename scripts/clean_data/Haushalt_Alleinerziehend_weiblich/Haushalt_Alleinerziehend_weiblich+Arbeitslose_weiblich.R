@@ -1,6 +1,6 @@
 library(tidyverse)
 
-setwd("/Users/qq/QQ/LMU/P_11_Grund_Prak/Grund_Prak_2526/scripts/clean_data/Haushalt_Alleinerziehend_weiblich")
+setwd("/Users/qq/QQ/LMU/P11_Grund_Prak/Grund_Prak_2526/scripts/clean_data/Haushalt_Alleinerziehend_weiblich")
 getwd()
 
 
