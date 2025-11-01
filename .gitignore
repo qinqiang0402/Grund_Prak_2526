@@ -1,9 +1,12 @@
 
+# macos systen file
 .DS_Store
 .DS_Store
 
+# R project
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+.Rproj.user
 

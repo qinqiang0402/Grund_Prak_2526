@@ -4,8 +4,8 @@ setwd("/Users/qq/QQ/LMU/P_11_Grund_Prak/Grund_Prak_2526/scripts/clean_data/Haush
 getwd()
 
 
-ha_weiblich <- readRDS("/Users/qq/QQ/LMU/P_11_Grund_Prak/Grund_Prak_2526/scripts/clean_data/Haushalt_Alleinerziehend_weiblich/haushalte_alleinerziehend_weiblich.rds")
-arbeitslos_weiblich <- readRDS("/Users/qq/QQ/LMU/P_11_Grund_Prak/Grund_Prak_2526/scripts/clean_data/Haushalt_Alleinerziehend_weiblich/arbeitslos_weiblich.rds")
+ha_weiblich <- readRDS("/Users/qq/QQ/LMU/P11_Grund_Prak/Grund_Prak_2526/scripts/clean_data/Haushalt_Alleinerziehend_weiblich/haushalte_alleinerziehend_weiblich.rds")
+arbeitslos_weiblich <- readRDS("/Users/qq/QQ/LMU/P11_Grund_Prak/Grund_Prak_2526/scripts/clean_data/Haushalt_Alleinerziehend_weiblich/arbeitslos_weiblich.rds")
 
 df_merge <- inner_join(ha_weiblich, arbeitslos_weiblich,
                        by = c("Jahr","Raumbezug"),
@@ -74,10 +74,6 @@ ggplot(df_long, aes(x = Jahr, y = Wert, color = Indikator)) +
   )
 
 
-
-
-
-
 # 1) ausgewählt Spalten
 plot_dat <- df_merge %>%
   select(Jahr, Raumbezug, Indikatorwert_ha, Indikatorwert_arb) %>%
@@ -88,7 +84,7 @@ plot_dat <- df_merge %>%
 
 # 2) Ausgewählt Jahre
 years_to_plot <- plot_dat %>% distinct(Jahr) %>% arrange(desc(Jahr)) %>% 
-  slice_head(n = 2) %>% pull(Jahr)          # letzte zwei Jahre
+  slice_head(n = 13) %>% pull(Jahr)          # letzte zwei Jahre
 plot_dat <- filter(plot_dat, Jahr %in% years_to_plot)
 
 # 3) facetieren
@@ -125,3 +121,50 @@ g <- ggplot(plot_dat, aes(
   )
 
 print(g)
+
+
+
+
+#-----------------------------------------------------------
+
+
+#  2012 -2024
+plot_dat_filtered <- plot_dat %>%
+  filter(Jahr >= 2012 & Jahr <= 2024)
+
+# nach Jahre verteilt
+plot_list <- split(plot_dat_filtered, plot_dat_filtered$Jahr)
+
+# loop
+for (jahr in names(plot_list)) {
+  df_year <- plot_list[[jahr]]
+  
+  p <- ggplot(df_year, aes(
+    x = Indikatorwert_ha,
+    y = Indikatorwert_arb,
+    color = Raumbezug
+  )) +
+    geom_point(size = 2, alpha = 0.8) +
+    geom_text(aes(label = Bezirk_Nr),
+              size = 2.5, vjust = -0.7, hjust = 0.5, color = "black") +
+    geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+    labs(
+      title = paste("Zusammenhang: Alleinerziehende (w) vs. Arbeitslosenquote (w) — Jahr", jahr),
+      subtitle = "Jeder Punkt = Stadtbezirk, Zahl = Bezirksnummer, Farben = Stadtbezirke",
+      x = "Anteil Haushalte alleinerziehender Frauen",
+      y = "Arbeitslosenquote Frauen",
+      color = "Stadtbezirk"
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+      legend.position = "bottom",
+      legend.key.size = unit(0.5, "cm"),
+      legend.text = element_text(size = 7),
+      plot.title = element_text(size = 14, face = "bold")
+    )
+  
+  # ✅ 只显示，不保存
+  print(p)
+  cat("--------- Jahr:", jahr, "---------\n")
+}
+
