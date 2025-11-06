@@ -360,3 +360,6 @@ p_y5 <- ggplot(year_group5, aes(x = employment_female, y = birthrate, colour = R
     legend.title = element_text(face = "bold", size = 11)
   )
 p_y5
+
+install.packages("leaflet")
+library(leaflet)
