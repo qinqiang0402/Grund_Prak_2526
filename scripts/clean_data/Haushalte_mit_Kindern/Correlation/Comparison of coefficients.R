@@ -49,64 +49,55 @@ data_be_clean <- data_be %>%
 df <- inner_join(data_ar_clean, data_be_clean, by = c("Jahr", "Raumbezug"))
 
 
-# --- 4. Compute correlation coefficients per year ---
+# --- 4. Compute all three correlation coefficients per year ---
 cor_data <- df %>%
   group_by(Jahr) %>%
   summarize(
-    r = cor(haushalt_kinder, arbeitslos_weiblich, use = "complete.obs")
-  )
-
+    pearson  = cor(haushalt_kinder, arbeitslos_weiblich, method = "pearson",  use = "complete.obs"),
+    spearman = cor(haushalt_kinder, arbeitslos_weiblich, method = "spearman", use = "complete.obs"),
+    kendall  = cor(haushalt_kinder, arbeitslos_weiblich, method = "kendall",  use = "complete.obs")
+  ) %>%
+  pivot_longer(cols = c(pearson, spearman, kendall),
+               names_to = "method",
+               values_to = "r")
 
 # --- 5. Visualization ---
-ggplot(df, aes(x = haushalt_kinder, y = arbeitslos_weiblich, group = Jahr)) +
+plot2 <-ggplot(cor_data, aes(x = Jahr, y = r, color = method, shape = method)) +
   
-  # Scatter points
-  geom_point(size = 2, alpha = 0.25, color = "grey60") +
+  geom_line(linewidth = 0.8, alpha = 0.8) +
+  geom_point(size = 2.5, alpha = 0.9) +
   
-  # Regression lines for each year
-  geom_smooth(
-    aes(color = Jahr),
-    method = "lm",
-    se = FALSE,
-    linewidth = 1.1,
-    alpha = 0.9
-  ) +
-  
-  # Add correlation coefficient labels
+  # Text labels (small, readable)
   geom_text(
-    data = cor_data,
-    aes(
-      x = 28,                 # X position of label (adjust as needed)
-      y = 7.5 - (Jahr - 2012) * 0.4,  # Slightly offset labels vertically by year
-      label = paste0("r = ", round(r, 2))
-    ),
+    aes(label = sprintf("%.2f", r)),
+    vjust = -0.8,
+    size = 3,
     color = "black",
-    size = 3.2,
-    hjust = 1,
-    fontface = "bold"
+    check_overlap = TRUE
   ) +
   
-  # Apply Viridis color palette
-  scale_color_viridis_c(
-    option = "plasma",
-    direction = -1,
-    name = "Year"
+  scale_color_manual(
+    values = c("pearson" = "#440154FF", "spearman" = "#21908CFF", "kendall" = "#FDE725FF"),
+    name = "Correlation Type",
+    labels = c("pearson" = "Pearson", "spearman" = "Spearman", "kendall" = "Kendall")  # 命名向量，明确对应关系
+  ) +
+  scale_shape_manual(
+    values = c("pearson" = 16, "spearman" = 17, "kendall" = 15),
+    name = "Correlation Type",
+    labels = c("pearson" = "Pearson", "spearman" = "Spearman", "kendall" = "Kendall")  # 同上
   ) +
   
-  # Define axes
-  scale_x_continuous(limits = c(5, 30), breaks = seq(5, 30, 5)) +
-  scale_y_continuous(limits = c(0, 8), breaks = seq(0, 8, 1)) +
+  scale_y_continuous(limits = c(-1, 1), breaks = seq(-1, 1, 0.2)) +
+  scale_x_continuous(breaks = seq(2012, 2024, 1)) +
   
-  # Titles and labels
   labs(
-    title = "Evolution of the Relationship (2012–2024)",
-    subtitle = "Link between households with children and female unemployment rate",
-    x = "Share of households with children (%)",
-    y = "Female unemployment rate (%)",
+    title = "Yearly Correlations (2012–2024)",
+    subtitle = "Comparison of Pearson, Spearman, and Kendall coefficients",
+    x = "Year",
+    y = "Correlation (r)",
     caption = "Data source: City of Munich · Own calculation"
   ) +
   
-  # Theme and legend
   theme_minimal(base_size = 11, base_family = "Arial") +
   theme(
     plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
@@ -116,19 +107,5 @@ ggplot(df, aes(x = haushalt_kinder, y = arbeitslos_weiblich, group = Jahr)) +
     legend.position = "bottom",
     legend.title = element_text(size = 9, face = "bold"),
     legend.text = element_text(size = 8)
-  ) +
-  
-  # Custom legend layout
-  scale_color_viridis_c(
-    option = "plasma",
-    direction = -1,
-    name = "Year",
-    breaks = seq(2012, 2024, 2),
-    guide = guide_colorbar(
-      title.position = "top",
-      title.hjust = 0.5,
-      barwidth = 10,
-      barheight = 0.6
-    )
   )
-
+plot2

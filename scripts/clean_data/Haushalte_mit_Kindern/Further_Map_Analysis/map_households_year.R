@@ -9,6 +9,7 @@ be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 
 # filter indicator "Haushalte mit Kindern"
 households_with_children <- be_sheet %>%
+  select(Indikator, Ausprägung, Jahr, Raumbezug, Indikatorwert, "Basiswert 1", "Basiswert 2")%>%
   filter(
     Indikator == "Haushalte mit Kindern",
     Ausprägung == "insgesamt"
@@ -63,7 +64,7 @@ label_data <- data_for_plot %>%
   distinct(Raumbezug, .keep_all = TRUE)
 
 # plot
-ggplot(data_for_plot, aes(x = Jahr, y = anteil, group = Raumbezug)) +
+haushalt_kindern_jahr <- ggplot(data_for_plot, aes(x = Jahr, y = anteil, group = Raumbezug)) +
   # grey background lines for all other districts
   geom_line(data = subset(data_for_plot, highlight_status == "Other"),
             color = "grey80", linewidth = 0.6, alpha = 0.6) +
@@ -121,3 +122,4 @@ ggplot(data_for_plot, aes(x = Jahr, y = anteil, group = Raumbezug)) +
     y = "Anteil der Haushalte mit Kindern (%)"
   )
 
+haushalt_kindern_jahr
