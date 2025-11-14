@@ -43,3 +43,4 @@ ggplot(df_trend, aes(
     legend.title = element_text(size = 10),
     legend.text = element_text(size = 8)
   )
+

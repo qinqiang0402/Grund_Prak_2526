@@ -81,6 +81,7 @@ create_indicator_map <- function(
 
 
 # Start to create our map
+library(readxl)
 export_be <- read_excel("data/raw/export_be.xlsx")
 be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 
@@ -127,6 +128,7 @@ karte_households <- create_indicator_map(
 )
 
 karte_households
+# 把basemap改成黑白色！不然颜色有分别
 
 # without basemap
 karte_households_nobase <- create_indicator_map(
