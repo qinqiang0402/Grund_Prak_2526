@@ -127,3 +127,42 @@ ggplot(data = data_for_plot, mapping = aes(x = Jahr, y = anteil)) +
     y = "Durchschnittlicher Anteil (%)"
   )
 
+# Average Stadt München
+ggplot(
+  data = data_for_plot %>% filter(Raumbezug == "Stadt München"),
+  aes(x = Jahr, y = anteil)
+) +
+  geom_line(
+    color = "steelblue",
+    linewidth = 1.2
+  ) +
+  geom_point(
+    color = "steelblue",
+    size = 2
+  ) +
+  geom_text_repel(
+    data = label_data %>% filter(Raumbezug == "Stadt München"),
+    aes(label = Raumbezug),
+    nudge_x = 0.5,
+    size = 3,
+    show.legend = FALSE
+  ) +
+  scale_x_continuous(
+    breaks = seq(min(data_for_plot$Jahr, na.rm = TRUE),
+                 max(data_for_plot$Jahr, na.rm = TRUE),
+                 by = 1),
+    limits = c(min(data_for_plot$Jahr, na.rm = TRUE),
+               max(data_for_plot$Jahr, na.rm = TRUE) + 1.5)
+  ) +
+  coord_cartesian(clip = "off") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.margin = unit(c(0.5, 4, 0.5, 0.5), "cm")
+  ) +
+  labs(
+    title = "Durchschnittliche Frauenbeschäftigungsquote – Stadt München",
+    subtitle = "Gesamtstädtischer Durchschnitt (ohne Bezirke)",
+    x = "Jahr",
+    y = "Durchschnittlicher Anteil (%)"
+  )
