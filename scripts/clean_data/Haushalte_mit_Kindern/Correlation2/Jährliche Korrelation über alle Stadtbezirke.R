@@ -31,6 +31,8 @@ df_merged <- df_emp %>%
              by = c("Jahr", "Raumbezug"))
 
 #————————————————————————————————————————————————
+# Option1：Pearson
+
 df_corr_by_district <- df_merged %>%
   group_by(Raumbezug) %>%
   summarise(
@@ -41,13 +43,35 @@ df_corr_yearly <- df_merged %>%
   group_by(Jahr) %>%
   summarise(cor_year = cor(emp_female_pct, households_pct, use = "complete.obs"))
 
+#————————————————————————————————————————————————————————————————
+# Option2: Spearman
+df_corr_by_district <- df_merged %>%
+  group_by(Raumbezug) %>%
+  summarise(
+    cor_district = cor(emp_female_pct, households_pct,
+                       use = "complete.obs",
+                       method = "spearman")
+  )
+
+df_corr_yearly <- df_merged %>%
+  group_by(Jahr) %>%
+  summarise(
+    cor_year = cor(emp_female_pct, households_pct,
+                   use = "complete.obs",
+                   method = "spearman")
+  )
+
+
+#————————————————————————————————————————————————————————————————————
+# plots
+
+library(ggplot2)
+
 ggplot(df_merged, aes(x = households_pct, y = emp_female_pct)) +
   geom_point(alpha = 0.5) +
   geom_smooth(method = "lm", se = FALSE, color = "red") +
   theme_minimal()
 
-
-library(ggplot2)
 
 ggplot(df_corr_yearly, aes(x = Jahr, y = cor_year)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey70") +
