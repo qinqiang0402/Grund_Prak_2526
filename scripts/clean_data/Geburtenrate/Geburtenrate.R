@@ -1,4 +1,4 @@
-install.packages("readxl")   
+install.packages("readxl")  
 library(readxl)
 install.packages("tidyr")
 library(tidyr)
@@ -50,7 +50,7 @@ labormarket_2010 <- read_excel("~/Documents/LMU/Projekt/export_ab2010.xlsx",
   )
 labormarket <- bind_rows(labormarket_2009, labormarket_2010)
 
-# plot nach Raumbezug：
+# plot by district
 install.packages("ggplot2")
 library(ggplot2)
 
@@ -72,294 +72,99 @@ data_joined <- left_join(birthrate, employment_female, by = c("Jahr", "Raumbezug
   pivot_longer(cols = c("birthrate", "employment_female"),
                names_to = "Indikator",
                values_to = "Wert")
+data_joined
+data_wide
 
-data_group1 <- data_joined %>%
-  filter(
-    Raumbezug %in% c("Stadt München", "01 Altstadt - Lehel", "02 Ludwigsvorstadt - Isarvorstadt", 
-                     "03 Maxvorstadt", "04 Schwabing - West", "05 Au - Haidhausen")
-  )
-data_group2 <- data_joined %>%
-  filter(
-    Raumbezug %in% c("06 Sendling", "07 Sendling - Westpark", "08 Schwanthalerhöhe",
-                     "09 Neuhausen - Nymphenburg", "10 Moosach", "11 Milbertshofen - Am Hart")
-  )
-data_group3 <- data_joined %>%
-  filter(
-    Raumbezug %in% c("12 Schwabing - Freimann", "13 Bogenhausen", "14 Berg am Laim", 
-                     "15 Trudering - Riem", "16 Ramersdorf - Perlach", 
-                     "17 Obergiesing - Fasangarten")
-  )
-data_group4 <- data_joined %>%
-  filter(
-    Raumbezug %in% c("18 Untergiesing - Harlaching", "19 Thalkirchen - Obersendling - Forstenried - Fürstenried - Solln",
-                     "20 Hadern", "21 Pasing - Obermenzing", "22 Aubing - Lochhausen - Langwied",
-                     "23 Allach - Untermenzing","24 Feldmoching - Hasenbergl","25 Laim")
-  )
-unique(data_group1$Indikator)
+# function giving plot of birthrate & female employment
+# input: district name
+plot_birthrate_district <- function(input.district) {
+  # variation of input
+  districts <- unique(data_wide$Raumbezug)
+  # input is number:
+  if (is.numeric(input.district)) {
+    number <- sprintf("%02d", input.district)   # example: 1 -> "01"
+    district.name <- districts[str_detect(districts, paste0("^", number, " "))]
+    
+  } else {
+    input.district <- as.character(input.district)
+  # input is excactly same as data:
+  if (input.district %in% districts) {
+    district.name <- district.input
+      
+  } else {
+    # input is a part of district name 
+    # example: "Lehel" instead of "Altstadt - Lehel"
+    district.name <- districts[str_detect(districts, regex(input.district, ignore_case = TRUE))]
+    }
+  }
+  # error, if no district found with input
+  if (length(district.name) == 0) {
+    stop("No district found. Please check the input.")
+  }
+  
+  # If more than one district found with input → plot the first & warning
+  if (length(district.name) > 1) {
+    message("ℹ More than one district been found. Now plotting: ", district.name[1])
+    district.name <- district.name[1]
+  }
+  
+  # data from long into wide
+  df <- data_wide %>%
+    filter(Raumbezug == district.name)
+  
+  df <- df %>% 
+    tidyr::drop_na(birthrate, employment_female)
+  
+  # extra axis for variable "birthrate" for better vsualization
+  range_emp  <- range(df$employment_female, na.rm = TRUE)
+  range_birth <- range(df$birthrate, na.rm = TRUE)
+  
+  scale_factor <- diff(range_emp) / diff(range_birth)
+  
+  df <- df %>%
+    mutate(birthrate_scaled = birthrate * scale_factor)
+  
+  # plot
+  ggplot(df, aes(x = Jahr)) +
+    # female employment (axis left)
+    geom_line(aes(y = employment_female,
+                  color = "Beschäftigungsrate"), linewidth = 1.1) +
+    geom_point(aes(y = employment_female,
+                   color = "Beschäftigungsrate"), size = 1.8) +
+    
+    # birthrate (axis right)
+    geom_line(aes(y = birthrate_scaled,
+                  color = "Allgemeine Geburtenrate"), linewidth = 1.1) +
+    geom_point(aes(y = birthrate_scaled,
+                   color = "Allgemeine Geburtenrate"), size = 1.8) +
 
-data_group1 %>%
-  count(Raumbezug, Jahr, Indikator) %>%
-  filter(n > 1)
-anti_join(birthrate, employment_female, by = c("Raumbezug", "Jahr"))
-
-
-#plot Munich areas
-p1 <- ggplot(data_group1, aes(x = Jahr, y = Wert, color = Indikator,
-                                  group = Indikator)) +
-  geom_line(aes(color = Indikator),size = 1) +
-  geom_point(aes(color = Indikator),size = 1.5) +
-  facet_wrap(~ Raumbezug, ncol = 2) +
-  scale_color_manual(
-    values = c("birthrate" = "#E74C3C", "employment_female" = "#3498DB"),
-    name = "Indikator",
-    labels = c("Allgemeine Geburtenrate", "Beschäftigungsrate")) +
-  scale_x_continuous(breaks = seq(2000, 2024, by = 4)) +
-  theme_minimal(base_size = 13) +
-  labs(
-    title = "Allgemeine Geburtenrate und weiblicher Beschäftigungsrate Stadtteile Münchens",
-    subtitle = "Teil 1",
-    x = "Jahr",
-    y = "Prozent (%)",
-    color = "Indikator"
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title.y = element_text(size = 7),
-    strip.text = element_text(size = 11, face = "bold"),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold")
-  )
-p1
-p2 <- ggplot(data_group2, aes(x = Jahr, y = Wert, color = Indikator,
-                              group = Indikator)) +
-  geom_line(aes(color = Indikator),size = 1) +
-  geom_point(aes(color = Indikator),size = 1.5) +
-  facet_wrap(~ Raumbezug, ncol = 2) +
-  scale_color_manual(
-    values = c("birthrate" = "#E74C3C", "employment_female" = "#3498DB"),
-    name = "Indikator",
-    labels = c("Allgemeine Geburtenrate", "Beschäftigungsrate")) +
-  scale_x_continuous(breaks = seq(2000, 2024, by = 4)) +
-  theme_minimal(base_size = 13) +
-  labs(
-    title = "Allgemeine Geburtenrate und weiblicher Beschäftigungsrate Stadtteile Münchens",
-    subtitle = "Teil 2",
-    x = "Jahr",
-    y = "Prozent (%)",
-    color = "Indikator"
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title.y = element_text(size = 7),
-    strip.text = element_text(size = 11, face = "bold"),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold")
-  )
-p2
-p3 <- ggplot(data_group3, aes(x = Jahr, y = Wert, color = Indikator,
-                              group = Indikator)) +
-  geom_line(aes(color = Indikator),size = 1) +
-  geom_point(aes(color = Indikator),size = 1.5) +
-  facet_wrap(~ Raumbezug, ncol = 2) +
-  scale_color_manual(
-    values = c("birthrate" = "#E74C3C", "employment_female" = "#3498DB"),
-    name = "Indikator",
-    labels = c("Allgemeine Geburtenrate", "Beschäftigungsrate")) +
-  scale_x_continuous(breaks = seq(2000, 2024, by = 4)) +
-  theme_minimal(base_size = 13) +
-  labs(
-    title = "Allgemeine Geburtenrate und weiblicher Beschäftigungsrate Stadtteile Münchens",
-    subtitle = "Teil 3",
-    x = "Jahr",
-    y = "Prozent (%)",
-    color = "Indikator"
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title.y = element_text(size = 7),
-    strip.text = element_text(size = 11, face = "bold"),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold")
-  )
-p3
-p4 <- ggplot(data_group4, aes(x = Jahr, y = Wert, color = Indikator,
-                              group = Indikator)) +
-  geom_line(aes(color = Indikator),size = 1) +
-  geom_point(aes(color = Indikator),size = 1.5) +
-  facet_wrap(~ Raumbezug, ncol = 2) +
-  scale_color_manual(
-    values = c("birthrate" = "#E74C3C", "employment_female" = "#3498DB"),
-    name = "Indikator",
-    labels = c("Allgemeine Geburtenrate", "Beschäftigungsrate")) +
-  scale_x_continuous(breaks = seq(2000, 2024, by = 4)) +
-  theme_minimal(base_size = 13) +
-  labs(
-    title = "Allgemeine Geburtenrate und weiblicher Beschäftigungsrate Stadtteile Münchens",
-    subtitle = "Teil 4",
-    x = "Jahr",
-    y = "Prozent (%)",
-    color = "Indikator"
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title.y = element_text(size = 7),
-    strip.text = element_text(size = 11, face = "bold"),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold")
-  )
-p4
-
-#plot year
-names(data_joined)
-head(data_joined)
-data_wide <- data_joined %>%
-  pivot_wider(
-    names_from = Indikator,
-    values_from = Wert
-  )
-head(data_wide)
-
-year_group1 <- data_wide %>%
-  filter(
-    Jahr %in% c(2000, 2001, 2002, 2003, 2004))
-                
-p_y1 <- ggplot(year_group1, aes(x = employment_female, y = birthrate, colour = Raumbezug)) +
-  geom_point(size = 2, alpha = 0.8) +
-  facet_wrap(~ Jahr, ncol = 5) +
-  labs(
-    title = "Zusammenhang: Allgemeine Geburtenrate und weiblicher Beschäftigungsrate",
-    subtitle = "nach ausgewählten Jahren",
-    x = "Beschäftigungsrate (%)",
-    y = "Allgemeine Geburtenrate (%)",
-    color = "Raumbezug"
-  ) +
-  scale_y_continuous(limits = c(0,6), breaks = seq(0, 6, 1)) +
-  scale_x_continuous(limits = c(40,60), breaks = seq(40, 60, 5)) +
-  theme_minimal(base_size = 13) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 10),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title.x = element_text(size = 7),
-    axis.title.y = element_text(size = 7),
-    strip.text = element_text(size = 11, face = "bold"),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold", size = 11)
-  )
-p_y1
-
-year_group2 <- data_wide %>%
-  filter(
-    Jahr %in% c(2005, 2006, 2007, 2008, 2009))
-p_y2 <- ggplot(year_group2, aes(x = employment_female, y = birthrate, colour = Raumbezug)) +
-  geom_point(size = 2, alpha = 0.8) +
-  facet_wrap(~ Jahr, ncol = 5) +
-  labs(
-    title = "Zusammenhang: Allgemeine Geburtenrate und weiblicher Beschäftigungsrate",
-    subtitle = "nach ausgewählten Jahren",
-    x = "Beschäftigungsrate (%)",
-    y = "Allgemeine Geburtenrate (%)",
-    color = "Raumbezug"
-  ) +
-  scale_y_continuous(limits = c(0,6), breaks = seq(0, 6, 1)) +
-  scale_x_continuous(limits = c(40,60), breaks = seq(40, 60, 5)) +
-  theme_minimal(base_size = 13) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 10),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title.x = element_text(size = 7),
-    axis.title.y = element_text(size = 7),
-    strip.text = element_text(size = 11, face = "bold"),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold", size = 11)
-  )
-p_y2
-
-year_group3 <- data_wide %>%
-  filter(
-    Jahr %in% c(2010, 2011, 2012, 2013, 2014))
-p_y3 <- ggplot(year_group3, aes(x = employment_female, y = birthrate, colour = Raumbezug)) +
-  geom_point(size = 2, alpha = 0.8) +
-  facet_wrap(~ Jahr, ncol = 5) +
-  labs(
-    title = "Zusammenhang: Allgemeine Geburtenrate und weiblicher Beschäftigungsrate",
-    subtitle = "nach ausgewählten Jahren",
-    x = "Beschäftigungsrate (%)",
-    y = "Allgemeine Geburtenrate (%)",
-    color = "Raumbezug"
-  ) +
-  scale_x_continuous(limits = c(40,70), breaks = seq(40, 70, 10)) +
-  theme_minimal(base_size = 13) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 10),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title.x = element_text(size = 7),
-    axis.title.y = element_text(size = 7),
-    strip.text = element_text(size = 11, face = "bold"),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold", size = 11)
-  )
-p_y3
-
-year_group4 <- data_wide %>%
-  filter(
-    Jahr %in% c(2015, 2016, 2017, 2018, 2019))
-p_y4 <- ggplot(year_group4, aes(x = employment_female, y = birthrate, colour = Raumbezug)) +
-  geom_point(size = 2, alpha = 0.8) +
-  facet_wrap(~ Jahr, ncol = 5) +
-  labs(
-    title = "Zusammenhang: Allgemeine Geburtenrate und weiblicher Beschäftigungsrate",
-    subtitle = "nach ausgewählten Jahren",
-    x = "Beschäftigungsrate (%)",
-    y = "Allgemeine Geburtenrate (%)",
-    color = "Raumbezug"
-  ) +
-  scale_x_continuous(limits = c(40,70), breaks = seq(40, 70, 5)) +
-  theme_minimal(base_size = 13) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 10),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title.x = element_text(size = 7),
-    axis.title.y = element_text(size = 7),
-    strip.text = element_text(size = 11, face = "bold"),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold", size = 11)
-  )
-p_y4
-
-year_group5 <- data_wide %>%
-  filter(
-    Jahr %in% c(2020, 2021, 2022, 2023, 2024))
-p_y5 <- ggplot(year_group5, aes(x = employment_female, y = birthrate, colour = Raumbezug)) +
-  geom_point(size = 2, alpha = 0.8) +
-  facet_wrap(~ Jahr, ncol = 5) +
-  labs(
-    title = "Zusammenhang: Allgemeine Geburtenrate und weiblicher Beschäftigungsrate",
-    subtitle = "nach ausgewählten Jahren",
-    x = "Beschäftigungsrate (%)",
-    y = "Allgemeine Geburtenrate (%)",
-    color = "Raumbezug"
-  ) +
-  scale_x_continuous(limits = c(40,70), breaks = seq(40, 70, 10)) +
-  theme_minimal(base_size = 13) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 10),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title.x = element_text(size = 7),
-    axis.title.y = element_text(size = 7),
-    strip.text = element_text(size = 11, face = "bold"),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold", size = 11)
-  )
-p_y5
-
-install.packages("leaflet")
-library(leaflet)
+    scale_y_continuous(
+      name = "Beschäftigungsrate (%)",
+      sec.axis = sec_axis(
+        ~ . / scale_factor,
+        name = "Allgemeine Geburtenrate"
+      )
+    ) +
+    scale_x_continuous(breaks = seq(2000, 2024, by = 2)) +
+    
+    scale_color_manual(
+      name   = "Indikator",
+      values = c("Allgemeine Geburtenrate" = "#E74C3C",   # rot
+                 "Beschäftigungsrate"      = "#3498DB")   # blau
+    ) +
+    
+    labs(
+      title    = "Allgemeine Geburtenrate und weibliche SV-pflichtige Beschäftigungsrate",
+      subtitle = district.name,
+      x = "Jahr"
+    ) +
+    theme_minimal(base_size = 13) +
+    theme(
+      plot.title      = element_text(face = "bold", hjust = 0.5, size = 16),
+      plot.subtitle   = element_text(hjust = 0.5),
+      axis.title.y.right = element_text(margin = margin(l = 8)),
+      legend.position = "bottom",
+      legend.title    = element_text(face = "bold")
+    )
+}
+plot_birthrate_district("Stadt")
