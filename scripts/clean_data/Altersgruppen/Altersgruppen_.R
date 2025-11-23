@@ -3,9 +3,9 @@ library(tidyr)
 library(corrr)
 library(ggplot2)
 
-Altersgruppen <- readRDS("/Users/qq/QQ/LMU/P11_Grund_Prak/Grund_Prak_2526/scripts/clean_data/Altersgruppen/Altersgruppen.rds")
-arbeitslos_weiblich <- readRDS("/Users/qq/QQ/LMU/P11_Grund_Prak/Grund_Prak_2526/scripts/clean_data/Altersgruppen/arbeitslos_weiblich.rds")
-
+Altersgruppen <- readRDS("scripts/clean_data/Altersgruppen/Altersgruppen.rds")
+arbeitslos_weiblich <- readRDS("scripts/clean_data/Altersgruppen/arbeitslose_Anteil_weiblich.rds")
+be_raw <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 
 
 
@@ -41,14 +41,14 @@ Altersgruppen_wide <- Altersgruppen %>%
 
 
 df_merge <- arbeitslos_weiblich %>%
-  select(Jahr, Raumbezug, Indikatorwert) %>%
-  rename(arbeitslosenquote_w = Indikatorwert) %>%
+  select(Jahr, Raumbezug, arbeitslos_weiblich) %>%
+  rename(arbeitslosenquote_w = arbeitslos_weiblich) %>%
   inner_join(Altersgruppen_wide, by = c("Jahr", "Raumbezug"))
 
 
 
 cor_result <- df_merge %>%
-  select(arbeitslosenquote_w, `bis 17 Jahre`, `15 bis 17 Jahre`,
+  select(arbeitslosenquote_w, `bis 2 Jahre`,`bis 17 Jahre`, `15 bis 17 Jahre`,
          `15 bis 64 Jahre`, `18 Jahre und älter`,
          `65 Jahre und älter`, `75 Jahre und älter`) %>%
   correlate() %>%
