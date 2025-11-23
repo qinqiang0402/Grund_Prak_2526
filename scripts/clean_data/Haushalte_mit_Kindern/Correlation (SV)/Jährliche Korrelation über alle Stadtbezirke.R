@@ -33,25 +33,12 @@ df_merged <- df_emp %>%
 #————————————————————————————————————————————————
 # Option1：Pearson
 
-df_corr_by_district <- df_merged %>%
-  group_by(Raumbezug) %>%
-  summarise(
-    cor_district = cor(emp_female_pct, households_pct, use = "complete.obs")
-  )
-
 df_corr_yearly <- df_merged %>%
   group_by(Jahr) %>%
   summarise(cor_year = cor(emp_female_pct, households_pct, use = "complete.obs"))
 
 #————————————————————————————————————————————————————————————————
 # Option2: Spearman
-df_corr_by_district <- df_merged %>%
-  group_by(Raumbezug) %>%
-  summarise(
-    cor_district = cor(emp_female_pct, households_pct,
-                       use = "complete.obs",
-                       method = "spearman")
-  )
 
 df_corr_yearly <- df_merged %>%
   group_by(Jahr) %>%
