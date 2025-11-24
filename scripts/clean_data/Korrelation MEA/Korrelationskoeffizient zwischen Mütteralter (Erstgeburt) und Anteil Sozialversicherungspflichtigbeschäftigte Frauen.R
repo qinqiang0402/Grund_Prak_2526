@@ -1,17 +1,12 @@
-install.packages("readxl")
 library(readxl)
 export_be <- read_excel("data/raw/export_be.xlsx")
 be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
-View(be_sheet)
 
 export_ar <- read_excel("data/raw/export_ar.xlsx")
 ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
-View(ar_sheet)
 
-install.packages("tidyverse")
 library(tidyverse)
 
-install.packages("ggpubr")
 library(ggpubr)
 
 all_districts_and_city <- be_sheet %>%
