@@ -93,12 +93,17 @@ plot_data_final <- korrelations_daten_clean %>%
   ) %>%
   ungroup()
 
+all_labels <- sort(unique(plot_data_final$Raumbezug_Label))
+all_colors <- scales::hue_pal()(length(all_labels))
+stadtteil_palette <- all_colors
+names(stadtteil_palette) <- all_labels
 
 ggplot(plot_data_final, aes(x = mean_age, y = anteil)) +
   geom_smooth(aes(color = Raumbezug_Label, group = Raumbezug_Label),
               method = "lm", se = FALSE, linewidth = 1.1, alpha = 0.8) +
   geom_point(aes(color = Raumbezug_Label), size = 1.1, alpha = 0.5) +
   geom_smooth(aes(group = 1), method = "lm", color = "black", linewidth = 1.1, se = FALSE) +
+  scale_color_manual(values = stadtteil_palette) +
   labs(
     title = "Korrelationskoeffizient (Spearman) zwischen Haushalte mit Kindern und Anteil Sozialversicherungspflichtigbeschäftigte Frauen nach Stadtteile",
     x = "Haushalte mit Kindern (Anteil)",
@@ -153,6 +158,7 @@ ggplot(plot_data_highlight, aes(x = mean_age, y = anteil)) +
     linewidth = 1.1, 
     se = FALSE
   ) +
+  scale_color_manual(values = stadtteil_palette) +
   labs(
     title = "Simpson's Paradox",
     subtitle = "Grau = Positiver Zusammenhang, Bunt = Negativer Zusammenhang",
