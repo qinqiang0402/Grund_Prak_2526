@@ -1,6 +1,8 @@
 library(readxl)
 library(tidyverse)
 library(ggpubr)
+library(ggplot2)
+
 
 export_be <- read_excel("data/raw/export_be.xlsx")
 be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
@@ -49,9 +51,6 @@ ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   theme_minimal()
 
 #----------------------------------------------------------------------------------
-library(ggplot2)
-library(ggpubr)
-
 ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   geom_point(aes(color = Raumbezug), 
              size = 1.3,     
@@ -59,32 +58,44 @@ ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   stat_cor(
     method = "spearman", 
-    label.x.npc = "left",  
-    label.y.npc = "top",  
+    label.x.npc = "left",   
+    label.y.npc = "top",   
     color = "black",
     size = 5
   ) + 
+  coord_cartesian(xlim = c(0.1, 0.3), ylim = c(48, 68)) +
   labs(
     title = "Korrelationskoeffizient zwischen Haushalte mit Kindern und Anteil Sozialversicherungspflichtigbeschäftigte Frauen(Spearman)",
     x = "Haushalte mit Kindern",
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
     color = "Stadtteile" 
   ) +
-  scale_x_continuous(limits = c(0.1, 0.3)) + 
-  scale_y_continuous(limits = c(48, 68)) +
-  guides(color = guide_legend(ncol = 1)) + # Legende einspaltig
+  guides(color = guide_legend(ncol = 1)) + 
   theme_minimal()
-
-
 #-----------------------------------------------------------------------
+korrelations_daten <- inner_join(
+  all_districts_and_city, 
+  Sozialversicherungspflichtig_Beschäftigte_anteil_frau, 
+  by = c("Raumbezug", "Jahr")
+)
+
+korrelations_daten_clean <- korrelations_daten %>%
+  filter(Raumbezug != "Stadt München")
 
 
-library(readxl)
-library(tidyverse)
-library(ggpubr)
+
+plot_data_final <- korrelations_daten_clean %>%
+  group_by(Raumbezug) %>%
+  mutate(
+    spearman_r = cor(mean_age, anteil, method = "spearman", use = "complete.obs"),
+    r_label = sprintf("(R=%.2f)", spearman_r),
+    Raumbezug_Label = paste(Raumbezug, r_label, sep = " ")
+  ) %>%
+  ungroup()
+
 
 ggplot(plot_data_final, aes(x = mean_age, y = anteil)) +
-  geom_smooth(aes(color = Raumbezug_Label, group = Raumbezug_Label), 
+  geom_smooth(aes(color = Raumbezug_Label, group = Raumbezug_Label),
               method = "lm", se = FALSE, linewidth = 1.1, alpha = 0.8) +
   geom_point(aes(color = Raumbezug_Label), size = 1.1, alpha = 0.5) +
   geom_smooth(aes(group = 1), method = "lm", color = "black", linewidth = 1.1, se = FALSE) +
@@ -94,29 +105,16 @@ ggplot(plot_data_final, aes(x = mean_age, y = anteil)) +
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
     color = "Stadtteile" 
   ) +
-  scale_x_continuous(limits = c(0.1, 0.3)) +
+  coord_cartesian(xlim = c(0.1, 0.3), ylim = c(48, 68)) + 
   theme_minimal() +
   theme(
-    legend.text = element_text(size = 7), 
-    legend.key.height = unit(0.4, "cm")   
+    legend.text = element_text(size = 7),
+    legend.key.height = unit(0.4, "cm")
   ) +
   guides(color = guide_legend(ncol = 1))
 
 
-
-
-
-
-
-
-
-
-
-
 #----------------------------------------------------------------------------
-library(tidyverse)
-library(ggpubr)
-
 r_werte_check <- korrelations_daten_clean %>%
   group_by(Raumbezug) %>%
   summarise(
@@ -162,22 +160,11 @@ ggplot(plot_data_highlight, aes(x = mean_age, y = anteil)) +
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
     color = "Stadtteile mit R < 0" 
   ) +
-  scale_x_continuous(limits = c(0.1, 0.3)) +
-  scale_y_continuous(limits = c(48, 68)) + 
+  coord_cartesian(xlim = c(0.1, 0.3), ylim = c(48, 68)) +
   theme_minimal() +
   theme(legend.position = "right")
 
-
-
-
-
-
-
-
 #------------------------------------------------------------------------------
-library(tidyverse)
-library(ggpubr)
-
 plot_data_colored <- korrelations_daten_clean %>%
   group_by(Raumbezug) %>%
   mutate(
@@ -208,7 +195,7 @@ ggplot(plot_data_colored, aes(x = mean_age, y = anteil)) +
     x = "Haushalte mit Kindern (Anteil)",
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)"
   ) +
-  scale_x_continuous(limits = c(0.1, 0.3)) +
+  coord_cartesian(xlim = c(0.1, 0.3)) +
   theme_minimal() +
   theme(legend.position = "none")
 
