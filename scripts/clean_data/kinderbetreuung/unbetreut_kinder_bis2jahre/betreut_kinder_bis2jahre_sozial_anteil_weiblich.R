@@ -68,7 +68,7 @@ df_betreut %>%
 
 
 
-#——————————————————————————————————————————————————————————————————————————————————————————
+
 
 geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gsm_wfs:vablock_stadtbezirke_opendata&outputFormat=application/json"
 munich_map <- st_read(geojson_url)
@@ -108,18 +108,18 @@ map_avg <- munich_map2 %>%
 # 4) Plot: clean, no grid, no axes
 ggplot(map_avg) +
   geom_sf(aes(fill = avg_enrolled_weighted), color = "white", size = 0.25) +
-  coord_sf(datum = NA) +                     # removes lat/lon graticules
+  coord_sf(datum = NA) +                     # entfernt Gitternetzlinien (Lat/Lon)
   scale_fill_gradient(
     low = "#deebf7", high = "#08306b",
-    name = "Enrolled share (%)",
+    name = "Betreuungsanteil (%)",
     na.value = "grey90"
   ) +
   labs(
-    title = "Average Share of Enrolled Children (0–2 years), Munich (2007–2024)",
-    subtitle = "Weighted by the number of 0–2-year-olds per year\nLighter = lower share · Darker = higher share",
-    caption = "Data: Landeshauptstadt München, Statistikamt"
+    title = "Durchschnittlicher Betreuungsanteil von Kindern (0–2 Jahre) in München (2007–2024)",
+    subtitle = "Gewichtet nach der Anzahl der 0–2-Jährigen pro Jahr\nHeller = niedriger Anteil · Dunkler = höherer Anteil",
+    caption = "Daten: Landeshauptstadt München, Statistikamt"
   ) +
-  theme_void(base_size = 12) +               # removes background, axes, ticks
+  theme_void(base_size = 12) +               # entfernt Hintergrund, Achsen, Ticks
   theme(legend.position = "right")
 
 
@@ -173,29 +173,30 @@ scale_factor <- (range_left[2] - range_left[1]) / (range_right[2] - range_right[
 # 3) Plot dual-axis trend
 # -----------------------------
 ggplot(ts_dual, aes(x = Jahr)) +
-  # Left axis series (enrolled share)
-  geom_line(aes(y = share_enrolled, color = "Enrolled (0–2)"), size = 1.2) +
-  geom_point(aes(y = share_enrolled, color = "Enrolled (0–2)"), size = 2) +
+  # Linke Achse (Betreuungsanteil)
+  geom_line(aes(y = share_enrolled, color = "Betreuungsanteil (0–2)"), size = 1.2) +
+  geom_point(aes(y = share_enrolled, color = "Betreuungsanteil (0–2)"), size = 2) +
   
-  # Right axis series (female employment), rescaled onto left axis
+  # Rechte Achse (weibliche Beschäftigung), auf linke Achse reskaliert
   geom_line(aes(y = (emp_women - range_right[1]) * scale_factor + range_left[1],
-                color = "Female employment"), size = 1.2) +
+                color = "Weibliche Beschäftigung"), size = 1.2) +
   geom_point(aes(y = (emp_women - range_right[1]) * scale_factor + range_left[1],
-                 color = "Female employment"), size = 2) +
+                 color = "Weibliche Beschäftigung"), size = 2) +
   
   scale_y_continuous(
-    name = "Share of enrolled children (0–2) [%]",
+    name = "Betreuungsanteil (0–2 Jahre) [%]",
     sec.axis = sec_axis(~ (. - range_left[1]) / scale_factor + range_right[1],
-                        name = "Female employment rate [%]")
+                        name = "Anteil weiblicher Beschäftigung [%]")
   ) +
   scale_color_manual(
     name = NULL,
-    values = c("Enrolled (0–2)" = "#1f77b4", "Female employment" = "#d62728")
+    values = c("Betreuungsanteil (0–2)" = "#1f77b4",
+               "Weibliche Beschäftigung" = "#d62728")
   ) +
   labs(
-    title    = "Dual-axis Trend: Enrolled 0–2-year-olds vs Female Employment (2007–2024)",
-    subtitle = "Left: share of enrolled 0–2-year-olds (weighted) · Right: female employment rate",
-    x        = "Year"
+    title    = "Zwei-Achsen-Trend: Betreute Kinder (0–2) vs. weibliche Beschäftigung (2007–2024)",
+    subtitle = "Links: Betreuungsanteil der 0–2-Jährigen (gewichtet) · Rechts: Anteil weiblicher Beschäftigung",
+    x        = "Jahr"
   ) +
   theme_minimal(base_size = 13) +
   theme(
@@ -232,11 +233,11 @@ ggplot(enrolled_trend, aes(x = Jahr, y = share_enrolled)) +
   geom_point(color = "#08306b", size = 2.2) +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   labs(
-    title = "Trend of Enrolled Children (0–2 years) in Munich (2007–2024)",
-    subtitle = "Citywide weighted average share of 0–2-year-olds enrolled in childcare",
-    x = "Year",
-    y = "Share of enrolled children (0–2 years) [%]",
-    caption = "Data: Landeshauptstadt München, Statistikamt"
+    title = "Trend der betreuten Kinder (0–2 Jahre) in München (2007–2024)",
+    subtitle = "Stadtweit gewichteter Durchschnittsanteil der betreuten 0–2-Jährigen",
+    x = "Jahr",
+    y = "Anteil der betreuten Kinder (0–2 Jahre) [%]",
+    caption = "Daten: Landeshauptstadt München, Statistikamt"
   ) +
   theme_minimal(base_size = 13) +
   theme(
@@ -370,7 +371,7 @@ munich_map2 <- munich_map %>%
 
 dir.create("fig/maps_yearly", recursive = TRUE, showWarnings = FALSE)
 
-years <- sort(unique(bezirks_yearly$Jahr))
+years <- 2015
 
 for (yr in years) {
   map_year <- munich_map2 %>%
@@ -384,7 +385,7 @@ for (yr in years) {
       low = "#deebf7", high = "#08306b",
       name = "Betreuungsquote (%)",
       na.value = "grey90",
-      limits = c(0, 100)
+      limits = c(10, 60)
     ) +
     labs(
       title = paste0("Betreuungsquote (0–2 Jahre) – München, ", yr),
@@ -395,9 +396,9 @@ for (yr in years) {
     theme(legend.position = "right",
           plot.title = element_text(face = "bold"))
   
-#  ggsave(filename = file.path("fig/maps_yearly",
-#                              paste0("map_betreuung_", yr, ".png")),
-#         plot = pmap, width = 7.5, height = 6.8, dpi = 300)
+  ggsave(filename = file.path("fig/maps_yearly",
+                              paste0("map_betreuung_", yr, ".png")),
+         plot = pmap, width = 7.5, height = 6.8, dpi = 300)
 }
 
 
@@ -465,6 +466,8 @@ print(corr_space, n = 25)
 
 cat("\n③ 全体总体相关性:", round(corr_overall, 3), "\n")
 
+
+corr_space %>% filter(Jahr == 2015)
 
 
 
@@ -659,7 +662,7 @@ for (i in seq_len(nrow(dists))) {
  dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
  
  # 4) 年份序列
- years <- 2007:2024
+ years <- 2015
  
  # 5) 逐年绘图并保存
  for (yr in years) {
@@ -670,9 +673,10 @@ for (i in seq_len(nrow(dists))) {
      geom_sf(aes(fill = sozial_weiblich_pct), color = "white", linewidth = 0.25, na.rm = TRUE) +
      coord_sf(datum = NA) +
      scale_fill_gradient(
-       low = "#deebf7", high = "#08306b",
+       low = "#f7fbff",  # 近乎白色
+       high = "#08306b",
        name = "Anteil weiblich\nSV-Beschäftigte (%)",
-       limits = rng,                   # 用统一范围保证跨年可比
+       limits = c(50,65),
        na.value = "grey90"
      ) +
      labs(
@@ -686,15 +690,195 @@ for (i in seq_len(nrow(dists))) {
        plot.title = element_text(face = "bold")
      )
    
-#   ggsave(
-#     filename = file.path(outdir, sprintf("map_sozial_weiblich_%d.png", yr)),
-#    plot = p, width = 7.5, height = 6.8, dpi = 300
-#   )
+   ggsave(
+     filename = file.path(outdir, sprintf("map_sozial_weiblich_%d.png", yr)),
+    plot = p, width = 7.5, height = 6.8, dpi = 300
+   )
  }
  
  
  
  
  
+ #————————————————————————————————————————————————————————————————————————————————————————
  
+ library(dplyr)
+ library(forcats)   # fct_reorder 用来按相关系数排序
+ library(ggplot2)
+ 
+ # 1️⃣ 计算每个 Stadtbezirk 的时间相关性
+ corr_kita_bezirk <- df_merge %>%
+   group_by(sb) %>%                                      # 同一个 Bezirk
+   summarise(
+     bezirk = first(Raumbezug),                         # 区名（Stadtbezirk-Name）
+     corr   = if (sum(complete.cases(anteil_betreut, sozial_weiblich)) > 1)
+       cor(anteil_betreut, sozial_weiblich, use = "complete.obs")
+     else NA_real_,
+     .groups = "drop"
+   )
+ 
+ # 2️⃣ 画横向条形图
+ ggplot(corr_kita_bezirk,
+        aes(x = corr, y = fct_reorder(bezirk, corr))) +
+   geom_col(fill = "#1f77b4") +
+   geom_vline(xintercept = 0, color = "grey40") +
+   labs(
+     title    = "Korrelation pro Stadtbezirk (2007–2024)",
+     subtitle = "Frauenbeschäftigung vs. Kinderbetreuung (0–2 Jahre)",
+     x        = "Korrelationskoeffizient",
+     y        = "Stadtbezirk"
+   ) +
+   theme_minimal(base_size = 13) +
+   theme(
+     panel.grid.minor = element_blank()
+   )
+ 
+ 
+ 
+ #——————————————————————————————————————————————————————————————————————————————————————————
+ 
+ 
+ # 1️⃣ 计算每一年的“空间横截面”相关性
+ corr_kita_year <- df_merge %>%
+   group_by(Jahr) %>%
+   summarise(
+     corr = if (sum(complete.cases(anteil_betreut, sozial_weiblich)) > 1)
+       cor(anteil_betreut, sozial_weiblich, use = "complete.obs")
+     else NA_real_,
+     .groups = "drop"
+   )
+ 
+ # 2️⃣ 画时间趋势图
+ ggplot(corr_kita_year, aes(x = Jahr, y = corr)) +
+   geom_line(color = "#08306b", linewidth = 1.3) +
+   geom_point(color = "#08306b", size = 2) +
+   geom_hline(yintercept = 0, color = "grey50", linetype = "dashed") +
+   scale_x_continuous(breaks = 2007:2024, limits = c(2007, 2024))+
+   labs(
+     title    = "Jährliche Korrelation über alle Stadtbezirke",
+     subtitle = "Frauenbeschäftigungsquote vs. Kinderbetreuungsquote (0–2 Jahre)",
+     x        = "Jahr",
+     y        = "Korrelationskoeffizient (−1 … +1)"
+   ) +
+   theme_minimal(base_size = 13) +
+   theme(
+     panel.grid.minor = element_blank()
+   )
+ 
+ 
+ 
+ 
+ 
+ 
+ #——————————————————————————————————————————————————————————————————————————————————————————
+ library(ggplot2)
+ library(dplyr)
+ 
+ # 1) 选取有用变量，并把女性就业率变成百分比，方便解释
+ simpson_df <- df_merge %>%
+   filter(Jahr >= 2007, Jahr <= 2024) %>%          # 只要 2007–2024
+   mutate(
+     sb = as.factor(sb),                           # 每个 Stadtbezirk 当成一组
+     sozial_weiblich_pct = sozial_weiblich * 100   # 0–1 → %
+   )
+ 
+ # 2) 画 Simpson-Paradox 图：
+ #    - 彩色线：每个 Bezirk 自己的回归线
+ #    - 黑线：用全部数据拟合的一条整体回归线
+ ggplot(simpson_df, 
+        aes(x = anteil_betreut, y = sozial_weiblich_pct, colour = sb)) +
+   # 每个点：某一年 × 某一区
+   geom_point(alpha = 0.6, size = 1.8) +
+   
+   # 每个区一条线性回归线（彩色）
+   geom_smooth(method = "lm", se = FALSE, linewidth = 1) +
+   
+   # 整体回归线（黑色），不按区分组
+   geom_smooth(aes(group = 1),
+               method = "lm", se = FALSE,
+               colour = "black", linewidth = 1.3) +
+   
+   labs(
+     title    = "Simpson-Paradox: Bezirksweise vs. Gesamtzusammenhang",
+     subtitle = "Jede Farbe: ein Stadtbezirk (2007–2024)\nSchwarze Linie: Gesamtstadt",
+     x        = "Betreuungsquote 0–2 Jahre (%)",
+     y        = "Anteil sozialversicherungspflichtig beschäftigter Frauen (%)"
+   ) +
+   theme_minimal(base_size = 13) +
+   theme(
+     legend.position = "none",            # 不需要具体区名和区号 → 关掉图例
+     panel.grid.minor = element_blank()
+   )
+ 
+ 
+ #_________________________________________________________________________________________
+ 
+ df_merge %>%
+   filter(Jahr == 2015) %>%
+   ggplot(aes(x = anteil_betreut, y = sozial_weiblich)) +
+   geom_point() +
+   geom_smooth(method = "lm", se = FALSE) +
+   labs(
+     title = "2015 nach Bezirke Betreuungsquote vs SV_Weiblich",
+     x = "Betreuungsquote 0–2 Jahre (%)",
+     y = "Anteil weiblicher SV-Beschäftigter (weiblich)"
+   )
 
+ 
+ #_______________________________________________________________________________________
+ 
+ df_merge %>%
+   filter(Jahr == 2015) %>%
+   summarise(
+     n = sum(complete.cases(anteil_betreut, sozial_weiblich)),
+     corr_manual = cor(anteil_betreut, sozial_weiblich, use = "complete.obs")
+   )
+ 
+ 
+ 
+ #——————————————————————————————————————————————————————————————————————————————————————————
+ 
+ 
+ 
+ library(dplyr)
+ library(ggplot2)
+ 
+ # 1️⃣ 准备 overall 数据：所有区 × 所有年份
+ df_overall <- df_merge %>%
+   filter(Jahr >= 2007, Jahr <= 2024) %>%        # 保险起见，限定年份
+   mutate(
+     betreuung_pct   = anteil_betreut,           # 已经是百分数了
+     beschaeft_pct   = sozial_weiblich * 100     # 0–1 → 0–100%
+   ) %>%
+   filter(
+     is.finite(betreuung_pct),
+     is.finite(beschaeft_pct)
+   )
+ 
+ # 2️⃣ 计算总体相关系数（所有区 + 所有年份一起）
+ corr_overall <- cor(
+   df_overall$betreuung_pct,
+   df_overall$beschaeft_pct,
+   use = "complete.obs"
+ )
+ 
+ cat("Overall correlation (2007–2024, alle Bezirke):",
+     round(corr_overall, 3), "\n")
+ 
+ # 3️⃣ 画 overall correlation 的散点 + 回归线
+ ggplot(df_overall, aes(x = betreuung_pct, y = beschaeft_pct)) +
+   geom_point(alpha = 0.5, color = "#1f77b4", size = 1.6) +
+   geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 1.2) +
+   labs(
+     title    = "Gesamtkorrelation: Betreuungsquote (0–2) vs. weibliche Beschäftigung",
+     subtitle = paste0("Alle Bezirke, 2007–2024 · Pearson-Korrelation = ",
+                       round(corr_overall, 3)),
+     x        = "Betreuungsquote 0–2 Jahre (%)",
+     y        = "Anteil weiblicher SV-Beschäftigter (%)"
+   ) +
+   theme_minimal(base_size = 13) +
+   theme(
+     panel.grid.minor = element_blank()
+   )
+
+ 
