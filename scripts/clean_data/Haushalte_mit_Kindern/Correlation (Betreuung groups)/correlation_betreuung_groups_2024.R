@@ -3,14 +3,21 @@ library(readxl)
 library(ggplot2)
 library(dplyr)
 
+
+# Einlesen der Bevölkerungsdaten (0–2 Jahre)
+
+
 be <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 
 be_0bis2 <- be %>% 
   filter(
     Indikator == "Altersgruppen",
-    Ausprägung == "bis 2 Jahre",
+    Ausprägung == "bis 2 Jahre"
   ) %>%
-  dplyr::select(Indikator, Ausprägung, Jahr, Raumbezug, `Basiswert 1` )
+  select(Indikator, Ausprägung, Jahr, Raumbezug, `Basiswert 1`)
+
+
+# Einlesen der Kinderbetreuungsdaten (0–2 Jahre)
 
 
 ki <- read_excel("data/raw/export_ki.xlsx", sheet = "KINDERBETREUUNG")
@@ -20,7 +27,11 @@ ki_0bis2 <- ki %>%
     Indikator == "Altersgruppen",
     Ausprägung == "bis 2 Jahre"
   ) %>% 
-  dplyr::select(Indikator, Ausprägung, Jahr, Raumbezug, `Basiswert 1`)
+  select(Indikator, Ausprägung, Jahr, Raumbezug, `Basiswert 1`)
+
+
+# Umbenennen der Variablen
+
 
 be_0bis2 <- be_0bis2 %>%
   rename(kinder_total = `Basiswert 1`)
@@ -29,14 +40,19 @@ ki_0bis2 <- ki_0bis2 %>%
   rename(kinder_betreut = `Basiswert 1`)
 
 
-# Merge based on Jahr (year) and Raumbezug (district)
+# Zusammenführen der Bevölkerung und Betreuungszahlen
+
+
 df_betreut <- left_join(
   be_0bis2,
   ki_0bis2,
   by = c("Jahr", "Raumbezug", "Indikator", "Ausprägung")
 )
 
-# Calculate non-enrolled children and percentages
+
+# Berechnung: unbetreute Kinder und Betreuungsanteile
+
+
 df_betreut <- df_betreut %>%
   mutate(
     kinder_unbetreut = kinder_total - kinder_betreut,
@@ -44,17 +60,16 @@ df_betreut <- df_betreut %>%
     anteil_betreut = kinder_betreut / kinder_total * 100
   )
 
-df_betreut %>%
-  dplyr::select(Raumbezug, kinder_total, kinder_betreut, kinder_unbetreut,
-                anteil_betreut, anteil_unbetreut) %>%
-  arrange(desc(anteil_unbetreut)) %>%
-  head()
 
-#——————————————————————————————————————————————————————
+# Filter für das Jahr 2024
+
+
 df_2024 <- df_betreut %>%
   filter(Jahr == 2024)
 
-# Haushalte mit Kindern und Frauen SV
+
+# Einlesen: Beschäftigungsdaten (Anteil weiblich)
+
 
 ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 
@@ -70,6 +85,9 @@ df_emp <- ar_sheet %>%
   select(Jahr, Raumbezug, emp_female_pct)
 
 
+# Einlesen: Haushalte mit Kindern
+
+
 df_households <- be_sheet %>%
   filter(
     Indikator == "Haushalte mit Kindern",
@@ -77,59 +95,79 @@ df_households <- be_sheet %>%
   ) %>%
   mutate(
     Jahr = as.numeric(Jahr),
-    households_pct = 100 * `Basiswert 1` / `Basiswert 2`,
+    households_pct = 100 * `Basiswert 1` / `Basiswert 2`
   ) %>%
   select(Jahr, Raumbezug, households_pct)
+
+
+# Zusammenführen der Beschäftigung + Haushalte
+
 
 df_merged <- df_emp %>%
   inner_join(df_households,
              by = c("Jahr", "Raumbezug"))
 
-# Join together
+
+# Hinzufügen der Betreuungsquote (0–2 Jahre, Jahr 2024)
+
+
 df_2024 <- df_merged %>%
-  inner_join(df_betreut %>% filter(Jahr == 2024) %>% 
+  inner_join(df_betreut %>% filter(Jahr == 2024) %>%
                select(Raumbezug, anteil_betreut),
              by = "Raumbezug") %>%
   filter(Jahr == 2024)
 
-# Quantile group
-quantiles_2024 <- quantile(df_2024$anteil_betreut, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE)
+
+# Bildung von Quantilsgruppen (Niedrig / Mittel / Hoch)
+
+
+quantiles_2024 <- quantile(df_2024$anteil_betreut,
+                           probs = c(0, 1/3, 2/3, 1),
+                           na.rm = TRUE)
 
 df_2024 <- df_2024 %>%
   mutate(
     betreuung_group = cut(
       anteil_betreut,
       breaks = quantiles_2024,
-      labels = c("Low", "Mid", "High"),
+      labels = c("Niedrig", "Mittel", "Hoch"),
       include.lowest = TRUE
     )
   )
 
-# 1）Onhe Group
+
+# Korrelationsberechnung für Gesamt, Niedrig, Hoch
+
+
 cor_total <- cor(df_2024$emp_female_pct,
                  df_2024$households_pct,
                  use = "complete.obs",
                  method = "pearson")
 
-# 2）Low Betreuung（bottom 1/3）
 cor_low <- df_2024 %>%
-  filter(betreuung_group == "Low") %>%
+  filter(betreuung_group == "Niedrig") %>%
   summarise(cor = cor(emp_female_pct, households_pct,
                       use="complete.obs", method="pearson")) %>%
   pull(cor)
 
-# 3）High Betreuung（top 1/3）
 cor_high <- df_2024 %>%
-  filter(betreuung_group == "High") %>%
+  filter(betreuung_group == "Hoch") %>%
   summarise(cor = cor(emp_female_pct, households_pct,
                       use="complete.obs", method="pearson")) %>%
   pull(cor)
+
+
+# Vorbereitung der Grafikdaten
 
 
 df_bar <- tibble(
-  group = c("Gesamt", "Low Betreuung", "High Betreuung"),
+  group = c("Gesamt", "Niedrige Betreuung", "Hohe Betreuung"),
   corr = c(cor_total, cor_low, cor_high)
 )
+
+
+# Balkendiagramm
+
 
 ggplot(df_bar, aes(x = group, y = corr, fill = group)) +
   geom_col(width = 0.6, alpha = 0.8) +
@@ -139,8 +177,8 @@ ggplot(df_bar, aes(x = group, y = corr, fill = group)) +
   scale_fill_manual(values = c("grey50", "#f8766d", "#00bfc4")) +
   theme_minimal(base_size = 14) +
   labs(
-    title = "Korrelation 2024: Frauenbeschäftigung vs. Haushalte mit Kindern",
-    subtitle = "Vergleich: Gesamt vs. Low/High Kinderbetreuung (0–2 Jahre)",
+    title = "Korrelation 2024: Frauenbeschäftigung und Haushalte mit Kindern",
+    subtitle = "Vergleich: Gesamt sowie niedrige und hohe Kinderbetreuung (0–2 Jahre)",
     x = "",
     y = "Korrelationskoeffizient"
   ) +

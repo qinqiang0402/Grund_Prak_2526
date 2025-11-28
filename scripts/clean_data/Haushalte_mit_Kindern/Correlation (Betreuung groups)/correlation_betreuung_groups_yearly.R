@@ -78,7 +78,7 @@ corr_df <- map_df(years, function(y) {
       betreuung_group = cut(
         anteil_betreut,
         breaks = qu,
-        labels = c("Low", "Mid", "High"),
+        labels = c("Niedrig", "Mittel", "Hoch"),  
         include.lowest = TRUE
       )
     )
@@ -87,34 +87,35 @@ corr_df <- map_df(years, function(y) {
     Jahr = y,
     Gesamt = cor(df_y$emp_female_pct, df_y$households_pct,
                  use="complete.obs"),
-    Low    = cor(df_y %>% filter(betreuung_group=="Low")  %>% pull(emp_female_pct),
-                 df_y %>% filter(betreuung_group=="Low")  %>% pull(households_pct),
-                 use="complete.obs"),
-    High   = cor(df_y %>% filter(betreuung_group=="High") %>% pull(emp_female_pct),
-                 df_y %>% filter(betreuung_group=="High") %>% pull(households_pct),
-                 use="complete.obs")
+    Niedrig = cor(df_y %>% filter(betreuung_group=="Niedrig")  %>% pull(emp_female_pct),
+                  df_y %>% filter(betreuung_group=="Niedrig")  %>% pull(households_pct),
+                  use="complete.obs"),
+    Hoch    = cor(df_y %>% filter(betreuung_group=="Hoch") %>% pull(emp_female_pct),
+                  df_y %>% filter(betreuung_group=="Hoch") %>% pull(households_pct),
+                  use="complete.obs")
   )
 })
 
 corr_long <- corr_df %>%
-  pivot_longer(cols = c("Gesamt", "Low", "High"),
+  pivot_longer(cols = c("Gesamt", "Niedrig", "Hoch"),  
                names_to = "Group",
                values_to = "Correlation")
 
-# Plot
+# Plot (全部德语)
 ggplot(corr_long, aes(x = Jahr, y = Correlation, color = Group)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey70") +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
   scale_color_manual(values = c(
-    "Gesamt" = "grey50",
-    "Low"    = "#00bfc4",   
-    "High"   = "#f8766d"    
+    "Gesamt" = "grey40",
+    "Niedrig" = "#00bfc4",   
+    "Hoch"    = "#f8766d"   
   )) +
   theme_minimal(base_size = 14) +
   labs(
-    title = "Jährliche Korrelationen: Frauenbeschäftigung vs. Haushalte mit Kindern",
-    subtitle = "Vergleich: Gesamt vs. Low/High Kinderbetreuung (0–2 Jahre)",
+    title = "Jährliche Korrelationen: Frauenbeschäftigung und Haushalte mit Kindern",
+    subtitle = "Vergleich: Gesamt sowie niedrige und hohe Kinderbetreuung (0–2 Jahre)",
     x = "Jahr",
-    y = "Korrelationskoeffizient"
+    y = "Korrelationskoeffizient",
+    color = "Gruppe"
   )
