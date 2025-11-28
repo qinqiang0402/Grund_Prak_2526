@@ -75,6 +75,38 @@ odds_ratio_tabelle <- finales_vergleichs_ergebnis %>%
   select(Jahr, Odds_Ratio_hkue_hkun_sv, Odds_Ratio_hkun_hkue_sv)
 
 
+
+
+library(knitr)
+library(dplyr)
+library(kableExtra) 
+
+tabelle_2024 <- finales_vergleichs_ergebnis %>%
+  filter(Jahr == 2024) %>%
+  select(A, B, C, D) %>%
+  mutate(across(everything(), round, 2))
+
+
+matrix_2024 <- matrix(
+  c(tabelle_2024$A, tabelle_2024$B,  
+    tabelle_2024$C, tabelle_2024$D), 
+  nrow = 2, byrow = TRUE
+)
+
+rownames(matrix_2024) <- c("Bezirke: Haushalt mit Kinder (> Avg)", "Bezirke: Haushalt mit Kinder (< Avg)")
+colnames(matrix_2024) <- c("Frauen SV Anteil (%)", "Frauen 1-SV Anteil (%)")
+
+kable(matrix_2024, caption = "Haushalt mit Kinder und Frauen SV Antil Odds Ratio 2024") %>%
+  kable_styling(full_width = F, bootstrap_options = c("striped", "hover"))
+
+
+
+#-----------------------------------------------
+
+
+
+
+
 library(ggplot2)
 
 ggplot(data = odds_ratio_tabelle, aes(x = Jahr, y = Odds_Ratio_hkun_hkue_sv)) +

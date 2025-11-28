@@ -9,10 +9,10 @@ geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&
 munich_map <- st_read(geojson_url, quiet = TRUE) %>% 
   st_transform(4326) 
 
-export_be <- read_excel("data/raw/export_be.xlsx") 
-be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
-export_ar <- read_excel("data/raw/export_ar.xlsx") 
-ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
+export_be <- read_excel("../../data/raw/export_be.xlsx") 
+be_sheet <- read_excel("../../data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
+export_ar <- read_excel("../../data/raw/export_ar.xlsx") 
+ar_sheet <- read_excel("../../data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 
 
 
