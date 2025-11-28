@@ -1,4 +1,5 @@
 library(readxl)
+library(dplyr)
 ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 
 df_emp <- ar_sheet %>%
@@ -31,33 +32,15 @@ df_merged <- df_emp %>%
              by = c("Jahr", "Raumbezug"))
 
 #————————————————————————————————————————————————
-# Option1：Pearson
 
 df_corr_yearly <- df_merged %>%
   group_by(Jahr) %>%
   summarise(cor_year = cor(emp_female_pct, households_pct, use = "complete.obs"))
 
-#————————————————————————————————————————————————————————————————
-# Option2: Spearman
-
-df_corr_yearly <- df_merged %>%
-  group_by(Jahr) %>%
-  summarise(
-    cor_year = cor(emp_female_pct, households_pct,
-                   use = "complete.obs",
-                   method = "spearman")
-  )
-
-
 #————————————————————————————————————————————————————————————————————
 # plots
 
 library(ggplot2)
-
-ggplot(df_merged, aes(x = households_pct, y = emp_female_pct)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", se = FALSE, color = "red") +
-  theme_minimal()
 
 
 ggplot(df_corr_yearly, aes(x = Jahr, y = cor_year)) +
@@ -67,8 +50,8 @@ ggplot(df_corr_yearly, aes(x = Jahr, y = cor_year)) +
   theme_minimal() +
   labs(
     title = "Jährliche Korrelation über alle Stadtbezirke",
-    subtitle = "Frauenbeschäftigungsquote vs. Haushalte mit Kindern",
+    subtitle = "Frauenbeschäftigung und Haushalte mit Kindern",
     x = "Jahr",
-    y = "Korrelationskoeffizient (−1 … +1)"
+    y = "Korrelationskoeffizient"
   )
 

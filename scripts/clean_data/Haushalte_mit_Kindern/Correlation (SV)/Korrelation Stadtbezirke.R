@@ -1,5 +1,6 @@
 library(readxl)
 library(dplyr)
+library(ggplot2)
 ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 
 df_emp <- ar_sheet %>%
@@ -45,7 +46,7 @@ ggplot(df_corr_by_district,
   theme_minimal() +
   labs(
     title = "Korrelation pro Stadtbezirk (2005–2024)",
-    subtitle = "Frauenbeschäftigung vs. Haushalte mit Kindern",
+    subtitle = "Frauenbeschäftigung und Haushalte mit Kindern",
     x = "Stadtbezirk",
     y = "Korrelationskoeffizient"
   )
