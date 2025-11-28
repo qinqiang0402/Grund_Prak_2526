@@ -69,7 +69,7 @@ plot_corr_by_year <- function(corr_df) {
       title    = "Jährliche Korrelation über alle Stadtbezirke",
       subtitle = "Frauenbeschäftigungsquote und Kinderbetreuungsquote (0–2 Jahre)",
       x        = "Jahr",
-      y        = "Korrelationskoeffizient (−1 … +1)"
+      y        = "Korrelationskoeffizient"
     ) +
     theme_minimal(base_size = 13) +
     theme(panel.grid.minor = element_blank())
@@ -165,7 +165,7 @@ p_trend_emp <- ggplot(emp_year, aes(x = Jahr, y = emp_women)) +
   geom_point(color = "#08306b", size = 2) +
   scale_y_continuous(
     labels = percent_format(scale = 1),
-    name   = "Anteil weiblicher Beschäftigung [%]"
+    name   = "Anteil Frauenbeschaftigung [%]"
   ) +
   labs(
     title    = "Trend der Frauenbeschaftigung in München (2007–2024)",
