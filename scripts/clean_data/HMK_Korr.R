@@ -17,7 +17,7 @@ all_districts_and_city <- be_sheet %>%
     Ausprägung == "insgesamt"
   ) %>%
   mutate(
-    mean_age = `Basiswert 1` / `Basiswert 2`
+    hmk = `Basiswert 1` / `Basiswert 2`
   )
 
 Sozialversicherungspflichtig_Beschäftigte_anteil_frau <- ar_sheet %>%
@@ -39,25 +39,24 @@ korrelations_daten <- inner_join(
 korrelations_daten_clean <- korrelations_daten %>%
   filter(Raumbezug != "Stadt München")
 
-ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
+ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_point(size = 1.3, color = "grey", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
-  stat_cor(method = "spearman", label.x.npc = "left", label.y.npc = "top") + 
+  stat_cor(label.x.npc = "left", label.y.npc = "top") + 
   labs(
-    title = "Korrelationskoeffizient zwischen Haushalte mit Kindern und Anteil Sozialversicherungspflichtigbeschäftigte Frauen(Spearman)",
+    title = "Korrelationskoeffizient zwischen Haushalte mit Kindern und Anteil Sozialversicherungspflichtigbeschäftigte Frauen",
     x = "Haushalte mit Kindern",
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)"
   ) +
   theme_minimal()
 
 #----------------------------------------------------------------------------------
-ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
+ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_point(aes(color = Raumbezug), 
              size = 1.3,     
              alpha = 0.7) +   
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   stat_cor(
-    method = "spearman", 
     label.x.npc = "left",   
     label.y.npc = "top",   
     color = "black",
@@ -65,7 +64,7 @@ ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   ) + 
   coord_cartesian(xlim = c(0.1, 0.3), ylim = c(48, 68)) +
   labs(
-    title = "Korrelationskoeffizient zwischen Haushalte mit Kindern und Anteil Sozialversicherungspflichtigbeschäftigte Frauen(Spearman)",
+    title = "Korrelationskoeffizient zwischen Haushalte mit Kindern und Anteil Sozialversicherungspflichtigbeschäftigte Frauen",
     x = "Haushalte mit Kindern",
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
     color = "Stadtteile" 
@@ -87,8 +86,8 @@ korrelations_daten_clean <- korrelations_daten %>%
 plot_data_final <- korrelations_daten_clean %>%
   group_by(Raumbezug) %>%
   mutate(
-    spearman_r = cor(mean_age, anteil, method = "spearman", use = "complete.obs"),
-    r_label = sprintf("(R=%.2f)", spearman_r),
+    r = cor(hmk, anteil, use = "complete.obs"),
+    r_label = sprintf("(R=%.2f)", r),
     Raumbezug_Label = paste(Raumbezug, r_label, sep = " ")
   ) %>%
   ungroup()
@@ -98,14 +97,14 @@ all_colors <- scales::hue_pal()(length(all_labels))
 stadtteil_palette <- all_colors
 names(stadtteil_palette) <- all_labels
 
-ggplot(plot_data_final, aes(x = mean_age, y = anteil)) +
+ggplot(plot_data_final, aes(x = hmk, y = anteil)) +
   geom_smooth(aes(color = Raumbezug_Label, group = Raumbezug_Label),
               method = "lm", se = FALSE, linewidth = 1.1, alpha = 0.8) +
   geom_point(aes(color = Raumbezug_Label), size = 1.1, alpha = 0.5) +
   geom_smooth(aes(group = 1), method = "lm", color = "black", linewidth = 1.1, se = FALSE) +
   scale_color_manual(values = stadtteil_palette) +
   labs(
-    title = "Korrelationskoeffizient (Spearman) zwischen Haushalte mit Kindern und Anteil Sozialversicherungspflichtigbeschäftigte Frauen nach Stadtteile",
+    title = "Korrelationskoeffizient zwischen Haushalte mit Kindern und Anteil Sozialversicherungspflichtigbeschäftigte Frauen nach Stadtteile",
     x = "Haushalte mit Kindern (Anteil)",
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
     color = "Stadtteile" 
@@ -123,7 +122,7 @@ ggplot(plot_data_final, aes(x = mean_age, y = anteil)) +
 r_werte_check <- korrelations_daten_clean %>%
   group_by(Raumbezug) %>%
   summarise(
-    r_wert = cor(mean_age, anteil, method = "spearman")
+    r_wert = cor(hmk, anteil)
   ) %>%
   mutate(
     is_negative = r_wert < 0,
@@ -133,7 +132,7 @@ r_werte_check <- korrelations_daten_clean %>%
 plot_data_highlight <- korrelations_daten_clean %>%
   left_join(r_werte_check, by = "Raumbezug")
 
-ggplot(plot_data_highlight, aes(x = mean_age, y = anteil)) +
+ggplot(plot_data_highlight, aes(x = hmk, y = anteil)) +
   geom_smooth(
     data = subset(plot_data_highlight, is_negative == FALSE),
     aes(group = Raumbezug), 
@@ -174,12 +173,12 @@ ggplot(plot_data_highlight, aes(x = mean_age, y = anteil)) +
 plot_data_colored <- korrelations_daten_clean %>%
   group_by(Raumbezug) %>%
   mutate(
-    r_wert = cor(mean_age, anteil, method = "spearman"),
+    r_wert = cor(hmk, anteil),
     trend_richtung = ifelse(r_wert >= 0, "positiv", "negativ")
   ) %>%
   ungroup() 
 
-ggplot(plot_data_colored, aes(x = mean_age, y = anteil)) +
+ggplot(plot_data_colored, aes(x = hmk, y = anteil)) +
   geom_smooth(
     aes(
       color = trend_richtung,  
@@ -204,4 +203,3 @@ ggplot(plot_data_colored, aes(x = mean_age, y = anteil)) +
   coord_cartesian(xlim = c(0.1, 0.3)) +
   theme_minimal() +
   theme(legend.position = "none")
-
