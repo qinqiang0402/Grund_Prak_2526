@@ -2,14 +2,15 @@
 title: "Demographie & Arbeitsmarkt"
 subtitle: "leer"
 author: "Qiang Qin, Shihan Hu, Yuechen Wang, Yuqin Huang"
-institute: "Dr. Fabian Scheipl, Lisa Kleinlein, Rickmer Schulte"
+institute: "Dr.Scheipl, Daniel, Eugen"
 date: today
 format:
   revealjs:
-    css: customstyle.css
     embed-resources: true
     slide-number: c
-    logo: "Results/LMU_Logo.svg"
+    logo: "images/LMU_Logo.svg"
+
+css: customstyle.css
 editor: visual
 ---
 
@@ -92,15 +93,6 @@ editor: visual
 ## Seroprävalenz
 
 ::: incremental
--   Fall $\ \ \ R1 \ \ \ R2 \ \ \ R3 \ \ \ R4 \ \ \ R5 \ \ \ R6$
-
--   Voll $\ \ \ - \ \ \ - \ \ \ \ + \ \ \ + \ \ \ - \ \ \ -$
-
--   Orig $\ \ \ - \ \ \ -$
-
--   Pess $\ \ \ - \ \ \ - \ \ \ \ - \ \ \ - \ \ \ - \ \ \ -$
-
--   Opti $\ \ \  - \ \ \ - \ \ \ \  + \ \ \ + \ \ \ + \ \ \ +$
 :::
 
 ## Seroprävalenz
@@ -110,20 +102,7 @@ editor: visual
 
 ## Seroprävalenz
 
-```         
-```
-
 ## Seroprävalenz
-
--   Fall $\ \ \ R1 \ \ \ R2 \ \ \ R3 \ \ \ R4 \ \ \ R5 \ \ \ R6$
-
--   Voll $\ \ \ - \ \ \ - \ \ \ \ + \ \ \ + \ \ \ - \ \ \ -$
-
--   Orig $\ \ \ - \ \ \ -$
-
--   Pess $\ \ \ - \ \ \ - \ \ \ \ - \ \ \ - \ \ \ - \ \ \ -$
-
--   Opti $\ \ \  - \ \ \ - \ \ \ \  + \ \ \ + \ \ \ + \ \ \ +$
 
 ::: incremental
 -   Imputation: $X_i \sim B(\hat{\pi}_i)$ mit $50$ Iterationen
@@ -137,14 +116,6 @@ editor: visual
 
 ## Seroprävalenz
 
-```         
-```
-
-## Seroprävalenz
-
-```         
-```
-
 ## Agenda
 
 [1. Überblick und Terminologie]{style="color:lightgray;"}
@@ -152,15 +123,19 @@ editor: visual
 2.  Datenanalyse
 
     [Verlauf über die Runden]{style="color:lightgray;"}\
-    Zusammenhang\
+    Kinderbetreuung\
     [Antikörper]{style="color:lightgray;"}
 
 [3. Zusammenfassung und Diskussion]{style="color:lightgray;"}
 
-## Zusammenhang
+## Trend
 
-```         
-```
+![](images/clipboard-2450814181.png)
+
+
+# Korr
+
+![](images/clipboard-1883196003.png){fig-align="right"}
 
 ## Agenda
 
@@ -226,7 +201,7 @@ Wie lange es dauert, bis Antikörper im Blut verschwinden
 
 -   Große Unsicherheit der Survival-Analyse, Antikörper bei Erwachsenen länger nachweisbar als bei Kindern
 
--   Zusammenhang: Rauchen, Infektion von Eltern
+-   Zusammenhang: Rauchen, Infektion von Elternsd
 :::
 
 ## **Diskussion**
