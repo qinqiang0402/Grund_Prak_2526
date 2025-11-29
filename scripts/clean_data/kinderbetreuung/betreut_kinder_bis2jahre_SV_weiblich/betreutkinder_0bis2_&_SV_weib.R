@@ -165,11 +165,11 @@ p_trend_emp <- ggplot(emp_year, aes(x = Jahr, y = emp_women)) +
   geom_point(color = "#08306b", size = 2) +
   scale_y_continuous(
     labels = percent_format(scale = 1),
-    name   = "Anteil Frauenbeschaftigung [%]"
+    name   = "Anteil Frauenbeschäftigung [%]"
   ) +
   labs(
-    title    = "Trend der Frauenbeschaftigung in München (2007–2024)",
-    subtitle = "Anteil Frauenbeschaftigung (Stadt insgesamt)",
+    title    = "Trend der Frauenbeschäftigung in München (2007–2024)",
+    subtitle = "Anteil Frauenbeschäftigung (Stadt insgesamt)",
     x        = "Jahr"
   ) +
   theme_minimal(base_size = 13) +
@@ -223,9 +223,9 @@ map_sozial_2015 <- munich_map2 %>%
 p_map_sozial <- plot_bezirk_map(
   map_sozial_2015,
   value_col    = "sozial_weiblich_pct",
-  title        = paste0("Frauenbeschaftigung – ", year_map),
+  title        = paste0("Frauenbeschäftigung – ", year_map),
   subtitle     = "Anteil in % nach Stadtbezirk (München)",
-  legend_title = "Anteil Frauenbeschaftigung (%)",
+  legend_title = "Anteil Frauenbeschäftigung (%)",
   limits       = c(50, 62),
   low_col      = "#f7fbff",  # 浅蓝
   high_col     = "#08306b"   # 深蓝
