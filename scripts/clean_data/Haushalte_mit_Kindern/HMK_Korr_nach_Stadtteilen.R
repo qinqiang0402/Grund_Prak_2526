@@ -17,7 +17,7 @@ all_districts_and_city <- be_sheet %>%
     Ausprägung == "insgesamt"
   ) %>%
   mutate(
-    hmk = `Basiswert 1` / `Basiswert 2`
+    hmk = 100 * `Basiswert 1` / `Basiswert 2`
   )
 
 Sozialversicherungspflichtig_Beschäftigte_anteil_frau <- ar_sheet %>%
@@ -44,8 +44,8 @@ ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   stat_cor(label.x.npc = "left", label.y.npc = "top") + 
   labs(
-    title = "Korrelationskoeffizient zwischen Haushalte mit Kindern und Anteil Sozialversicherungspflichtigbeschäftigte Frauen",
-    x = "Haushalte mit Kindern",
+    title = "Korrelationskoeffizient gesamt (alle Jahre und Städte) zwischen Haushalte mit Kindern und Frauenbeschäftigung",
+    x = "Anteil Haushalte mit Kindern (%)",
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)"
   ) +
   theme_minimal()
@@ -62,10 +62,10 @@ ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
     color = "black",
     size = 5
   ) + 
-  coord_cartesian(xlim = c(0.1, 0.3), ylim = c(48, 68)) +
+  coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   labs(
-    title = "Korrelationskoeffizient zwischen Haushalte mit Kindern und Anteil Sozialversicherungspflichtigbeschäftigte Frauen",
-    x = "Haushalte mit Kindern",
+    title = "Korrelationskoeffizient nach Stadtteilen zwischen Haushalte mit Kindern und Frauenbeschäftigung",
+    x = "Anteil Haushalte mit Kindern (%)",
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
     color = "Stadtteile" 
   ) +
@@ -104,12 +104,12 @@ ggplot(plot_data_final, aes(x = hmk, y = anteil)) +
   geom_smooth(aes(group = 1), method = "lm", color = "black", linewidth = 1.1, se = FALSE) +
   scale_color_manual(values = stadtteil_palette) +
   labs(
-    title = "Korrelationskoeffizient zwischen Haushalte mit Kindern und Anteil Sozialversicherungspflichtigbeschäftigte Frauen nach Stadtteile",
-    x = "Haushalte mit Kindern (Anteil)",
+    title = "Korrelationskoeffizient nach Stadtteilen zwischen Haushalte mit Kindern und Frauenbeschäftigung",
+    x = "Anteil Haushalte mit Kindern (%)",
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
     color = "Stadtteile" 
   ) +
-  coord_cartesian(xlim = c(0.1, 0.3), ylim = c(48, 68)) + 
+  coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   theme_minimal() +
   theme(
     legend.text = element_text(size = 7),
@@ -161,11 +161,11 @@ ggplot(plot_data_highlight, aes(x = hmk, y = anteil)) +
   labs(
     title = "Simpson's Paradox",
     subtitle = "Grau = Positiver Zusammenhang, Bunt = Negativer Zusammenhang",
-    x = "Haushalte mit Kindern (Anteil)",
+    x = "Anteil Haushalte mit Kindern (%)",
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
     color = "Stadtteile mit R < 0" 
   ) +
-  coord_cartesian(xlim = c(0.1, 0.3), ylim = c(48, 68)) +
+  coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   theme_minimal() +
   theme(legend.position = "right")
 
@@ -197,9 +197,10 @@ ggplot(plot_data_colored, aes(x = hmk, y = anteil)) +
   labs(
     title = "Simpson's Paradox",
     subtitle = "Rot = positiver Zusammenhang (R > 0), Blau = negative Zusammenhang (R < 0)",
-    x = "Haushalte mit Kindern (Anteil)",
+    x = "Anteil Haushalte mit Kindern (%)",
     y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)"
   ) +
-  coord_cartesian(xlim = c(0.1, 0.3)) +
+  coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   theme_minimal() +
   theme(legend.position = "none")
+
