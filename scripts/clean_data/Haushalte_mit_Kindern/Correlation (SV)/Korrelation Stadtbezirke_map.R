@@ -137,3 +137,5 @@ karte_corr <- create_indicator_map(
 )
 
 karte_corr
+
+saveRDS(karte_corr, "results/figures/Haushalt_mit_Kindern/HMK_karte_korr.rds")

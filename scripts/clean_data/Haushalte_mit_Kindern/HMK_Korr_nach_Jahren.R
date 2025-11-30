@@ -38,19 +38,23 @@ korrelations_daten_clean <- korrelations_daten %>%
   filter(Raumbezug != "Stadt München")
 
 
-ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
+hmk_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_point(size = 1.3, color = "grey", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   stat_cor(label.x.npc = "left", label.y.npc = "top") + 
   labs(
-    title = "Korrelationskoeffizient gesamt (alle Jahre und Städte) zwischen Haushalte mit Kindern und Frauenbeschäftigung",
+    title = "Korrelationskoeffizient gesamt (alle Jahre und Stadtteile) zwischen Haushalte mit Kindern und Frauenbeschäftigung",
     x = "Anteil Haushalte mit Kindern (%)",
-    y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)"
+    y = "Anteil Frauenbeschäftigung (%)"
   ) +
   theme_minimal()
 
+hmk_korr_gesamt_sw
+saveRDS(hmk_korr_gesamt_sw, "results/figures/Haushalt_mit_Kindern/hmk_korr_gesamt_sw.rds")
+
+
 # ----------------------------------------------------------------------------------
-ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
+hmk_korr_nach_jahr_color <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_point(aes(color = factor(Jahr)), 
              size = 1.3,   
              alpha = 0.7) +   
@@ -65,11 +69,14 @@ ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   labs(
     title = "Korrelationskoeffizient nach Jahren zwischen Haushalte mit Kindern und Frauenbeschäftigung",
     x = "Anteil Haushalte mit Kindern (%)",
-    y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
+    y = "Anteil Frauenbeschäftigung (%)",
     color = "Jahr"
   ) +
   guides(color = guide_legend(ncol = 1)) + 
   theme_minimal()
+
+hmk_korr_nach_jahr_color
+saveRDS(hmk_korr_nach_jahr_color, "results/figures/Haushalt_mit_Kindern/hmk_korr_nach_jahr_color.rds")
 
 # -----------------------------------------------------------------------
 plot_data_final_year <- korrelations_daten_clean %>%
@@ -86,7 +93,7 @@ all_colors_year <- scales::hue_pal()(length(all_labels_year))
 jahr_palette <- all_colors_year
 names(jahr_palette) <- all_labels_year
 
-ggplot(plot_data_final_year, aes(x = hmk, y = anteil)) +
+hmk_point_line_nach_jahr_color <- ggplot(plot_data_final_year, aes(x = hmk, y = anteil)) +
   geom_smooth(aes(color = Jahr_Label, group = Jahr_Label),
               method = "lm", se = FALSE, linewidth = 1.1, alpha = 0.8) +
   geom_point(aes(color = Jahr_Label), size = 1.1, alpha = 0.5) +
@@ -96,7 +103,7 @@ ggplot(plot_data_final_year, aes(x = hmk, y = anteil)) +
   labs(
     title = "Korrelationskoeffizient nach Jahren zwischen Haushalte mit Kindern und Frauenbeschäftigung",
     x = "Anteil Haushalte mit Kindern (%)",
-    y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
+    y = "Anteil Frauenbeschäftigung (%)",
     color = "Jahr"
   ) +
   theme_minimal() +
@@ -106,6 +113,8 @@ ggplot(plot_data_final_year, aes(x = hmk, y = anteil)) +
   ) +
   guides(color = guide_legend(ncol = 1))
 
+hmk_point_line_nach_jahr_color
+saveRDS(hmk_point_line_nach_jahr_color, "results/figures/Haushalt_mit_Kindern/hmk_point_line_nach_jahr_color.rds")
 
 # ----------------------------------------------------------------------------
 r_werte_check_year <- korrelations_daten_clean %>%
@@ -121,7 +130,7 @@ r_werte_check_year <- korrelations_daten_clean %>%
 plot_data_highlight_year <- korrelations_daten_clean %>%
   left_join(r_werte_check_year, by = "Jahr") 
 
-ggplot(plot_data_highlight_year, aes(x = hmk, y = anteil)) +
+hmk_non_simpson_nach_jahr <- ggplot(plot_data_highlight_year, aes(x = hmk, y = anteil)) +
   geom_smooth(
     data = subset(plot_data_highlight_year, is_negative == FALSE),
     aes(group = Jahr), 
@@ -151,12 +160,15 @@ ggplot(plot_data_highlight_year, aes(x = hmk, y = anteil)) +
     title = "non Simpson's Paradox (nach Jahr)",
     subtitle = "Grau = Positiver Zusammenhang (R ≥ 0), Bunt = Negativer Zusammenhang (R < 0)",
     x = "Anteil Haushalte mit Kindern (%)",
-    y = "Anteil sozialversicherungspflichtig Beschäftigter Frauen (%)",
+    y = "Anteil Frauenbeschäftigung (%)",
     color = "Jahr mit R < 0" 
   ) +
   coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   theme_minimal() +
   theme(legend.position = "right")
+
+hmk_non_simpson_nach_jahr
+saveRDS(hmk_non_simpson_nach_jahr, "results/figures/Haushalt_mit_Kindern/hmk_non_simpson_nach_jahr.rds")
 
 # ------------------------------------------------------------------------------
 plot_data_colored_year <- korrelations_daten_clean %>%
@@ -167,7 +179,7 @@ plot_data_colored_year <- korrelations_daten_clean %>%
   ) %>%
   ungroup() 
 
-ggplot(plot_data_colored_year, aes(x = hmk, y = anteil)) +
+hmk_non_simpson_nach_jahr_blau_rot <- ggplot(plot_data_colored_year, aes(x = hmk, y = anteil)) +
   geom_smooth(
     aes(
       color = trend_richtung, 
@@ -192,3 +204,6 @@ ggplot(plot_data_colored_year, aes(x = hmk, y = anteil)) +
   coord_cartesian(xlim = c(8, 28)) +
   theme_minimal() +
   theme(legend.position = "none")
+
+hmk_non_simpson_nach_jahr_blau_rot
+saveRDS(hmk_non_simpson_nach_jahr_blau_rot, "results/figures/Haushalt_mit_Kindern/hmk_non_simpson_nach_jahr_blau_rot.rds")

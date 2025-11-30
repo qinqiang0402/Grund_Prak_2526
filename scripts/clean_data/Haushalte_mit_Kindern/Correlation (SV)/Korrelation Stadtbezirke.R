@@ -39,14 +39,17 @@ df_corr_by_district <- df_merged %>%
     cor_district = cor(emp_female_pct, households_pct, use = "complete.obs")
   )
 
-ggplot(df_corr_by_district,
+hmk_korr_nach_stadtteile <- ggplot(df_corr_by_district,
        aes(x = reorder(Raumbezug, cor_district), y = cor_district)) +
   geom_col(fill = "steelblue") +
   coord_flip() +
   theme_minimal() +
   labs(
-    title = "Korrelation pro Stadtbezirk (2005–2024)",
+    title = "Korrelation pro Stadtteile (2005–2024)",
     subtitle = "Frauenbeschäftigung und Haushalte mit Kindern",
-    x = "Stadtbezirk",
+    x = "Stadtteile",
     y = "Korrelationskoeffizient"
   )
+hmk_korr_nach_stadtteile
+saveRDS(hmk_korr_nach_stadtteile, "results/figures/Haushalt_mit_Kindern/hmk_korr_nach_stadtteile.rds")
+

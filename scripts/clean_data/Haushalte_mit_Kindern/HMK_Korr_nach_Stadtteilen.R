@@ -39,7 +39,7 @@ korrelations_daten <- inner_join(
 korrelations_daten_clean <- korrelations_daten %>%
   filter(Raumbezug != "Stadt München")
 
-ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
+hmk_korr_gesamt_point_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_point(size = 1.3, color = "grey", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   stat_cor(label.x.npc = "left", label.y.npc = "top") + 
@@ -50,8 +50,11 @@ ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   ) +
   theme_minimal()
 
+hmk_korr_gesamt_point_sw
+saveRDS(hmk_korr_gesamt_point_sw, "results/figures/Haushalt_mit_Kindern/hmk_korr_gesamt_point_sw.rds")
+
 #----------------------------------------------------------------------------------
-ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
+hmk_korr_ponit_nach_stadtteile_color <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_point(aes(color = Raumbezug), 
              size = 1.3,     
              alpha = 0.7) +   
@@ -71,6 +74,11 @@ ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   ) +
   guides(color = guide_legend(ncol = 1)) + 
   theme_minimal()
+
+hmk_korr_ponit_nach_stadtteile_color
+saveRDS(hmk_korr_ponit_nach_stadtteile_color, "results/figures/Haushalt_mit_Kindern/hmk_korr_ponit_nach_stadtteile_color.rds")
+
+
 #-----------------------------------------------------------------------
 korrelations_daten <- inner_join(
   all_districts_and_city, 
@@ -97,7 +105,7 @@ all_colors <- scales::hue_pal()(length(all_labels))
 stadtteil_palette <- all_colors
 names(stadtteil_palette) <- all_labels
 
-ggplot(plot_data_final, aes(x = hmk, y = anteil)) +
+hmk_korr_point_line_nach_stadtteile_color <- ggplot(plot_data_final, aes(x = hmk, y = anteil)) +
   geom_smooth(aes(color = Raumbezug_Label, group = Raumbezug_Label),
               method = "lm", se = FALSE, linewidth = 1.1, alpha = 0.8) +
   geom_point(aes(color = Raumbezug_Label), size = 1.1, alpha = 0.5) +
@@ -117,6 +125,10 @@ ggplot(plot_data_final, aes(x = hmk, y = anteil)) +
   ) +
   guides(color = guide_legend(ncol = 1))
 
+hmk_korr_point_line_nach_stadtteile_color
+
+saveRDS(hmk_korr_point_line_nach_stadtteile_color, "results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_stadtteile_color.rds")
+
 
 #----------------------------------------------------------------------------
 r_werte_check <- korrelations_daten_clean %>%
@@ -132,7 +144,7 @@ r_werte_check <- korrelations_daten_clean %>%
 plot_data_highlight <- korrelations_daten_clean %>%
   left_join(r_werte_check, by = "Raumbezug")
 
-ggplot(plot_data_highlight, aes(x = hmk, y = anteil)) +
+hmk_simpson_stadtteile_kleiner_0 <- ggplot(plot_data_highlight, aes(x = hmk, y = anteil)) +
   geom_smooth(
     data = subset(plot_data_highlight, is_negative == FALSE),
     aes(group = Raumbezug), 
@@ -169,6 +181,9 @@ ggplot(plot_data_highlight, aes(x = hmk, y = anteil)) +
   theme_minimal() +
   theme(legend.position = "right")
 
+hmk_simpson_stadtteile_kleiner_0
+saveRDS(hmk_simpson_stadtteile_kleiner_0, "results/figures/Haushalt_mit_Kindern/hmk_simpson_stadtteile_kleiner_0.rds")
+
 #------------------------------------------------------------------------------
 plot_data_colored <- korrelations_daten_clean %>%
   group_by(Raumbezug) %>%
@@ -178,7 +193,7 @@ plot_data_colored <- korrelations_daten_clean %>%
   ) %>%
   ungroup() 
 
-ggplot(plot_data_colored, aes(x = hmk, y = anteil)) +
+hmk_simpson_blau_rot <- ggplot(plot_data_colored, aes(x = hmk, y = anteil)) +
   geom_smooth(
     aes(
       color = trend_richtung,  
@@ -204,3 +219,5 @@ ggplot(plot_data_colored, aes(x = hmk, y = anteil)) +
   theme_minimal() +
   theme(legend.position = "none")
 
+hmk_simpson_blau_rot
+saveRDS(hmk_simpson_blau_rot, "results/figures/Haushalt_mit_Kindern/hmk_simpson_blau_rot.rds")

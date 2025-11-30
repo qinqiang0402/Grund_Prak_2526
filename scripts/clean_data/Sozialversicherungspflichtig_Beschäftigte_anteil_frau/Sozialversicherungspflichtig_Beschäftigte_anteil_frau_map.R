@@ -1,4 +1,4 @@
-install.packages(c("tidyverse", "readxl", "sf", "leaflet"))
+
 library(tidyverse)
 library(readxl)
 library(sf)
@@ -7,7 +7,7 @@ library(htmltools)
 library(dplyr)
 library(ggplot2)
 
-install.packages("readxl")
+
 library(readxl)
 
 export_ar <- read_excel("data/raw/export_ar.xlsx")

@@ -43,7 +43,7 @@ df_corr_yearly <- df_merged %>%
 library(ggplot2)
 
 
-ggplot(df_corr_yearly, aes(x = Jahr, y = cor_year)) +
+HMK_korr_nach_Jahr <- ggplot(df_corr_yearly, aes(x = Jahr, y = cor_year)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey70") +
   geom_line(color = "steelblue", linewidth = 1.1) +
   geom_point(color = "steelblue", size = 2) +
@@ -54,4 +54,7 @@ ggplot(df_corr_yearly, aes(x = Jahr, y = cor_year)) +
     x = "Jahr",
     y = "Korrelationskoeffizient"
   )
+
+HMK_korr_nach_Jahr
+saveRDS(HMK_korr_nach_Jahr, "results/figures/Haushalt_mit_Kindern/HMK_korr_nach_Jahr.rds")
 
