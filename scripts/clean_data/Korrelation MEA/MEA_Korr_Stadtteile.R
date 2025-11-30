@@ -40,7 +40,7 @@ korrelations_daten_clean <- korrelations_daten %>%
 ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   geom_point(size = 1.3, color = "grey", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
-  stat_cor(method = "spearman", label.x.npc = "left", label.y.npc = "top") + 
+  stat_cor(label.x.npc = "left", label.y.npc = "top") + 
   labs(
     title = "Korrelationskoeffizient zwischen Erstgeburtsalter von Mutter und Anteil Sozialversicherungspflichtigbeschäftigte Frauen(Spearman)",
     x = "Erstgeburtsalter von Mutter",
@@ -58,8 +58,7 @@ ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
              alpha = 0.7) + 
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   
-  stat_cor(method = "spearman", 
-           label.x = 29.5,  
+  stat_cor(label.x = 29.5,  
            label.y = 66,    
            color = "black",
            size = 5) +      
