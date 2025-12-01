@@ -45,7 +45,7 @@ cor_birthrate_employment_year <- data_wide %>%
     spearman_rho = cor(birthrate, employment_female,
                        method = "spearman", use = "complete.obs")
   )
-cor_birthrate_employment_year
+
 #plot
 ggplot() +
   geom_line(data = cor_birthrate_employment_year,

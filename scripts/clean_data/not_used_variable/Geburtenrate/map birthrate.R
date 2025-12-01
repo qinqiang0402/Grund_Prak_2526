@@ -6,7 +6,7 @@ library(dplyr)
 library(stringr)
 geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gsm_wfs:vablock_stadtbezirke_opendata&outputFormat=application/json"
 munich_map <- st_read(geojson_url)
-birthrate
+
 data_birthrate <- birthrate %>%
   group_by(Raumbezug) %>%
   summarise(mean_birthrate = mean(birthrate, na.rm = TRUE)) %>%

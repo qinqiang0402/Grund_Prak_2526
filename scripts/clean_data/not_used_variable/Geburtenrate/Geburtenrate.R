@@ -2,85 +2,62 @@ install.packages("readxl")
 library(readxl)
 install.packages("tidyr")
 library(tidyr)
-data_bis2009 <- read_excel("~/Documents/LMU/Projekt/export_bis2009.xlsx")
-data_ab2010 <- read_excel("~/Documents/LMU/Projekt/export_ab2010.xlsx")
 install.packages("dplyr")
 library(dplyr)
 install.packages("tidyverse")
 library(tidyverse)
-data <- bind_rows(data_bis2009, data_ab2010)
-head(data)
-
-population_2009 <- read_excel("~/Documents/LMU/Projekt/export_bis2009.xlsx", 
-                                 sheet = "BEVÖLKERUNG") %>% 
-  mutate(
-    Indikatorwert = gsub(",", ".", Indikatorwert),
-    Indikatorwert = gsub("%", "", Indikatorwert),
-    Indikatorwert = trimws(Indikatorwert),
-    Indikatorwert = as.numeric(Indikatorwert)
-  )
-
-population_2010 <- read_excel("~/Documents/LMU/Projekt/export_ab2010.xlsx", 
-                                sheet = "BEVÖLKERUNG") %>%
-  mutate(
-    Indikatorwert = gsub(",", ".", Indikatorwert),
-    Indikatorwert = gsub("%", "", Indikatorwert),
-    Indikatorwert = trimws(Indikatorwert),
-    Indikatorwert = as.numeric(Indikatorwert)
-  )
-
-population <- bind_rows(population_2009, population_2010)
-
-labormarket_2009 <- read_excel("~/Documents/LMU/Projekt/export_bis2009.xlsx", 
-                                  sheet = "ARBEITSMARKT") %>%
-  mutate(
-    Indikatorwert = gsub(",", ".", Indikatorwert),
-    Indikatorwert = gsub("%", "", Indikatorwert),
-    Indikatorwert = trimws(Indikatorwert),
-    Indikatorwert = as.numeric(Indikatorwert)
-  )
-
-labormarket_2010 <- read_excel("~/Documents/LMU/Projekt/export_ab2010.xlsx", 
-                                 sheet = "ARBEITSMARKT") %>%
-  mutate(
-    Indikatorwert = gsub(",", ".", Indikatorwert),
-    Indikatorwert = gsub("%", "", Indikatorwert),
-    Indikatorwert = trimws(Indikatorwert),
-    Indikatorwert = as.numeric(Indikatorwert)
-  )
-labormarket <- bind_rows(labormarket_2009, labormarket_2010)
-
-# plot by district
 install.packages("ggplot2")
 library(ggplot2)
 
-employment_female <- labormarket%>%
+# import data
+export_be <- read_excel("data/raw/export_be.xlsx")
+be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
+export_ar <- read_excel("data/raw/export_ar.xlsx")
+ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
+
+labormarket <- ar_sheet %>%
+  mutate(
+    Indikatorwert = gsub(",", ".", Indikatorwert),
+    Indikatorwert = gsub("%", "", Indikatorwert),
+    Indikatorwert = trimws(Indikatorwert),
+    Indikatorwert = as.numeric(Indikatorwert)
+  )
+population <- be_sheet %>%
+  mutate(
+    Indikatorwert = gsub(",", ".", Indikatorwert),
+    Indikatorwert = gsub("%", "", Indikatorwert),
+    Indikatorwert = trimws(Indikatorwert),
+    Indikatorwert = as.numeric(Indikatorwert)
+  )
+
+# plot of birthrate & female employment by district
+employment_female <- labormarket %>%
   filter(Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
          Ausprägung == "weiblich") %>%
   select(Jahr, Raumbezug, employment_female = Indikatorwert) %>%
   distinct(Raumbezug, Jahr, .keep_all = TRUE)
-employment_female
 
 birthrate <- population %>%
   filter(Indikator == "Allgemeine Geburtenrate") %>%
   mutate(Indikatorwert = Indikatorwert/10) %>%
   select(Jahr, Raumbezug, birthrate = Indikatorwert) %>%
   distinct(Raumbezug, Jahr, .keep_all = TRUE)
-birthrate
 
 data_joined <- left_join(birthrate, employment_female, by = c("Jahr", "Raumbezug")) %>%
   pivot_longer(cols = c("birthrate", "employment_female"),
                names_to = "Indikator",
                values_to = "Wert")
-data_joined
-data_wide
 
-# function giving plot of birthrate & female employment
-# input: district name
+data_wide <- birthrate %>%
+  left_join(employment_female, by = c("Jahr", "Raumbezug"))
+
+# function giving plot
+# input: district name (can be e.g. "01", "1", "'München'", "'Lehel'")
+# output: plot by district
 plot_birthrate_district <- function(input.district) {
   # variation of input
   districts <- unique(data_wide$Raumbezug)
-  # input is number:
+  # input is number
   if (is.numeric(input.district)) {
     number <- sprintf("%02d", input.district)   # example: 1 -> "01"
     district.name <- districts[str_detect(districts, paste0("^", number, " "))]
@@ -167,4 +144,4 @@ plot_birthrate_district <- function(input.district) {
       legend.title    = element_text(face = "bold")
     )
 }
-plot_birthrate_district("Stadt")
+plot_birthrate_district("München")

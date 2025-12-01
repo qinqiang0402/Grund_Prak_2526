@@ -2,6 +2,7 @@ birthrate_average <- birthrate %>%
   group_by(Raumbezug) %>%
   mutate(mean_birthrate = mean(birthrate, na.rm = TRUE)) %>%
   ungroup()
+
 # district with lowest average
 lowest_birth_district <- birthrate_average %>%
   filter(Raumbezug != "Stadt München") %>%
@@ -9,7 +10,7 @@ lowest_birth_district <- birthrate_average %>%
   summarise(mean_birthrate = mean(birthrate, na.rm = TRUE)) %>%
   slice_min(mean_birthrate, n = 1) %>%
   pull(Raumbezug)
-lowest_birth_district
+
 # district with highest average
 highest_birth_district <- birthrate_average %>%
   filter(Raumbezug != "Stadt München") %>%
@@ -17,8 +18,8 @@ highest_birth_district <- birthrate_average %>%
   summarise(mean_birthrate = mean(birthrate, na.rm = TRUE)) %>%
   slice_max(mean_birthrate, n = 1) %>%
   pull(Raumbezug)
-highest_birth_district
-#group Munich, highest, lowest
+
+#group Munich, district highest, district lowest
 line_birthrate_data <- birthrate %>%
   mutate(
     line_birthrate_group = case_when(
@@ -28,9 +29,8 @@ line_birthrate_data <- birthrate %>%
       TRUE ~ "rest"
     )
   )
-line_birthrate_data
-#line diagram birthrate
 
+#line diagram birthrate
 ggplot() +
   geom_line(data = line_birthrate_data %>% 
               filter(line_birthrate_group =="rest"),
