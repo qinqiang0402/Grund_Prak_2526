@@ -36,7 +36,7 @@ korrelations_daten <- inner_join(
 korrelations_daten_clean <- korrelations_daten %>%
   filter(Raumbezug != "Stadt München")
 
-ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
+mea_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   geom_point(size = 1.3, color = "grey", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   stat_cor(label.x.npc = "left", label.y.npc = "top") + # Spearmans Rho als Standard
@@ -47,8 +47,11 @@ ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   ) +
   theme_minimal()
 
+mea_gesamt_sw
+saveRDS(mea_gesamt_sw, "results/figures/MEA/mea_gesamt_sw.rds")
+
 # ----------------------------------------------------------------------------------
-ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
+mea_korr_nach_stadtteilen <- ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   geom_point(aes(color = Raumbezug), 
              size = 1.3,     
              alpha = 0.7) +   
@@ -70,6 +73,10 @@ ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   guides(color = guide_legend(ncol = 1)) + 
   theme_minimal()
 
+mea_korr_nach_stadtteilen
+saveRDS(mea_korr_nach_stadtteilen, "results/figures/MEA/mea_korr_nach_stadtteilen_point.rds")
+
+
 # -----------------------------------------------------------------------
 plot_data_final <- korrelations_daten_clean %>%
   group_by(Raumbezug) %>%
@@ -85,7 +92,7 @@ all_colors <- scales::hue_pal()(length(all_labels))
 stadtteil_palette <- all_colors
 names(stadtteil_palette) <- all_labels
 
-ggplot(plot_data_final, aes(x = mean_age, y = anteil)) +
+mea_korr_nach_stadtteilen_point_line <- ggplot(plot_data_final, aes(x = mean_age, y = anteil)) +
   geom_smooth(aes(color = Raumbezug_Label, group = Raumbezug_Label),
               method = "lm", se = FALSE, linewidth = 1.1, alpha = 0.8) +
   geom_point(aes(color = Raumbezug_Label), size = 1.1, alpha = 0.5) +
@@ -104,6 +111,9 @@ ggplot(plot_data_final, aes(x = mean_age, y = anteil)) +
     legend.key.height = unit(0.4, "cm")
   ) +
   guides(color = guide_legend(ncol = 1))
+
+mea_korr_nach_stadtteilen_point_line
+saveRDS(mea_korr_nach_stadtteilen_point_line, "results/figures/MEA/mea_korr_nach_stadtteilen_point_line.rds")
 
 # ----------------------------------------------------------------------
 r_werte_check <- korrelations_daten_clean %>%
@@ -190,3 +200,4 @@ ggplot(plot_data_colored, aes(x = mean_age, y = anteil)) +
   coord_cartesian(xlim = c(29, 34), ylim = c(48, 68)) +
   theme_minimal() +
   theme(legend.position = "none")
+

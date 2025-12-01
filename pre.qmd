@@ -59,6 +59,8 @@ geburtenrate_korr_trend_nach_jahr <- readRDS("results/figures/Geburtenrate/gebur
 
 #_______________________________________________________________________________
 
+
+
 ```
 
 ## Agenda
@@ -99,25 +101,25 @@ geburtenrate_korr_trend_nach_jahr <- readRDS("results/figures/Geburtenrate/gebur
 
 ## Datenaufbau
 
-  -   basiert auf jährlich aggregierten Bezirksdaten der Stadt München\
+-   basiert auf jährlich aggregierten Bezirksdaten der Stadt München\
 
-  -   Datensätze: Arbeitsmarkt, Bevölkerung, Kinderbetreuung usw.\
+-   Datensätze: Arbeitsmarkt, Bevölkerung, Kinderbetreuung usw.\
 
-  -   jede Zeile der Datensätze bildet eine Kombination aus:
+-   jede Zeile der Datensätze bildet eine Kombination aus:
 
-      -    **Jahr**: Kalenderjahr (2000–2024)\
-      -    **Raumbezug**: Stadtteil (01–25, inkl. Name) sowie „Stadt München“ als gesamtstädtischer Wert\
-      -    **Indikator**: Art der Kennziffer \
-      -    **Ausprägung**: Untergruppe eines Indikators \
-      -    **Wert**: numerischer Wert des Indikators
+    -   **Jahr**: Kalenderjahr (2000–2024)\
+    -   **Raumbezug**: Stadtteil (01–25, inkl. Name) sowie „Stadt München“ als gesamtstädtischer Wert\
+    -   **Indikator**: Art der Kennziffer\
+    -   **Ausprägung**: Untergruppe eines Indikators\
+    -   **Wert**: numerischer Wert des Indikators
 
 ## untersuchte Variablen
 
-- Anteil weiblicher sozialversicherungspflichtig Beschäftigter
-- Haushalte mit Kindern
-- Kinderbetreuungsquote (0–2 Jahre)
-- Durchschnittsalter der Mütter bei Erstgeburt
-- Geburtenrate
+-   Anteil weiblicher sozialversicherungspflichtig Beschäftigter
+-   Haushalte mit Kindern
+-   Kinderbetreuungsquote (0–2 Jahre)
+-   Durchschnittsalter der Mütter bei Erstgeburt
+-   Geburtenrate
 
 ## Datenquellen
 
@@ -208,7 +210,7 @@ Hier wird noch Shiny-App eingefügt
 hmk_korr_gesamt_point_sw
 ```
 
-## Haushalte mit Kindern (Stadtteilen)
+## Haushalte mit Kindern (Stadtteile)
 
 ```{r}
 #| label: hmk_korr_ponit_nach_stadtteile_color
@@ -221,7 +223,7 @@ hmk_korr_gesamt_point_sw
 hmk_korr_ponit_nach_stadtteile_color
 ```
 
-## Haushalte mit Kindern
+## Haushalte mit Kindern (Stadtteile)
 
 ```{r}
 #| label: hmk_korr_point_line_nach_stadtteile_color
@@ -234,7 +236,7 @@ hmk_korr_ponit_nach_stadtteile_color
 hmk_korr_point_line_nach_stadtteile_color
 ```
 
-## Haushalte mit Kindern
+## Haushalte mit Kindern (Stadtteile)
 
 ```{r}
 
@@ -248,7 +250,7 @@ hmk_simpson_stadtteile_kleiner_0
 
 ```
 
-## Haushalte mit Kindern
+## Haushalte mit Kindern (Jahre)
 
 ```{r}
 
@@ -262,7 +264,7 @@ hmk_korr_point_nach_jahr_color
 
 ```
 
-## Haushalte mit Kindern
+## Haushalte mit Kindern (Jahre)
 
 ```{r}
 
@@ -308,10 +310,10 @@ hmk_korr_point_line_nach_jahr_color
 
 ::: {style="font-size:2.0rem;"}
 $$
-\text{Kinderbetreuungsquote }
+\text{Kinderbetreuungsquote % }
 =
-\frac{\text{Betreute Kinder }}
-     {\text{Alle Kinder }}
+\frac{\text{#Betreute Kinder }}
+     {\text{#Alle Kinder }}
 \times 100
 $$
 :::
@@ -497,44 +499,48 @@ m_effekt_02
 ## Fazit
 
 ### Frauenbeschäftigung
-    - Deutliche regionale Unterschiede zwischen den Stadtteilen.  
-    - Zentrale Stadtteile zeigen höhere Beschäftigungsanteile und stärkere Zuwächse.  
-    - Periphere Stadtteile weisen geringere Anteile und langsamere Entwicklungen auf.  
-    - Insgesamt wächst die Frauenbeschäftigung, jedoch nicht gleichmäßig über die Stadt verteilt.
+
+```         
+- Deutliche regionale Unterschiede zwischen den Stadtteilen.  
+- Zentrale Stadtteile zeigen höhere Beschäftigungsanteile und stärkere Zuwächse.  
+- Periphere Stadtteile weisen geringere Anteile und langsamere Entwicklungen auf.  
+- Insgesamt wächst die Frauenbeschäftigung, jedoch nicht gleichmäßig über die Stadt verteilt.
+```
 
 <br>
 
 ### Kinderbetreuung
-    - Große Unterschiede zwischen den Stadtteilen.  
-    - Höhere Betreuungsquoten → höhere Frauenbeschäftigung.  
-    - Niedrige Betreuung limitiert Mütter im Arbeitsmarkt.  
-    - Frühkindliche Betreuung ist ein Schlüssel für weibliche Erwerbsteilhabe.  
 
+```         
+- Große Unterschiede zwischen den Stadtteilen.  
+- Höhere Betreuungsquoten → höhere Frauenbeschäftigung.  
+- Niedrige Betreuung limitiert Mütter im Arbeitsmarkt.  
+- Frühkindliche Betreuung ist ein Schlüssel für weibliche Erwerbsteilhabe.  
+```
 
 ## Limitation
 
-- **Sozialversicherungspflichtige Beschäftigung** erfasst nicht alle Erwerbstätigen  
+-   **Sozialversicherungspflichtige Beschäftigung** erfasst nicht alle Erwerbstätigen
 
+-   **Begrenzte Stichprobe:** nur 25 Stadtbezirke → geringe Fallzahl bei Korrelationen.
 
-- **Begrenzte Stichprobe:** nur 25 Stadtbezirke → geringe Fallzahl bei Korrelationen.  
+-   **Nicht kompatible Altersgruppen** zwischen Bevölkerungsdaten (BE) und Kinderbetreuungsdaten (KI) → Betreuungsquoten über 2 Jahre hinaus sind nicht exakt vergleichbar.
 
-- **Nicht kompatible Altersgruppen** zwischen Bevölkerungsdaten (BE) und Kinderbetreuungsdaten (KI) → Betreuungsquoten über 2 Jahre hinaus sind nicht exakt vergleichbar.  
+-   **Unterschiedliche Zeitabdeckung:**\
+    Beschäftigungsdaten ab 2000, Kinderbetreuungsdaten erst ab 2007.
 
-- **Unterschiedliche Zeitabdeckung:**  
-  Beschäftigungsdaten ab 2000, Kinderbetreuungsdaten erst ab 2007.
-  
-  
 ## Ausblick
 
-- **Feinere Datenebene:**  
-  Mikrodatensätze auf Haushaltsebene würden genauere Analysen ermöglichen  
+-   **Feinere Datenebene:**\
+    Mikrodatensätze auf Haushaltsebene würden genauere Analysen ermöglichen
 
-- **Kinderbetreuung weiter untersuchen:**  
-  - Politische und zeitliche Effekte berücksichtigen  
-  - Analyse politischer Maßnahmen
+-   **Kinderbetreuung weiter untersuchen:**
 
-- **Übertragbarkeit prüfen:**  
-  Wie verändern sich die Ergebnisse bei größeren Stichproben  
+    -   Politische und zeitliche Effekte berücksichtigen\
+    -   Analyse politischer Maßnahmen
+
+-   **Übertragbarkeit prüfen:**\
+    Wie verändern sich die Ergebnisse bei größeren Stichproben
 
 ## Anhang
 
