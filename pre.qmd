@@ -1,8 +1,8 @@
 ---
 title: "Demographie & Arbeitsmarkt"
-subtitle: "leer"
+subtitle: ""
 author: "Qiang Qin, Shihan Hu, Yuechen Wang, Yuqin Huang"
-institute: "Dr.Scheipl, Daniel, Eugen"
+institute: "Eugen Gorich, Dr.Scheipl, Daniel Schlichting"
 date: today
 format:
   revealjs:
@@ -29,6 +29,9 @@ library(forcats)
 library(ggpubr)
 
 # 把所有要用到的图从 RDS 里读进来
+leaflet_sv_durchschnitt <- readRDS("results/figures/SV/leaflet_sv_durchschnitt.rds")
+
+#_________________________________________________________________________________________________________
 hmk_korr_ponit_nach_stadtteile_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_ponit_nach_stadtteile_color.rds")
 hmk_korr_point_line_nach_stadtteile_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_stadtteile_color.rds")
 hmk_simpson_stadtteile_kleiner_0 <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_simpson_stadtteile_kleiner_0.rds")
@@ -48,8 +51,13 @@ sv_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_sv_2015.rds")
 m_effekt_01 <- readRDS("results/figures/m_effekt/m_effekt_01.rds")
 m_effekt_02 <- readRDS("results/figures/m_effekt/m_effekt_02.rds")
 
+#_____________________________________________________________________________
+geburtenrate_dual_trend <- readRDS("results/figures/Geburtenrate/geburtenrate_dual_trend.rds")
+geburtenrate_trend_nach_stadtteile <- readRDS("results/figures/Geburtenrate/geburtenrate_trend_nach_stadtteile.rds")
+geburtenrate_korr_nach_stadtteile <- readRDS("results/figures/Geburtenrate/geburtenrate_korr_nach_stadtteile.rds")
+geburtenrate_korr_trend_nach_jahr <- readRDS("results/figures/Geburtenrate/geburtenrate_korr_trend_nach_jahr.rds")
 
-# ……按你实际的文件名来补
+#_______________________________________________________________________________
 
 ```
 
@@ -71,27 +79,51 @@ m_effekt_02 <- readRDS("results/figures/m_effekt/m_effekt_02.rds")
 
 3.  Zusammenfassung
 
-## Motivation
+## Agenda
 
-![](images/clipboard-1669243684.png){fig-align="center"}
+1.  Einleitung
+
+[2. Datenanalyse]{style="color:lightgray;"}
+
+-   [Weiblich sozialversicherungspflichtig Beschäftigte]{style="color:lightgray;"}
+-   [Zusammenhang]{style="color:lightgray;"}
+    -   [Haushalte mit Kindern]{style="color:lightgray;"}
+    -   [Kinderbetreuung]{style="color:lightgray;"}
+    -   [moderierender Effekt]{style="color:lightgray;"}
+
+[3. Zusammenfassung]{style="color:lightgray;"}
 
 ## Motivation
 
 ![](images/clipboard-1065721815.jpeg){fig-align="center"}
 
-## Daten
+## Datenaufbau
 
--   **1. Datenaufbau**
+  -   basiert auf jährlich aggregierten Bezirksdaten der Stadt München\
 
-    kontent
+  -   Datensätze: Arbeitsmarkt, Bevölkerung, Kinderbetreuung usw.\
 
--   **2. untersuchte Variablen**
+  -   jede Zeile der Datensätze bildet eine Kombination aus:
 
-    kontent
+      -    **Jahr**: Kalenderjahr (2000–2024)\
+      -    **Raumbezug**: Stadtteil (01–25, inkl. Name) sowie „Stadt München“ als gesamtstädtischer Wert\
+      -    **Indikator**: Art der Kennziffer \
+      -    **Ausprägung**: Untergruppe eines Indikators \
+      -    **Wert**: numerischer Wert des Indikators
 
--   **3. Datenquellen**
+## untersuchte Variablen
 
-    kontent
+- Anteil weiblicher sozialversicherungspflichtig Beschäftigter
+- Haushalte mit Kindern
+- Kinderbetreuungsquote (0–2 Jahre)
+- Durchschnittsalter der Mütter bei Erstgeburt
+- Geburtenrate
+
+## Datenquellen
+
+```         
+kontent
+```
 
 ## Agenda
 
@@ -123,9 +155,23 @@ Weibliche Bevölkerung, die in einem Arbeitsverhältnis stehen und deren Einkomm
 
 Unterschied zwischen Stadtteilen 2024
 
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+leaflet_sv_durchschnitt
+
+```
+
 ## Frauenbeschäftigung
 
 Unterschied zwischen Stadtteilen über die Jahre (2000-2024)
+
+Hier wird noch Shiny-App eingefügt
 
 ## Agenda
 
@@ -149,7 +195,7 @@ Unterschied zwischen Stadtteilen über die Jahre (2000-2024)
 
 <br><br> Definition: Privathaushalte mit mindestens einem Kind bis 17 Jahre (mit mindestens einer Hauptwohnsitzperson)
 
-## Haushalte mit Kindern
+## Haushalte mit Kindern (gesamt)
 
 ```{r}
 #| label: hmk_korr_gesamt_point_sw
@@ -162,7 +208,7 @@ Unterschied zwischen Stadtteilen über die Jahre (2000-2024)
 hmk_korr_gesamt_point_sw
 ```
 
-## Haushalte mit Kindern
+## Haushalte mit Kindern (Stadtteilen)
 
 ```{r}
 #| label: hmk_korr_ponit_nach_stadtteile_color
@@ -255,7 +301,7 @@ hmk_korr_point_line_nach_jahr_color
 ::::: left-align-content
 ::: tight-table
 | **Definition:** | Anteil der 0–2-jährigen Kinder, die eine Kita oder Tagespflege besuchen. |
-|----|----|
+|------------------------------------|------------------------------------|
 :::
 
 <br><br>
@@ -450,9 +496,45 @@ m_effekt_02
 
 ## Fazit
 
+### Frauenbeschäftigung
+    - Deutliche regionale Unterschiede zwischen den Stadtteilen.  
+    - Zentrale Stadtteile zeigen höhere Beschäftigungsanteile und stärkere Zuwächse.  
+    - Periphere Stadtteile weisen geringere Anteile und langsamere Entwicklungen auf.  
+    - Insgesamt wächst die Frauenbeschäftigung, jedoch nicht gleichmäßig über die Stadt verteilt.
+
+<br>
+
+### Kinderbetreuung
+    - Große Unterschiede zwischen den Stadtteilen.  
+    - Höhere Betreuungsquoten → höhere Frauenbeschäftigung.  
+    - Niedrige Betreuung limitiert Mütter im Arbeitsmarkt.  
+    - Frühkindliche Betreuung ist ein Schlüssel für weibliche Erwerbsteilhabe.  
+
+
 ## Limitation
 
+- **Sozialversicherungspflichtige Beschäftigung** erfasst nicht alle Erwerbstätigen  
+
+
+- **Begrenzte Stichprobe:** nur 25 Stadtbezirke → geringe Fallzahl bei Korrelationen.  
+
+- **Nicht kompatible Altersgruppen** zwischen Bevölkerungsdaten (BE) und Kinderbetreuungsdaten (KI) → Betreuungsquoten über 2 Jahre hinaus sind nicht exakt vergleichbar.  
+
+- **Unterschiedliche Zeitabdeckung:**  
+  Beschäftigungsdaten ab 2000, Kinderbetreuungsdaten erst ab 2007.
+  
+  
 ## Ausblick
+
+- **Feinere Datenebene:**  
+  Mikrodatensätze auf Haushaltsebene würden genauere Analysen ermöglichen  
+
+- **Kinderbetreuung weiter untersuchen:**  
+  - Politische und zeitliche Effekte berücksichtigen  
+  - Analyse politischer Maßnahmen
+
+- **Übertragbarkeit prüfen:**  
+  Wie verändern sich die Ergebnisse bei größeren Stichproben  
 
 ## Anhang
 
@@ -461,3 +543,65 @@ m_effekt_02
 <br> § 7 SGB IV und § 2 SGB IV
 
 ## Anhang
+
+Geburtenrate
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+geburtenrate_dual_trend
+
+```
+
+------------------------------------------------------------------------
+
+Geburtenrate
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 21
+#| fig-height: 13
+#| fig-dpi: 300
+
+geburtenrate_trend_nach_stadtteile
+
+```
+
+------------------------------------------------------------------------
+
+Geburtenrate
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+geburtenrate_korr_nach_stadtteile
+
+```
+
+------------------------------------------------------------------------
+
+Geburtenrate
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+geburtenrate_korr_trend_nach_jahr
+
+```

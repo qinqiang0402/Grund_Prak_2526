@@ -1,12 +1,7 @@
-install.packages("readxl")  
 library(readxl)
-install.packages("tidyr")
 library(tidyr)
-install.packages("dplyr")
 library(dplyr)
-install.packages("tidyverse")
 library(tidyverse)
-install.packages("ggplot2")
 library(ggplot2)
 
 # import data
@@ -144,4 +139,176 @@ plot_birthrate_district <- function(input.district) {
       legend.title    = element_text(face = "bold")
     )
 }
-plot_birthrate_district("München")
+p_01 <- plot_birthrate_district("München")
+
+saveRDS(p_01, "results/figures/Geburtenrate/geburtenrate_dual_trend.rds")
+
+#——————————————————————————————————————————————————————————————————————————————————————————————————————
+#
+# line birthrate
+#
+
+
+birthrate_average <- birthrate %>%
+  group_by(Raumbezug) %>%
+  mutate(mean_birthrate = mean(birthrate, na.rm = TRUE)) %>%
+  ungroup()
+
+# district with lowest average
+lowest_birth_district <- birthrate_average %>%
+  filter(Raumbezug != "Stadt München") %>%
+  group_by(Raumbezug) %>%
+  summarise(mean_birthrate = mean(birthrate, na.rm = TRUE)) %>%
+  slice_min(mean_birthrate, n = 1) %>%
+  pull(Raumbezug)
+
+# district with highest average
+highest_birth_district <- birthrate_average %>%
+  filter(Raumbezug != "Stadt München") %>%
+  group_by(Raumbezug) %>%
+  summarise(mean_birthrate = mean(birthrate, na.rm = TRUE)) %>%
+  slice_max(mean_birthrate, n = 1) %>%
+  pull(Raumbezug)
+
+#group Munich, district highest, district lowest
+line_birthrate_data <- birthrate %>%
+  mutate(
+    line_birthrate_group = case_when(
+      Raumbezug == "Stadt München" ~ "Stadt München", 
+      Raumbezug == highest_birth_district ~ "highest",
+      Raumbezug == lowest_birth_district ~ "lowest",
+      TRUE ~ "rest"
+    )
+  )
+
+#line diagram birthrate
+geburtenrate_trend_nach_stadtteile <- ggplot() +
+  geom_line(data = line_birthrate_data %>% 
+              filter(line_birthrate_group =="rest"),
+            aes(x = Jahr, y = birthrate, group = Raumbezug), 
+            color = "grey80", 
+            linewidth = 0.5) +
+  geom_line(data = line_birthrate_data %>% 
+              filter(line_birthrate_group != "rest"), 
+            aes(x = Jahr, y = birthrate,color = line_birthrate_group, group = Raumbezug), 
+            linewidth = 1.2) +
+  scale_color_manual(
+    name = "",
+    values = c(
+      "Stadt München" = "black",
+      "highest" = "red",
+      "lowest" = "blue"),
+    labels = c(
+      "Stadt München" = "Gesamtdurchschnitt Münchens",
+      "highest" = paste(highest_birth_district, "(Bezirk mit höchstem Durchschnitt)"),
+      "lowest" = paste(lowest_birth_district, "(Bezirk mit niedrigstem Durchschnitt)")
+    )
+  ) +
+  labs(
+    title = "Entwicklung der Geburtenrate in Stadtbezirken Münchens (2000-2024)",
+    x = "Jahr",
+    y = "Anteil (%)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  ) +
+  guides(
+    color = guide_legend(
+      nrow = 3,      
+      byrow = TRUE    
+    ))
+
+geburtenrate_trend_nach_stadtteile
+
+saveRDS(geburtenrate_trend_nach_stadtteile, "results/figures/Geburtenrate/geburtenrate_trend_nach_stadtteile.rds")
+
+#_________________________________________________________________________________________
+#
+# Korrelation
+#
+
+
+
+# Spearman Correlation between birthrate and female employment
+
+# spatial dimension
+# average of years 2000-2024
+# correlation by district including whole Munich
+cor_birthrate_employment_district <- data_wide %>% 
+  group_by(Raumbezug) %>%
+  summarise(
+    spearman_rho = cor(birthrate, employment_female, method = "spearman", use = "complete.obs"),
+    n = n()  # Jahre
+  ) %>%
+  arrange(desc(spearman_rho))  # descent order
+print (cor_birthrate_employment_district, n=26)
+# plot
+geburtenrate_korr_nach_stadtteile <- ggplot(cor_birthrate_employment_district, 
+       aes(x = reorder(Raumbezug, spearman_rho), y = spearman_rho,
+           fill = ifelse(spearman_rho >= 0, "Positiv", "Negativ"))) +
+  geom_col() +
+  scale_fill_manual(
+    name = "Korrelation",
+    values = c("Positiv" = "steelblue", "Negativ" = "firebrick3")
+  ) +
+  coord_flip() +  # Bezirke von oben nach unten anzeigen
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.6) +
+  labs(
+    title = "Korrelation zwischen Geburtenrate und weiblicher Beschäftigungsrate",
+    subtitle = "Bezirke Münchens, Durchschnitt der Jahre 2000–2024",
+    x = "Stadtbezirk",
+    y = "Spearman ρ"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    legend.position = "top",
+    legend.title = element_text(face = "bold"),
+    axis.text.y = element_text(size = 10)
+  )
+
+geburtenrate_korr_nach_stadtteile
+
+saveRDS(geburtenrate_korr_nach_stadtteile, "results/figures/Geburtenrate/geburtenrate_korr_nach_stadtteile.rds")
+
+
+
+
+# time dimension of whole Munich
+# correlation by year
+cor_birthrate_employment_year <- data_wide %>%
+  filter(Raumbezug != "Stadt München") %>%
+  group_by(Jahr) %>%
+  summarise(
+    spearman_rho = cor(birthrate, employment_female,
+                       method = "spearman", use = "complete.obs")
+  )
+
+#plot
+geburtenrate_korr_trend_nach_jahr <- ggplot() +
+  geom_line(data = cor_birthrate_employment_year,
+            aes(x = Jahr, y = spearman_rho), 
+            color = "darkblue", 
+            linewidth = 1) +
+  labs(
+    title = "Entwicklung der Korrelation zwischen Geburtenrate und weibliche Beschäftigung",
+    subtitle = "Stadt München, 2000-2024",
+    x = "Jahr",
+    y = "Spearman p"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
+    legend.position = "right",
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+geburtenrate_korr_trend_nach_jahr
+
+saveRDS(geburtenrate_korr_trend_nach_jahr, "results/figures/Geburtenrate/geburtenrate_korr_trend_nach_jahr.rds")
+
+
