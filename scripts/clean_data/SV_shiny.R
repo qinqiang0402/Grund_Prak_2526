@@ -46,7 +46,7 @@ ui <- fluidPage(
   ),
   
   # Titel fest angepasst
-  div(class = "main-title", "Anteil weiblicher Sozialversicherungspflichtig Beschäftigte"),
+  div(class = "main-title", "Frauenbeschäftigungsquote"),
   
   sidebarLayout(
     sidebarPanel(
@@ -94,7 +94,7 @@ server <- function(input, output, session) {
     color_max <- GLOBAL_MAX
     unit <- " %"
     decimal_places <- 1
-    var_label <- "SV-Beschäftigte (Frauen)" 
+    var_label <- "Frauenbeschäftigungsquote" 
     
     pal <- colorNumeric(
       palette = "Blues", 

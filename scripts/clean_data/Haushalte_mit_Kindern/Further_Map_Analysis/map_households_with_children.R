@@ -128,7 +128,7 @@ karte_households <- create_indicator_map(
 )
 
 karte_households
-# 把basemap改成黑白色！不然颜色有分别
+
 
 # without basemap
 karte_households_nobase <- create_indicator_map(

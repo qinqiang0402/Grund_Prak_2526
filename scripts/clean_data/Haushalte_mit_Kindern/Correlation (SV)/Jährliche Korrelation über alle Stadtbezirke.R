@@ -54,4 +54,3 @@ ggplot(df_corr_yearly, aes(x = Jahr, y = cor_year)) +
     x = "Jahr",
     y = "Korrelationskoeffizient"
   )
-

@@ -119,3 +119,4 @@ ggplot(corr_long, aes(x = Jahr, y = Correlation, color = Group)) +
     y = "Korrelationskoeffizient",
     color = "Gruppe"
   )
+
