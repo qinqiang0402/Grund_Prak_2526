@@ -1,0 +1,89 @@
+/* 标题页主标题：改字体大小 */
+.title {
+  font-size: 4.6rem !important;   /* 这里用你在 HTML 里试出来满意的 4.6rem */
+}
+
+/* 副标题（如果也想改的话，可以一起调）*/
+/*.subtitle {
+/*  font-size: 1.4rem !important;
+/*}
+
+/* 作者行（可选） */
+/* .quarto-title-author-name {
+  font-size: 1.2rem !important;
+} */
+
+/* 日期（可选） */
+/* .date {
+  font-size: 1.0rem !important;
+} */
+
+
+.reveal .slide-logo {
+  height: 100px !important;
+  width: 100px!important;
+  max-width: unset !important;
+  max-height: unset !important;
+  top: 14px !important;
+  right: 50px !important;
+}
+
+
+
+.reveal .result {
+  max-height: 100%;
+}
+
+
+/* 把页码固定到右下角 */
+.reveal .slide-number,
+.reveal.has-logo .slide-number {
+  bottom: 14px !important;  /* 距离底部的距离，可以自己调 */
+  right: 50px !important;   /* 距离右边的距离，可以自己调 */
+  top: unset !important;    /* 确保不会跑到上面去 */
+  left: auto !important;
+  font-size: 1.0em !important;  
+  font-weight: bold;
+}
+
+
+
+/* 针对幻灯片内具有 tight-table 类的表格，减少其单元格内边距 */
+.reveal .tight-table table {
+    width: auto; /* 仅占用所需宽度 */
+}
+
+.reveal .tight-table td,
+.reveal .tight-table th {
+    padding-top: 0.1em;    /* 缩小顶部内边距 */
+    padding-bottom: 0.1em; /* 缩小底部内边距 */
+    padding-left: 0;       /* 消除左侧内边距 */
+    padding-right: 0.5em;  /* 稍微保留右侧内边距，用于分隔 */
+    border: none;          /* 移除边框 */
+}
+
+
+
+
+/* 强制公式（块级元素）靠左而不是居中 */
+.reveal .left-align-content .math.display {
+    text-align: left !important;
+}
+
+/* 确保表格（通常是块级元素）靠左 */
+.reveal .left-align-content .tight-table table {
+    margin-left: 0 !important; /* 移除自动居中的 margin */
+    margin-right: auto;
+}
+
+
+/* 解决 left-align-content 居中问题 */
+.reveal .left-align-content {
+    /* 核心属性：强制从左侧开始，并占用整个宽度 */
+    width: 100%; 
+    text-align: left;
+    
+    /* 覆盖 Reveal.js 可能会应用的自动边距 */
+    margin-left: 0 !important;
+    transform: translateX(0) !important; 
+}
