@@ -76,7 +76,7 @@ hmk_korr_nach_jahr_color <- ggplot(korrelations_daten_clean, aes(x = hmk, y = an
   theme_minimal()
 
 hmk_korr_nach_jahr_color
-saveRDS(hmk_korr_nach_jahr_color, "results/figures/Haushalt_mit_Kindern/hmk_korr_nach_jahr_color.rds")
+saveRDS(hmk_korr_nach_jahr_color, "results/figures/Haushalt_mit_Kindern/hmk_korr_point_nach_jahr_color.rds")
 
 # -----------------------------------------------------------------------
 plot_data_final_year <- korrelations_daten_clean %>%
@@ -114,7 +114,7 @@ hmk_point_line_nach_jahr_color <- ggplot(plot_data_final_year, aes(x = hmk, y = 
   guides(color = guide_legend(ncol = 1))
 
 hmk_point_line_nach_jahr_color
-saveRDS(hmk_point_line_nach_jahr_color, "results/figures/Haushalt_mit_Kindern/hmk_point_line_nach_jahr_color.rds")
+saveRDS(hmk_point_line_nach_jahr_color, "results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_jahr_color.rds")
 
 # ----------------------------------------------------------------------------
 r_werte_check_year <- korrelations_daten_clean %>%

@@ -102,7 +102,7 @@ corr_long <- corr_df %>%
                values_to = "Correlation")
 
 # Plot (全部德语)
-ggplot(corr_long, aes(x = Jahr, y = Correlation, color = Group)) +
+m_effekt_02 <- ggplot(corr_long, aes(x = Jahr, y = Correlation, color = Group)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey70") +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
@@ -120,3 +120,8 @@ ggplot(corr_long, aes(x = Jahr, y = Correlation, color = Group)) +
     color = "Gruppe"
   )
 
+<<<<<<< Updated upstream
+=======
+m_effekt_02
+saveRDS(m_effekt_02, "results/figures/m_effekt/m_effekt_02.rds")
+>>>>>>> Stashed changes

@@ -169,7 +169,7 @@ df_bar <- tibble(
 # Balkendiagramm
 
 
-ggplot(df_bar, aes(x = group, y = corr, fill = group)) +
+m_effekt <- ggplot(df_bar, aes(x = group, y = corr, fill = group)) +
   geom_col(width = 0.6, alpha = 0.8) +
   geom_text(aes(label = round(corr, 2)),
             vjust = -0.5, size = 5) +
@@ -183,3 +183,7 @@ ggplot(df_bar, aes(x = group, y = corr, fill = group)) +
     y = "Korrelationskoeffizient"
   ) +
   theme(legend.position = "none")
+
+m_effekt
+
+saveRDS(m_effekt, "results/figures/m_effekt/m_effekt_01.rds")

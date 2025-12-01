@@ -12,6 +12,7 @@ format:
 
 css: customstyle.css
 editor: visual
+#server: shiny
 ---
 
 ```{r}
@@ -19,6 +20,7 @@ editor: visual
 #| include: false
 
 # 加载你需要的包
+library(shiny)
 library(tidyverse)
 library(readxl)
 library(sf)
@@ -27,6 +29,14 @@ library(forcats)
 library(ggpubr)
 
 # 把所有要用到的图从 RDS 里读进来
+hmk_korr_ponit_nach_stadtteile_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_ponit_nach_stadtteile_color.rds")
+hmk_korr_point_line_nach_stadtteile_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_stadtteile_color.rds")
+hmk_simpson_stadtteile_kleiner_0 <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_simpson_stadtteile_kleiner_0.rds")
+hmk_korr_gesamt_point_sw <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_gesamt_point_sw.rds")
+hmk_korr_point_nach_jahr_color <-  readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_nach_jahr_color.rds")
+hmk_korr_point_line_nach_jahr_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_jahr_color.rds")
+
+#______________________________________________________________________________
 ki_korr_raumlich   <- readRDS("results/figures/Kinderbetreuung/korr_raumlich.rds")
 ki_korr_zeitlich    <- readRDS("results/figures/Kinderbetreuung/korr_zeitlich.rds")
 ki_trend <- readRDS("results/figures/Kinderbetreuung/trend_ki.rds")
@@ -34,8 +44,13 @@ ki_dual_trend <- readRDS("results/figures/Kinderbetreuung/ki_dual_trend.rds")
 sv_trend <- readRDS("results/figures/Kinderbetreuung/trend_sv.rds")
 ki_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_ki_2015.rds")
 sv_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_sv_2015.rds")
+#__________________________________________________________________________
+m_effekt_01 <- readRDS("results/figures/m_effekt/m_effekt_01.rds")
+m_effekt_02 <- readRDS("results/figures/m_effekt/m_effekt_02.rds")
+
 
 # ……按你实际的文件名来补
+
 ```
 
 ## Agenda
@@ -136,27 +151,84 @@ Unterschied zwischen Stadtteilen über die Jahre (2000-2024)
 
 ## Haushalte mit Kindern
 
-Gesamte Korrelation (alle Jahre und Stadtteile)
+```{r}
+#| label: hmk_korr_gesamt_point_sw
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_korr_gesamt_point_sw
+```
 
 ## Haushalte mit Kindern
 
-Korrelation nach Stadtteilen
+```{r}
+#| label: hmk_korr_ponit_nach_stadtteile_color
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_korr_ponit_nach_stadtteile_color
+```
 
 ## Haushalte mit Kindern
 
-Korrelation nach Stadtteilen
+```{r}
+#| label: hmk_korr_point_line_nach_stadtteile_color
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_korr_point_line_nach_stadtteile_color
+```
 
 ## Haushalte mit Kindern
 
-Korrelation nach Stadtteilen - Simpsons Paradox
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_simpson_stadtteile_kleiner_0
+
+```
 
 ## Haushalte mit Kindern
 
-Korrelation nach Jahren
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_korr_point_nach_jahr_color
+
+```
 
 ## Haushalte mit Kindern
 
-Korrelation nach Jahren
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_korr_point_line_nach_jahr_color
+
+```
 
 ## Agenda
 
@@ -183,7 +255,7 @@ Korrelation nach Jahren
 ::::: left-align-content
 ::: tight-table
 | **Definition:** | Anteil der 0–2-jährigen Kinder, die eine Kita oder Tagespflege besuchen. |
-|-----------------|-------------------------------------------------------|
+|----|----|
 :::
 
 <br><br>
@@ -219,12 +291,12 @@ ki_dual_trend
 ```
 
 ## Kinderbetreuung
+
 <br><br>
-<div style="text-align:center;">
 
-::: columns
+:::::: {style="text-align:center;"}
+::::: columns
 ::: column
-
 ```{r}
 #| echo: false
 #| fig-width: 9
@@ -233,6 +305,7 @@ ki_dual_trend
 sv_trend
 ```
 :::
+
 ::: column
 ```{r}
 #| echo: false
@@ -246,11 +319,8 @@ ki_trend
 
 ```
 :::
-:::
-
-</div>
-
-
+:::::
+::::::
 
 ## Kinderbetreuung
 
@@ -270,11 +340,10 @@ ki_korr_raumlich
 ## Kinderbetreuung
 
 <br><br>
-<div style="text-align:center;">
 
-::: columns
+:::::: {style="text-align:center;"}
+::::: columns
 ::: column
-
 ```{r}
 #| echo: false
 #| fig-width: 7
@@ -283,6 +352,7 @@ ki_korr_raumlich
 sv_map_2015
 ```
 :::
+
 ::: column
 ```{r}
 #| echo: false
@@ -296,9 +366,8 @@ ki_map_2015
 
 ```
 :::
-:::
-
-</div>
+:::::
+::::::
 
 ## Kinderbetreuung
 
@@ -341,11 +410,29 @@ ki_korr_zeitlich
 
 ## Moderierender Effekt
 
-Korrelation 2024: Frauenbeschäftigung, Haushalte mit Kindern (aufgeteilt nach Anteil Kinderbetreuung)
+```{r}
+#| label: m_effekt_01
+#| echo: false
+#| fig-align: center
+#| fig-width: 9
+#| fig-height: 5
+#| fig-dpi: 300
+
+m_effekt_01
+```
 
 ## Moderierender Effekt
 
-Korrelation über die Jahre: Frauenbeschäftigung, Haushalte mit kindern (aufgeteilt nach Anteil Kinderbetreuung)
+```{r}
+#| label: m_effekt_02
+#| echo: false
+#| fig-align: center
+#| fig-width: 9
+#| fig-height: 5
+#| fig-dpi: 300
+
+m_effekt_02
+```
 
 ## Agenda
 

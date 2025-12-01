@@ -78,7 +78,7 @@ popup_content_2024 <- paste0(
 
 
 ## 7. leaflet
-leaflet(data_2024, options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
+leaflet_sv_durchschnitt <- leaflet(data_2024, options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   setView(lng = 11.5761, lat = 48.1372, zoom = 10) %>%
   addPolygons(
@@ -101,3 +101,7 @@ leaflet(data_2024, options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
     labFormat = labelFormat(suffix = " % ", digits = 1),
     position = "bottomright"
   )
+
+leaflet_sv_durchschnitt
+
+saveRDS(leaflet_sv_durchschnitt, "results/figures/SV/leaflet_sv_durchschnitt.rds")
