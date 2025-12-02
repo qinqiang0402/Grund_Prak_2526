@@ -3,6 +3,7 @@ library(tidyverse)
 library(sf)
 library(leaflet)
 library(readxl)
+library(stringr)
 
 geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gsm_wfs:vablock_stadtbezirke_opendata&outputFormat=application/json"
 munich_map <- st_read(geojson_url, quiet = TRUE) %>% 
@@ -79,7 +80,7 @@ popup_content_2024 <- paste0(
 
 ## 7. leaflet
 leaflet_sv_durchschnitt <- leaflet(data_2024, options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
+  addTiles() %>%
   setView(lng = 11.5761, lat = 48.1372, zoom = 10) %>%
   addPolygons(
     fillColor = ~pal_div(Value_dev),
@@ -97,7 +98,7 @@ leaflet_sv_durchschnitt <- leaflet(data_2024, options = leafletOptions(minZoom =
     pal = pal_div,
     values = c(-max_abs, max_abs),
     opacity = 0.7,
-    title = HTML("Abweichung von der<br>Frauenbeschäftigungsquote 2024<br>(München = 0)"),
+    title = HTML("Abweichung von der<br>Frauenbeschäftigungsquote 2024"),
     labFormat = labelFormat(suffix = " % ", digits = 1),
     position = "bottomright"
   )

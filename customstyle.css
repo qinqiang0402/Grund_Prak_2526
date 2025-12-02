@@ -42,7 +42,7 @@
   right: 50px !important;   /* 距离右边的距离，可以自己调 */
   top: unset !important;    /* 确保不会跑到上面去 */
   left: auto !important;
-  font-size: 1.0em !important;  
+  font-size: 0.6em !important;  
   font-weight: bold;
 }
 

@@ -3,6 +3,7 @@ library(tidyverse)
 library(sf)
 library(leaflet)
 library(readxl)
+library(leaflet.providers)
 
 # =================================================================
 # 1. Datenvorbereitung

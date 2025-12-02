@@ -3,7 +3,7 @@ title: "Demographie & Arbeitsmarkt"
 subtitle: "Grundlegendes Praxisprojekt"
 author: "Qiang Qin, Shihan Hu, Yuechen Wang, Yuqin Huang"
 institute: | 
-  Eugen Gorich <br><br>
+  <br> Eugen Gorich <br><br>
   München
 date: today
 
@@ -15,7 +15,7 @@ format:
 
 css: customstyle.css
 editor: visual
-#server: shiny
+server: shiny
 ---
 
 ```{r}
@@ -30,7 +30,6 @@ library(sf)
 library(stringr)
 library(forcats)
 library(ggpubr)
-library(leaflet.providers)
 library(leaflet)
 
 # 把所有要用到的图从 RDS 里读进来
@@ -70,6 +69,140 @@ mea_korr_nach_stadtteilen_point_line <- readRDS("results/figures/MEA/mea_korr_na
 mea_korr_jahr_point <- readRDS("results/figures/MEA/mea_korr_jahr_point.rds")
 mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_line.rds")
 
+
+# =================================================================
+# Shiny 地图用的数据准备（von Shiny Skript übernommen）
+# =================================================================
+
+# 1. Geometrie der Münchner Stadtbezirke laden
+geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gsm_wfs:vablock_stadtbezirke_opendata&outputFormat=application/json"
+munich_map <- st_read(geojson_url, quiet = TRUE) %>% 
+  st_transform(4326)
+
+# 2. Excel-Daten laden
+# 注意：这里相对路径用项目根目录的写法，而不是 ../../
+be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
+ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
+ki_sheet <- read_excel("data/raw/export_ki.xlsx", sheet = "KINDERBETREUUNG") 
+
+# 3. 各个指标（Variable）长表格式（long-format）
+
+# 3.1 Durchschnittsalter Mütter erstgebärend
+be_data_long <- be_sheet %>%
+  filter(
+    Indikator == "Durchschnittsalter Mütter erstgebärend", 
+    Ausprägung == "insgesamt", 
+    Raumbezug != "Stadt München"
+  ) %>%
+  mutate(
+    age_mean = `Basiswert 1` / `Basiswert 2`,
+    bezirksnummer = sprintf("%02d", as.numeric(str_extract(Raumbezug, "^\\d+")))
+  ) %>%
+  select(Jahr, bezirksnummer, age_mean) %>% 
+  filter(!is.na(bezirksnummer))
+
+# 3.2 Anteil Frauenbeschäftigung
+ar_data_long <- ar_sheet %>%
+  filter(
+    Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil", 
+    Ausprägung == "weiblich", 
+    Raumbezug != "Stadt München"
+  ) %>%
+  mutate(
+    anteil = 100 * `Basiswert 1` / `Basiswert 2`,
+    bezirksnummer = sprintf("%02d", as.numeric(str_extract(Raumbezug, "^\\d+")))
+  ) %>%
+  select(Jahr, bezirksnummer, anteil) %>% 
+  filter(!is.na(bezirksnummer))
+
+# 3.3 Haushalte mit Kindern
+hh_data_long <- be_sheet %>%
+  filter(
+    Indikator == "Haushalte mit Kindern", 
+    Ausprägung == "insgesamt", 
+    Raumbezug != "Stadt München"
+  ) %>%
+  mutate(
+    anteil_kinder = 100 * `Basiswert 1` / `Basiswert 2`,
+    bezirksnummer = sprintf("%02d", as.numeric(str_extract(Raumbezug, "^\\d+")))
+  ) %>%
+  select(Jahr, bezirksnummer, anteil_kinder) %>% 
+  filter(!is.na(bezirksnummer))
+
+# 3.4 Kinderbetreuungsquote 0–2 Jahre
+# Schritt A: Nenner (Alle Kinder 0–2) aus BEVÖLKERUNG
+df_total <- be_sheet %>%
+  filter(
+    Indikator == "Altersgruppen", 
+    Ausprägung == "bis 2 Jahre", 
+    Raumbezug != "Stadt München"
+  ) %>%
+  select(Jahr, Raumbezug, kinder_total = `Basiswert 1`)
+
+# Schritt B: Zähler (Betreute Kinder) aus KINDERBETREUUNG
+df_betreut_raw <- ki_sheet %>%
+  filter(
+    Indikator == "Altersgruppen", 
+    Ausprägung == "bis 2 Jahre", 
+    Raumbezug != "Stadt München"
+  ) %>%
+  select(Jahr, Raumbezug, kinder_betreut = `Basiswert 1`)
+
+# Schritt C: Join + Quote
+betreuung_data_long <- df_total %>%
+  left_join(df_betreut_raw, by = c("Jahr", "Raumbezug")) %>%
+  mutate(
+    anteil_betreuung = 100 * kinder_betreut / kinder_total,
+    bezirksnummer = sprintf("%02d", as.numeric(str_extract(Raumbezug, "^\\d+")))
+  ) %>%
+  select(Jahr, bezirksnummer, anteil_betreuung) %>%
+  filter(!is.na(bezirksnummer))
+
+# 3.5 Geburtenrate (wie im Shiny-Skript)
+gr_data_long <- be_sheet %>%
+  filter(
+    Indikator == "Allgemeine Geburtenrate",
+    Ausprägung == "insgesamt",
+    Raumbezug != "Stadt München"
+  ) %>%
+  mutate(
+    new_baby = 100 * `Basiswert 1` / `Basiswert 2`, 
+    bezirksnummer = sprintf("%02d", as.numeric(str_extract(Raumbezug, "^\\d+")))
+  ) %>%
+  select(Jahr, bezirksnummer, new_baby) %>%
+  filter(!is.na(bezirksnummer))
+
+# 3.6 Alle Variablen zusammenmergen
+combined_data_all <- be_data_long %>%
+  full_join(ar_data_long,       by = c("Jahr", "bezirksnummer")) %>%
+  full_join(hh_data_long,       by = c("Jahr", "bezirksnummer")) %>%
+  full_join(betreuung_data_long,by = c("Jahr", "bezirksnummer")) %>%
+  full_join(gr_data_long,       by = c("Jahr", "bezirksnummer"))
+
+# 3.7 Mit Geometrie verknüpfen (sf)
+final_sf_data_long <- munich_map %>%
+  left_join(combined_data_all, by = c("sb_nummer" = "bezirksnummer")) %>%
+  filter(!is.na(Jahr))
+
+# 3.8 Globale Konstanten für Shiny
+MAP_NAME_COLUMN <- "name" 
+MIN_YEAR <- min(final_sf_data_long$Jahr, na.rm = TRUE)
+MAX_YEAR <- max(final_sf_data_long$Jahr, na.rm = TRUE)
+
+variable_choices <- c(
+  "Muttererstgeburtsalter"                   = "age_mean",
+  "Anteil Frauenbeschäftigung (%)"          = "anteil",
+  "Anteil Haushalte mit Kindern (%)"        = "anteil_kinder",
+  "Betreuungsquote Kinder 0-2 Jahre (%)"    = "anteil_betreuung",
+  "Geburtenrate (%)"                        = "new_baby"
+)
+
+# Globale Min/Max für konsistente Farben
+GLOBAL_MIN_AGE        <- min(final_sf_data_long$age_mean,          na.rm = TRUE); GLOBAL_MAX_AGE        <- max(final_sf_data_long$age_mean,          na.rm = TRUE)
+GLOBAL_MIN_ANTEIL     <- min(final_sf_data_long$anteil,            na.rm = TRUE); GLOBAL_MAX_ANTEIL     <- max(final_sf_data_long$anteil,            na.rm = TRUE)
+GLOBAL_MIN_KINDER     <- min(final_sf_data_long$anteil_kinder,     na.rm = TRUE); GLOBAL_MAX_KINDER     <- max(final_sf_data_long$anteil_kinder,     na.rm = TRUE)
+GLOBAL_MIN_BETREUUNG  <- min(final_sf_data_long$anteil_betreuung,  na.rm = TRUE); GLOBAL_MAX_BETREUUNG  <- max(final_sf_data_long$anteil_betreuung,  na.rm = TRUE)
+GLOBAL_MIN_BABY       <- min(final_sf_data_long$new_baby,          na.rm = TRUE); GLOBAL_MAX_BABY       <- max(final_sf_data_long$new_baby,          na.rm = TRUE)
 
 ```
 
@@ -130,7 +263,6 @@ mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_lin
 
         -   [Kinderbetreuung]{style="color:lightgray;"}
 
-
 [3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
 
 ------------------------------------------------------------------------
@@ -159,9 +291,134 @@ leaflet_sv_durchschnitt
 
 ## Frauenbeschäftigung
 
-Unterschied zwischen Stadtteilen über die Jahre (2000-2024)
+```{r}
+#| context: server
 
-Hier wird noch Shiny-App eingefügt
+
+# 1. Reaktive gefilterte Daten (immer aktuelles Jahr + gewählte Variable)
+filtered_sf_data <- reactive({
+  final_sf_data_long %>% 
+    filter(Jahr == input$time_slider) %>%
+    select(
+      sb_nummer,
+      !!sym(MAP_NAME_COLUMN),
+      geometry,
+      Value = !!sym(input$variable_select)
+    )
+})
+
+# 2. Grundkarte (wird einmal initialisiert)
+output$map_output <- renderLeaflet({
+  leaflet(options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
+    addTiles() %>%  # 默认 OSM 底图，稳定不报错
+    setView(lng = 11.5761, lat = 48.1372, zoom = 10)
+})
+
+# 3. Karte bei Änderung von Slider / Variable neu einfärben
+observe({
+  current_sf <- filtered_sf_data()
+  var_id     <- input$variable_select
+  var_label  <- names(variable_choices)[variable_choices == var_id]
+  
+  # ---- Farbbereich & Einheit je nach Variable ----
+  if (var_id == "age_mean") {
+    # Mütteralter -> pink ("RdPu")
+    c_min <- GLOBAL_MIN_AGE;       c_max <- GLOBAL_MAX_AGE
+    unit  <- " Jahre";             dec   <- 2
+    pal_name <- "RdPu"
+    
+  } else if (var_id == "anteil") {
+    # Frauenbeschäftigung -> blau
+    c_min <- GLOBAL_MIN_ANTEIL;    c_max <- GLOBAL_MAX_ANTEIL
+    unit  <- " %";                 dec   <- 1
+    pal_name <- "Blues"
+    
+  } else if (var_id == "anteil_kinder") {
+    # Haushalte mit Kindern -> grün
+    c_min <- GLOBAL_MIN_KINDER;    c_max <- GLOBAL_MAX_KINDER
+    unit  <- " %";                 dec   <- 1
+    pal_name <- "Greens"
+    
+  } else if (var_id == "anteil_betreuung") {
+    # Kinderbetreuung -> violett
+    c_min <- GLOBAL_MIN_BETREUUNG; c_max <- GLOBAL_MAX_BETREUUNG
+    unit  <- " %";                 dec   <- 1
+    pal_name <- "Purples"
+    
+  } else {
+    # Geburtenrate -> rot (Werte klein,多几位小数)
+    c_min <- GLOBAL_MIN_BABY;      c_max <- GLOBAL_MAX_BABY
+    unit  <- "";                   dec   <- 4
+    pal_name <- "Reds"
+  }
+  
+  pal <- colorNumeric(palette = pal_name, domain = c(c_min, c_max))
+  
+  popup_content <- paste0(
+    "<b>Bezirk:</b> ", current_sf[[MAP_NAME_COLUMN]], "<br/>",
+    "<b>", var_label, ":</b> ", round(current_sf$Value, dec), unit
+  )
+  
+  leafletProxy("map_output", data = current_sf) %>%
+    clearShapes() %>%
+    clearControls() %>%
+    addPolygons(
+      fillColor = ~pal(Value),
+      weight = 1.5,
+      opacity = 1,
+      color = "white",
+      dashArray = "1",
+      fillOpacity = 0.7,
+      label = lapply(popup_content, HTML),
+      highlightOptions = highlightOptions(
+        weight = 3,
+        color  = "#666",
+        fillOpacity = 0.9,
+        bringToFront = TRUE
+      )
+    ) %>%
+    addLegend(
+      pal      = pal,
+      values   = c(c_min, c_max),
+      opacity  = 0.7,
+      title    = var_label,
+      labFormat= labelFormat(suffix = unit, digits = dec),
+      position = "bottomright"
+    )
+})
+```
+
+## Frauenbeschäftigung
+
+```{r}
+#| panel: sidebar
+# 这里是 Shiny 的 UI 控件（侧边栏）
+selectInput(
+  "variable_select",
+  "Indikator wählen:",
+  choices  = variable_choices,
+  selected = "anteil"    # 默认先看 Frauenbeschäftigung
+)
+
+sliderInput(
+  "time_slider",
+  "Jahr:",
+  min     = MIN_YEAR,
+  max     = MAX_YEAR,
+  value   = MAX_YEAR,
+  step    = 1,
+  sep     = "",
+  animate = TRUE
+)
+```
+
+```{r}
+#| panel: fill
+# 主区域放地图
+leafletOutput("map_output", height = "650px")
+```
+
+------------------------------------------------------------------------
 
 ## Agenda
 
@@ -177,12 +434,11 @@ Hier wird noch Shiny-App eingefügt
 
         -   [Kinderbetreuung]{style="color:lightgray;"}
 
-
 [3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
 
 ## Haushalte mit Kindern
 
-<br><br>  Privathaushalte mit mindestens einem Kind bis 17 Jahre (mit mindestens einer Hauptwohnsitzperson)
+<br><br> Privathaushalte mit mindestens einem Kind bis 17 Jahre (mit mindestens einer Hauptwohnsitzperson)
 
 ## Haushalte mit Kindern (gesamt)
 
@@ -441,9 +697,8 @@ m_effekt_02
 -   [Zusammenhang]{style="color:lightgray;"}
     -   [Haushalte mit Kindern]{style="color:lightgray;"}
     -   [Kinderbetreuung]{style="color:lightgray;"}
-    
-<br>
-3.  Fazit - Limitation - Ausblick
+
+<br> 3. Fazit - Limitation - Ausblick
 
 ## Fazit
 
@@ -470,8 +725,6 @@ m_effekt_02
 ## Limitation
 
 -   **Sozialversicherungspflichtige Beschäftigung** erfasst nicht alle Erwerbstätigen
-
--   **Begrenzte Stichprobe:** nur 25 Stadtteilen → geringe Fallzahl bei Korrelationen.
 
 -   **Nicht kompatible Altersgruppen** zwischen Bevölkerungsdaten (BE) und Kinderbetreuungsdaten (KI) → Betreuungsquoten über 2 Jahre hinaus sind nicht exakt vergleichbar.
 
