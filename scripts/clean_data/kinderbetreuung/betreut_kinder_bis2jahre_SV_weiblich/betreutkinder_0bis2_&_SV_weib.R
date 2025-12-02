@@ -37,14 +37,15 @@ plot_bezirk_map <- function(map_df, value_col, title, subtitle,
       high = high_col,       # 用参数
       name = legend_title,
       limits = limits,
-      na.value = "grey90"
+      na.value = "grey90",
+      breaks = seq(limits[1], limits[2], by = 10)
     ) +
     labs(title = title,
          subtitle = subtitle,
-         caption = "Daten: Landeshauptstadt München – Statistisches Amt") +
+         caption = "") +
     theme_void(base_size = 12) +
     theme(
-      legend.position = "right",
+      legend.position = "bottom",
       plot.title = element_text(face = "bold")
     )
 }
@@ -300,7 +301,7 @@ p_map_betreuung <- plot_bezirk_map(
   map_betreuung_2015,
   value_col    = "betreuungsquote",
   title        = paste0("Kinderbetreuung (0–2 Jahre) – München, ", year_map),
-  subtitle     = "Anteil in % nach Stadtteile (München)",
+  subtitle     = "",
   legend_title = "Betreuungsquote (%)",
   limits       = c(10, 55),
   low_col      = "#fff5eb",  # 很浅的橙/米色
@@ -330,7 +331,7 @@ p_map_sozial <- plot_bezirk_map(
   map_sozial_2015,
   value_col    = "sozial_weiblich_pct",
   title        = paste0("Frauenbeschäftigung – ", year_map),
-  subtitle     = "Anteil in % nach Stadtteile (München)",
+  subtitle     = "",
   legend_title = "Anteil Frauenbeschäftigung (%)",
   limits       = c(50, 62),
   low_col      = "#f7fbff",  # 浅蓝

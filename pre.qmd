@@ -75,11 +75,11 @@ mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_lin
 
 ## Agenda
 
-1.  Einleitung
+1.  Datenüberblick
 
 2.  Datenanalyse
 
-    -   Weiblich sozialversicherungspflichtig Beschäftigte
+    -   Frauenbeschäftigung
 
     -   Zusammenhang
 
@@ -87,27 +87,24 @@ mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_lin
 
         -   Kinderbetreuung
 
-        -   moderierender Effekt
-
-3.  Zusammenfassung
+3.  Fazit - Limitation - Ausblick
 
 ## Agenda
 
-1.  Einleitung
+1.  Datenüberblick
 
 [2. Datenanalyse]{style="color:lightgray;"}
 
--   [Weiblich sozialversicherungspflichtig Beschäftigte]{style="color:lightgray;"}
+-   [Frauenbeschäftigung]{style="color:lightgray;"}
 -   [Zusammenhang]{style="color:lightgray;"}
     -   [Haushalte mit Kindern]{style="color:lightgray;"}
     -   [Kinderbetreuung]{style="color:lightgray;"}
-    -   [moderierender Effekt]{style="color:lightgray;"}
 
-[3. Zusammenfassung]{style="color:lightgray;"}
+[3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
 
-## Motivation
+## 
 
-![](images/clipboard-1065721815.jpeg){fig-align="center"}
+![](images/clipboard-3386569485.png)
 
 ## Daten
 
@@ -121,11 +118,11 @@ mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_lin
 
 ## Agenda
 
-[1. Einleitung]{style="color:lightgray;"}
+[1. Datenüberblick]{style="color:lightgray;"}
 
 2.  Datenanalyse
 
-    -   Weiblich sozialversicherungspflichtig Beschäftigte
+    -   Frauenbeschäftigung
 
     -   [Zusammenhang]{style="color:lightgray;"}
 
@@ -133,9 +130,8 @@ mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_lin
 
         -   [Kinderbetreuung]{style="color:lightgray;"}
 
-        -   [moderierender Effekt]{style="color:lightgray;"}
 
-[3. Zusammenfassung]{style="color:lightgray;"}
+[3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
 
 ------------------------------------------------------------------------
 
@@ -169,11 +165,11 @@ Hier wird noch Shiny-App eingefügt
 
 ## Agenda
 
-[1. Einleitung]{style="color:lightgray;"}
+[1. Datenüberblick]{style="color:lightgray;"}
 
 2.  Datenanalyse
 
-    -   [Weiblich sozialversicherungspflichtig Beschäftigte]{style="color:lightgray;"}
+    -   [Frauenbeschäftigung]{style="color:lightgray;"}
 
     -   Zusammenhang
 
@@ -181,13 +177,12 @@ Hier wird noch Shiny-App eingefügt
 
         -   [Kinderbetreuung]{style="color:lightgray;"}
 
-        -   [moderierender Effekt]{style="color:lightgray;"}
 
-[3. Zusammenfassung]{style="color:lightgray;"}
+[3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
 
 ## Haushalte mit Kindern
 
-<br><br> Definition: Privathaushalte mit mindestens einem Kind bis 17 Jahre (mit mindestens einer Hauptwohnsitzperson)
+<br><br>  Privathaushalte mit mindestens einem Kind bis 17 Jahre (mit mindestens einer Hauptwohnsitzperson)
 
 ## Haushalte mit Kindern (gesamt)
 
@@ -229,7 +224,6 @@ hmk_simpson_stadtteile_kleiner_0
 
 ```
 
-
 ## Haushalte mit Kindern (Jahre)
 
 ```{r}
@@ -246,11 +240,11 @@ hmk_korr_point_line_nach_jahr_color
 
 ## Agenda
 
-[1. Einleitung]{style="color:lightgray;"}
+[1. Datenüberblick]{style="color:lightgray;"}
 
 2.  Datenanalyse
 
-    -   [Weiblich sozialversicherungspflichtig Beschäftigte]{style="color:lightgray;"}
+    -   [Frauenbeschäftigung]{style="color:lightgray;"}
 
     -   Zusammenhang
 
@@ -258,9 +252,7 @@ hmk_korr_point_line_nach_jahr_color
 
         -   Kinderbetreuung
 
-        -   [moderierender Effekt]{style="color:lightgray;"}
-
-[3. Zusammenfassung]{style="color:lightgray;"}
+[3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
 
 ## Kinderbetreuung
 
@@ -329,39 +321,20 @@ ki_point_korr_gesamt_sw
 ki_point_line_color
 ```
 
-
-
-## Kinderbetreuung
+## Zusammenhang 2015
 
 <br><br>
 
-:::::: {style="text-align:center;"}
-::::: columns
-::: column
 ```{r}
 #| echo: false
-#| fig-width: 7
-#| fig-height: 4
-
-sv_map_2015
-```
-:::
-
-::: column
-```{r}
-#| echo: false
-#| fig-width: 7
-#| fig-height: 4
+#| layout-ncol: 2
+#| fig-width: 14
+#| fig-height: 10
 #| fig-align: center
 
+sv_map_2015
 ki_map_2015
-
-
-
 ```
-:::
-:::::
-::::::
 
 ## Korrelation (gesamt)
 
@@ -377,7 +350,6 @@ ki_map_2015
 
 ki_point_korr_gesamt_sw
 ```
-
 
 ## Korrelation nach Jahre
 
@@ -396,7 +368,6 @@ ki_simpson_sw
 
 ## Korrelation nach Jahre
 
-
 ```{r}
 
 #| echo: false
@@ -412,11 +383,11 @@ ki_point_line_korr_nach_stadtteile_color
 
 ## Agenda
 
-[1. Einleitung]{style="color:lightgray;"}
+[1. Datenüberblick]{style="color:lightgray;"}
 
 2.  Datenanalyse
 
-    -   [Weiblich sozialversicherungspflichtig Beschäftigte]{style="color:lightgray;"}
+    -   [Frauenbeschäftigung]{style="color:lightgray;"}
 
     -   Zusammenhang
 
@@ -424,9 +395,7 @@ ki_point_line_korr_nach_stadtteile_color
 
         -   [Kinderbetreuung]{style="color:lightgray;"}
 
-        -   moderierender Effekt
-
-[3. Zusammenfassung]{style="color:lightgray;"}
+[3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
 
 ## Moderierender Effekt
 
@@ -464,17 +433,17 @@ m_effekt_02
 
 ## Agenda
 
-[1. Einleitung]{style="color:lightgray;"}
+[1. Datenüberblick]{style="color:lightgray;"}
 
 [2. Datenanalyse]{style="color:lightgray;"}
 
--   [Weiblich sozialversicherungspflichtig Beschäftigte]{style="color:lightgray;"}
+-   [Frauenbeschäftigung]{style="color:lightgray;"}
 -   [Zusammenhang]{style="color:lightgray;"}
     -   [Haushalte mit Kindern]{style="color:lightgray;"}
     -   [Kinderbetreuung]{style="color:lightgray;"}
-    -   [moderierender Effekt]{style="color:lightgray;"}
-
-3.  Zusammenfassung
+    
+<br>
+3.  Fazit - Limitation - Ausblick
 
 ## Fazit
 
