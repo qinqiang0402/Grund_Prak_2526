@@ -129,7 +129,6 @@ hmk_simpson_stadtteile_kleiner_0 <- ggplot(plot_data_highlight, aes(x = hmk, y =
     linewidth = 1.1, 
     se = FALSE
   ) +
-  scale_color_manual(values = stadtteil_palette) +
   labs(
     x = "Anteil Haushalte mit Kindern (%)",
     y = "Anteil Frauenbeschäftigung (%)"
@@ -140,61 +139,4 @@ hmk_simpson_stadtteile_kleiner_0 <- ggplot(plot_data_highlight, aes(x = hmk, y =
 
 hmk_simpson_stadtteile_kleiner_0
 saveRDS(hmk_simpson_stadtteile_kleiner_0, "results/figures/Haushalt_mit_Kindern/hmk_simpson_stadtteile_kleiner_0.rds")
-
-#------------------------------------------------------------------------------
-plot_data_colored <- korrelations_daten_clean %>%
-  group_by(Raumbezug) %>%
-  mutate(
-    r_wert = cor(hmk, anteil),
-    trend_richtung = ifelse(r_wert >= 0, "positiv", "negativ")
-  ) %>%
-  ungroup() 
-
-hmk_simpson_blau_rot <- ggplot(plot_data_colored, aes(x = hmk, y = anteil)) +
-  geom_smooth(
-    aes(
-      color = trend_richtung,  
-      group = Raumbezug        
-    ), 
-    method = "lm", 
-    se = FALSE, 
-    linewidth = 1.1,    
-    alpha = 0.6       
-  ) +
-  geom_smooth(aes(group = 1), method = "lm", color = "black", linewidth = 1.1, se = FALSE) +
-  scale_color_manual(values = c(
-    "positiv" = "red",  
-    "negativ" = "blue"  
-  )) +
-  labs(
-    title = "Simpson's Paradox",
-    subtitle = "Rot = positiver Zusammenhang (R > 0), Blau = negative Zusammenhang (R < 0)",
-    x = "Anteil Haushalte mit Kindern (%)",
-    y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)"
-  ) +
-  coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-hmk_simpson_blau_rot
-saveRDS(hmk_simpson_blau_rot, "results/figures/Haushalt_mit_Kindern/hmk_simpson_blau_rot.rds")
-
-#---------------------------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------
-#hmk_korr_ponit_nach_stadtteile_color <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
-#geom_point(aes(color = Raumbezug), size = 1.3,alpha = 0.7) +   
-#geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
-#stat_cor(label.x.npc = "left",   label.y.npc = "top",   color = "black",size = 5 ) + 
-#coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
-#labs(
-#title = "Korrelationskoeffizient nach Stadtteilen zwischen Haushalte mit Kindern und Frauenbeschäftigung",
-#x = "Anteil Haushalte mit Kindern (%)",
-#y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
-#color = "Stadtteile" 
-#) +
-#guides(color = guide_legend(ncol = 1)) + 
-#theme_minimal()
-
-#hmk_korr_ponit_nach_stadtteile_color
-#saveRDS(hmk_korr_ponit_nach_stadtteile_color, "results/figures/Haushalt_mit_Kindern/hmk_korr_ponit_nach_stadtteile_color.rds")
 
