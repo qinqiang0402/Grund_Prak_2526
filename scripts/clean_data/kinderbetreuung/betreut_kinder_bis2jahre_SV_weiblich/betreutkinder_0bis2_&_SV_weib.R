@@ -5,6 +5,13 @@ library(stringr)
 library(forcats)
 library(ggpubr)
 
+
+
+
+
+
+
+
 #──────────────────────── 0. 帮助函数 ────────────────────────
 
 # 给 Raumbezug / sb_nummer 统一生成两位数 Bezirk-Code
@@ -159,7 +166,7 @@ enrolled_year <- df_betreut %>%
 # Option 1: direct city total row
 emp_year <- sozial_anteil_weiblich %>%
   filter(Jahr >= 2007, Jahr <= 2024, Raumbezug == "Stadt München") %>%
-  transmute(Jahr, emp_women = sozial_weiblich)
+  transmute(Jahr, emp_women = sozial_weiblich * 100)
 
 # Option 2 (fallback): average across districts (simple mean)
 # unemp_year <- arbeitslos_weiblich %>%
@@ -190,15 +197,15 @@ ts_dual <- ts_dual %>%
 # -----------------------------
 ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
   # Linke Achse (Betreuungsanteil)
-  geom_line(aes(y = share_enrolled, color = "Betreuungsanteil (0–2)"), size = 1.2) +
-  geom_point(aes(y = share_enrolled, color = "Betreuungsanteil (0–2)"), size = 2) +
+  geom_line(aes(y = share_enrolled, color = "Kinderbetreuung (0–2)"), size = 1.2) +
+  geom_point(aes(y = share_enrolled, color = "Kinderbetreuung (0–2)"), size = 2) +
   
   # Rechte Achse (Frauenbeschäftigung), jetzt mit emp_scaled
   geom_line(aes(y = emp_scaled, color = "Frauenbeschäftigung"), size = 1.2) +
   geom_point(aes(y = emp_scaled, color = "Frauenbeschäftigung"), size = 2) +
   
   scale_y_continuous(
-    name = "Betreuungsanteil (0–2 Jahre) [%]",
+    name = "Kinderbetreuung (0–2) [%]",
     sec.axis = sec_axis(
       ~ (. - range_left[1]) / scale_factor + range_right[1],
       name = "Anteil Frauenbeschäftigung [%]"
@@ -206,12 +213,12 @@ ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
   ) +
   scale_color_manual(
     name = NULL,
-    values = c("Betreuungsanteil (0–2)" = "#1f77b4",
-               "Frauenbeschäftigung"      = "#d62728")
+    values = c("Kinderbetreuung (0–2)" = "#d62728",
+               "Frauenbeschäftigung"      = "#1f77b4")
   ) +
   labs(
-    title    = "Dual-Trend: Kinderbetreuung vs. Frauenbeschäftigung (2007–2024)",
-    subtitle = "Links: Kinderbetreuungsquote (gewichtet) · Rechts: Anteil Frauenbeschäftigung",
+    title    = "",
+    subtitle = "",
     x        = "Jahr"
   ) +
   theme_minimal(base_size = 13) +
@@ -250,7 +257,7 @@ p_trend_kita <- ggplot(enrolled_year, aes(x = Jahr, y = share_enrolled)) +
 
 p_trend_kita
 
-saveRDS(p_trend_kita, "results/figures/Kinderbetreuung/trend_ki.rds")
+#saveRDS(p_trend_kita, "results/figures/Kinderbetreuung/trend_ki.rds")
 
 #__________________________________________________________________________________
 
@@ -273,7 +280,7 @@ p_trend_emp <- ggplot(emp_year, aes(x = Jahr, y = emp_women)) +
 
 p_trend_emp
 
-saveRDS(p_trend_emp, "results/figures/Kinderbetreuung/trend_sv.rds")
+#saveRDS(p_trend_emp, "results/figures/Kinderbetreuung/trend_sv.rds")
 
 
 #──────────────────────── 3. 图 2 & 3：2015 年两张地图 ─────────────────────
@@ -370,7 +377,7 @@ p_corr_stadtteile <- ggplot(corr_bezirk,
 
 p_corr_stadtteile
 
-saveRDS(p_corr_stadtteile, "results/figures/Kinderbetreuung/korr_zeitlich.rds")
+#saveRDS(p_corr_stadtteile, "results/figures/Kinderbetreuung/korr_zeitlich.rds")
 # ggsave("fig/corr_by_bezirk.png", p_corr_bezirk, width = 9, height = 6, dpi = 300)
 
 #──────────────────────── 5. 图 5：按 Jahr 的空间相关性 ─────────────────────
@@ -387,7 +394,7 @@ corr_year <- df_merge %>%
 p_corr_year <- plot_corr_by_year(corr_year)
 p_corr_year
 
-saveRDS(p_corr_year, "results/figures/Kinderbetreuung/korr_raumlich.rds")
+#saveRDS(p_corr_year, "results/figures/Kinderbetreuung/korr_raumlich.rds")
 
 
 # ggsave("fig/corr_by_year.png", p_corr_year, width = 9, height = 4.5, dpi = 300)
@@ -433,9 +440,8 @@ korrelations_daten_clean <- korrelations_daten %>%
 ki_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_point(size = 1.3, color = "grey", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
-  stat_cor(label.x.npc = "left", label.y.npc = "top") + 
   labs(
-    title = "Korrelationskoeffizient gesamt (alle Jahre und Stadtteile) zwischen Kinderbetreuung und Frauenbeschäftigung",
+    title = "",
     x = "Anteil Kinderbetreuung (%)",
     y = "Anteil Frauenbeschäftigung (%)"
   ) +
@@ -470,7 +476,7 @@ ki_year_color_point <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)
 
 ki_year_color_point
 
-saveRDS(ki_year_color_point, "results/figures/Kinderbetreuung/ki_point_year_color.rds")
+#saveRDS(ki_year_color_point, "results/figures/Kinderbetreuung/ki_point_year_color.rds")
 
 # ... 后面那几段按 Jahr 算 r、画多条 lm 线、highlight 负相关年份的代码，也都可以不改
 
@@ -510,13 +516,13 @@ ki_point_line_color <- ggplot(plot_data_final_year, aes(x = hmk, y = anteil)) +
   scale_color_manual(values = jahr_palette) +
   coord_cartesian() +
   labs(
-    title = "Korrelationskoeffizient nach Jahren zwischen Kinderbetreuungsquote (0–2 Jahre) und Frauenbeschäftigung",
-    x     = "Betreuungsquote Kinder 0–2 Jahre (%)",
+    title = "",
+    x     = "Kinderbetreuung 0–2 Jahre (%)",
     y     = "Anteil Frauenbeschäftigung (%)"
   ) +
   theme_minimal() +
   theme(
-    legend.position = "none"   # ⭐ 完全去掉 legend
+    legend.position = "none"   
   )
 
 ki_point_line_color
@@ -589,7 +595,7 @@ p_non_simpson <- ggplot(plot_data_highlight_year, aes(x = hmk, y = anteil)) +
 
 p_non_simpson
 
-saveRDS(p_non_simpson, "results/figures/Kinderbetreuung/ki_p_non_simpson.rds")
+#saveRDS(p_non_simpson, "results/figures/Kinderbetreuung/ki_p_non_simpson.rds")
 
 
 
@@ -641,7 +647,7 @@ ki_non_simpson_blau <- ggplot(plot_data_colored_year, aes(x = hmk, y = anteil)) 
 
 ki_non_simpson_blau
 
-saveRDS(ki_non_simpson_blau, "results/figures/Kinderbetreuung/ki_non_simpson_blau.rds")
+#saveRDS(ki_non_simpson_blau, "results/figures/Kinderbetreuung/ki_non_simpson_blau.rds")
 
 #——————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -690,9 +696,8 @@ y_range <- range(korrelations_daten_clean$anteil, na.rm = TRUE)
 ki_korr_nach_stadtteile_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_point(size = 1.3, color = "grey", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
-  ggpubr::stat_cor(label.x.npc = "left", label.y.npc = "top") + 
   labs(
-    title = "Korrelationskoeffizient gesamt (2007–2024) zwischen Kinderbetreuung (0–2 Jahre) und Frauenbeschäftigung",
+    title = "",
     x = "Kinderbetreuung 0–2 Jahre (%)",
     y = "Anteil Frauenbeschäftigung (%)"
   ) +
@@ -730,7 +735,7 @@ ki_korr_point_nach_stadtteile_color <- ggplot(korrelations_daten_clean, aes(x = 
    theme(legend.position = "none")
 
 ki_korr_point_nach_stadtteile_color
-saveRDS(ki_korr_point_nach_stadtteile_color, "results/figures/Kinderbetreuung/ki_korr_point_nach_stadtteile_color.rds")
+#saveRDS(ki_korr_point_nach_stadtteile_color, "results/figures/Kinderbetreuung/ki_korr_point_nach_stadtteile_color.rds")
 
 #————————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -763,7 +768,7 @@ ki_point_line_korr_nach_stadtteile_color <- ggplot(plot_data_final, aes(x = hmk,
               color = "black", linewidth = 1.1, se = FALSE) +
   scale_color_manual(values = stadtteil_palette) +
   labs(
-    title = "Korrelationskoeffizient nach Stadtteilen zwischen Kinderbetreuungs (0–2 Jahre) und Frauenbeschäftigung",
+    title = "",
     x     = "Kinderbetreuung 0–2 Jahre (%)",
     y     = "Anteil Frauenbeschäftigung (%)",
     color = "Stadtteil"
@@ -779,7 +784,7 @@ ki_point_line_korr_nach_stadtteile_color <- ggplot(plot_data_final, aes(x = hmk,
 
 ki_point_line_korr_nach_stadtteile_color  
 
-saveRDS(ki_korr_point_nach_stadtteile_color, "results/figures/Kinderbetreuung/ki_point_line_korr_nach_stadtteile_color.rds")
+saveRDS(ki_point_line_korr_nach_stadtteile_color, "results/figures/Kinderbetreuung/ki_point_line_korr_nach_stadtteile_color.rds")
 
 #——————————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -891,7 +896,7 @@ ki_simpson_blau_rot <- ggplot(plot_data_colored, aes(x = hmk, y = anteil)) +
   theme(legend.position = "none")
 
 ki_simpson_blau_rot
-saveRDS(ki_simpson_blau_rot, "results/figures/Kinderbetreuung/ki_simpson_blau_rot.rds")
+#saveRDS(ki_simpson_blau_rot, "results/figures/Kinderbetreuung/ki_simpson_blau_rot.rds")
 
 
 #————————————————————————————————————————————————————————————————————————————————————————————————

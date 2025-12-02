@@ -45,13 +45,14 @@ hmk_korr_point_nach_jahr_color <-  readRDS("results/figures/Haushalt_mit_Kindern
 hmk_korr_point_line_nach_jahr_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_jahr_color.rds")
 
 #______________________________________________________________________________
-ki_korr_raumlich   <- readRDS("results/figures/Kinderbetreuung/korr_raumlich.rds")
-ki_korr_zeitlich    <- readRDS("results/figures/Kinderbetreuung/korr_zeitlich.rds")
-ki_trend <- readRDS("results/figures/Kinderbetreuung/trend_ki.rds")
 ki_dual_trend <- readRDS("results/figures/Kinderbetreuung/ki_dual_trend.rds")
-sv_trend <- readRDS("results/figures/Kinderbetreuung/trend_sv.rds")
 ki_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_ki_2015.rds")
 sv_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_sv_2015.rds")
+ki_point_korr_gesamt_sw <- readRDS("results/figures/Kinderbetreuung/ki_point_korr_gesamt_sw.rds")
+ki_point_line_color <- readRDS("results/figures/Kinderbetreuung/ki_point_line_color.rds")
+ki_simpson_sw <- readRDS("results/figures/Kinderbetreuung/ki_simpson_sw.rds")
+ki_point_line_korr_nach_stadtteile_color <- readRDS("results/figures/Kinderbetreuung/ki_point_line_korr_nach_stadtteile_color.rds")
+
 #__________________________________________________________________________
 m_effekt_01 <- readRDS("results/figures/m_effekt/m_effekt_01.rds")
 m_effekt_02 <- readRDS("results/figures/m_effekt/m_effekt_02.rds")
@@ -109,14 +110,14 @@ mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_lin
 ![](images/clipboard-1065721815.jpeg){fig-align="center"}
 
 ## Daten
+
 表格
 
- -   Datenaufbau <br>
+-   Datenaufbau <br>
 
- -   Untersuchte Variablen <br>
+-   Untersuchte Variablen <br>
 
- -   Datenquellen (Fußnote) <br>
-
+-   Datenquellen (Fußnote) <br>
 
 ## Agenda
 
@@ -138,17 +139,15 @@ mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_lin
 
 ------------------------------------------------------------------------
 
-## Frauenbeschäftigung  
+## Frauenbeschäftigung
 
 *(Anteil weiblicher sozialversicherungspflichtig Beschäftigter)*
 
-<br>
-<br>
+<br> <br>
 
 Weibliche Bevölkerung, die in einem Arbeitsverhältnis stehen und deren Einkommen der Pflicht zur Zahlung von Sozialversicherungsbeiträgen unterliegt
 
 ## Frauenbeschäftigung
-
 
 ```{r}
 
@@ -206,19 +205,6 @@ hmk_korr_gesamt_point_sw
 ## Haushalte mit Kindern (Stadtteile)
 
 ```{r}
-#| label: hmk_korr_ponit_nach_stadtteile_color
-#| echo: false
-#| fig-align: center
-#| fig-width: 16
-#| fig-height: 9
-#| fig-dpi: 300
-
-hmk_korr_ponit_nach_stadtteile_color
-```
-
-## Haushalte mit Kindern (Stadtteile)
-
-```{r}
 #| label: hmk_korr_point_line_nach_stadtteile_color
 #| echo: false
 #| fig-align: center
@@ -243,19 +229,6 @@ hmk_simpson_stadtteile_kleiner_0
 
 ```
 
-## Haushalte mit Kindern (Jahre)
-
-```{r}
-
-#| echo: false
-#| fig-align: center
-#| fig-width: 16
-#| fig-height: 9
-#| fig-dpi: 300
-
-hmk_korr_point_nach_jahr_color
-
-```
 
 ## Haushalte mit Kindern (Jahre)
 
@@ -291,14 +264,7 @@ hmk_korr_point_line_nach_jahr_color
 
 ## Kinderbetreuung
 
-<br><br>
-
-::::: left-align-content
-::: tight-table
-| **Definition:**  Anteil der 0–2-jährigen Kinder, die eine Kita oder Tagespflege besuchen.
-:::
-
-<br><br>
+<br><br><br>
 
 ::: {style="font-size:1.8rem;"}
 $$
@@ -312,9 +278,10 @@ $$
 \quad\times 100\%
 $$
 :::
-:::::
 
-## Kinderbetreuung
+------------------------------------------------------------------------
+
+#### Dual-Trend: Kinderbetreuung vs. Frauenbeschäftigung (2007–2024)
 
 ```{r}
 #| label: ki-dual_trend
@@ -333,39 +300,7 @@ scale_factor <- (range_left[2] - range_left[1]) / (range_right[2] - range_right[
 ki_dual_trend
 ```
 
-## Kinderbetreuung
-
-<br><br>
-
-:::::: {style="text-align:center;"}
-::::: columns
-::: column
-```{r}
-#| echo: false
-#| fig-width: 9
-#| fig-height: 5
-
-sv_trend
-```
-:::
-
-::: column
-```{r}
-#| echo: false
-#| fig-width: 9
-#| fig-height: 5
-#| fig-align: center
-
-ki_trend
-
-
-
-```
-:::
-:::::
-::::::
-
-## Kinderbetreuung
+## Korrelation (gesamt)
 
 ```{r}
 #| label: ki-korr-raumlich
@@ -377,8 +312,24 @@ ki_trend
 
 
 
-ki_korr_raumlich
+ki_point_korr_gesamt_sw
 ```
+
+## Korrelation nach Stadtteilen
+
+```{r}
+#| echo: false
+#| fig-align: center
+#| fig-width: 7
+#| fig-height: 4
+#| fig-dpi: 300
+
+
+
+ki_point_line_color
+```
+
+
 
 ## Kinderbetreuung
 
@@ -412,17 +363,51 @@ ki_map_2015
 :::::
 ::::::
 
-## Kinderbetreuung
+## Korrelation (gesamt)
 
 ```{r}
-#| label: ki-korr-zeitlich
+
 #| echo: false
 #| fig-align: center
 #| fig-width: 7
 #| fig-height: 4
 #| fig-dpi: 300
 
-ki_korr_zeitlich
+
+
+ki_point_korr_gesamt_sw
+```
+
+
+## Korrelation nach Jahre
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 7
+#| fig-height: 4
+#| fig-dpi: 300
+
+
+
+ki_simpson_sw
+```
+
+## Korrelation nach Jahre
+
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 7
+#| fig-height: 4
+#| fig-dpi: 300
+
+
+
+ki_point_line_korr_nach_stadtteile_color
 ```
 
 ## Agenda
