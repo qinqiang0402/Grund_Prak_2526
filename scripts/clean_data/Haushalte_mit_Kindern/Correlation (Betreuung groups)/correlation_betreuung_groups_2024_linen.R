@@ -204,7 +204,7 @@ m_effekt_single <- ggplot(df_2024,
 
 m_effekt_single
 
-saveRDS(m_effekt_single, "results/figures/m_effekt/m_effekt_00_singleline.rds")
+saveRDS(m_effekt_single, "results/figures/m_effekt/m_effekt_01_singleline.rds")
 
 
 # --- Grafik 2: Linien + farbcodierte Punkte nach Gruppe ---
@@ -263,4 +263,4 @@ m_effekt_colored_points <- ggplot() +
 m_effekt_colored_points
 
 saveRDS(m_effekt_colored_points,
-        "results/figures/m_effekt/m_effekt_02_colored_points.rds")
+        "results/figures/m_effekt/m_effekt_02_colored.rds")
