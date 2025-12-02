@@ -58,7 +58,11 @@ geburtenrate_korr_nach_stadtteile <- readRDS("results/figures/Geburtenrate/gebur
 geburtenrate_korr_trend_nach_jahr <- readRDS("results/figures/Geburtenrate/geburtenrate_korr_trend_nach_jahr.rds")
 
 #_______________________________________________________________________________
-
+mea_gesamt_sw <- readRDS("results/figures/MEA/mea_gesamt_sw.rds")
+mea_korr_nach_stadtteilen_point <- readRDS("results/figures/MEA/mea_korr_nach_stadtteilen_point.rds")
+mea_korr_nach_stadtteilen_point_line <- readRDS("results/figures/MEA/mea_korr_nach_stadtteilen_point_line.rds")
+mea_korr_jahr_point <- readRDS("results/figures/MEA/mea_korr_jahr_point.rds")
+mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_line.rds")
 
 
 ```
@@ -113,7 +117,7 @@ geburtenrate_korr_trend_nach_jahr <- readRDS("results/figures/Geburtenrate/gebur
     -   **Ausprägung**: Untergruppe eines Indikators\
     -   **Wert**: numerischer Wert des Indikators
 
-## untersuchte Variablen
+## Untersuchte Variablen
 
 -   Anteil weiblicher sozialversicherungspflichtig Beschäftigter
 -   Haushalte mit Kindern
@@ -148,8 +152,10 @@ kontent
 ------------------------------------------------------------------------
 
 ## Weiblich sozialversicherungspflichtig Beschäftigte
+   
+   Abk. = Frauenbeschäftigung
 
-<br> <br> Definition:
+ <br> Definition:
 
 Weibliche Bevölkerung, die in einem Arbeitsverhältnis stehen und deren Einkommen der Pflicht zur Zahlung von Sozialversicherungsbeiträgen unterliegt
 
@@ -310,11 +316,11 @@ hmk_korr_point_line_nach_jahr_color
 
 ::: {style="font-size:2.0rem;"}
 $$
-\text{Kinderbetreuungsquote % }
+\text{Kinderbetreuungsquote }
 =
 \frac{\text{#Betreute Kinder }}
      {\text{#Alle Kinder }}
-\times 100
+\times 100\%
 $$
 :::
 :::::
@@ -609,5 +615,77 @@ Geburtenrate
 #| fig-dpi: 300
 
 geburtenrate_korr_trend_nach_jahr
+
+```
+
+
+## Durchschnittsalter Mütter erstgebärend
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+mea_gesamt_sw
+
+```
+
+## Durchschnittsalter Mütter erstgebärend
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+mea_korr_nach_stadtteilen_point
+
+```
+
+
+## Durchschnittsalter Mütter erstgebärend
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+mea_korr_nach_stadtteilen_point_line
+
+```
+
+## Durchschnittsalter Mütter erstgebärend
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+mea_korr_jahr_point
+
+```
+
+## Durchschnittsalter Mütter erstgebärend
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+mea_korr_jahr_point_line
 
 ```

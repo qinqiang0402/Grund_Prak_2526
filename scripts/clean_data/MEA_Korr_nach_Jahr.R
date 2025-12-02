@@ -52,7 +52,7 @@ ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   theme_minimal()
 
 
-ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
+mea_korr_jahr <- ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   geom_point(aes(color = factor(Jahr)), 
              size = 1.3,     
              alpha = 0.7) +   
@@ -73,6 +73,9 @@ ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   guides(color = guide_legend(ncol = 1)) + 
   theme_minimal()
 
+mea_korr_jahr
+saveRDS(mea_korr_jahr, "results/figures/MEA/mea_korr_jahr_point.rds")
+
 # -----------------------------------------------------------------------
 plot_data_final_year <- korrelations_daten_clean %>%
   group_by(Jahr) %>% 
@@ -89,10 +92,10 @@ all_colors_year <- scales::hue_pal()(length(all_labels_year))
 jahr_palette <- all_colors_year
 names(jahr_palette) <- all_labels_year
 
-ggplot(plot_data_final_year, aes(x = mean_age, y = anteil)) +
+mea_korr_jahr_point_line <- ggplot(plot_data_final_year, aes(x = mean_age, y = anteil)) +
   geom_smooth(aes(color = Jahr_Label, group = Jahr_Label),
               method = "lm", se = FALSE, linewidth = 1.1, alpha = 0.8) +
-  geom_point(aes(color = Jahr_Label), size = 1.1, alpha = 0.5) +e
+  geom_point(aes(color = Jahr_Label), size = 1.1, alpha = 0.5) +
   geom_smooth(aes(group = 1), method = "lm", color = "black", linewidth = 1.1, se = FALSE) +
   scale_color_manual(values = jahr_palette) +
   labs(
@@ -109,7 +112,8 @@ ggplot(plot_data_final_year, aes(x = mean_age, y = anteil)) +
   ) +
   guides(color = guide_legend(ncol = 1))
 
-
+mea_korr_jahr_point_line
+saveRDS(mea_korr_jahr_point_line, "results/figures/MEA/mea_korr_jahr_point_line.rds")
 # ----------------------------------------------------------------------------
 r_werte_check_year <- korrelations_daten_clean %>%
   group_by(Jahr) %>% 
@@ -195,3 +199,4 @@ ggplot(plot_data_colored_year, aes(x = mean_age, y = anteil)) +
   coord_cartesian(xlim = c(29, 34)) +
   theme_minimal() +
   theme(legend.position = "none")
+
