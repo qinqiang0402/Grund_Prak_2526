@@ -1,0 +1,688 @@
+---
+title: "Demographie & Arbeitsmarkt"
+subtitle: "Grundlegendes Praxisprojekt"
+author: "Qiang Qin, Shihan Hu, Yuechen Wang, Yuqin Huang"
+institute: | 
+  Eugen Gorich <br><br>
+  München
+date: today
+
+format:
+  revealjs:
+    embed-resources: true
+    slide-number: c
+    logo: "images/LMU_Logo.svg"
+
+css: customstyle.css
+editor: visual
+#server: shiny
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+# 加载你需要的包
+library(shiny)
+library(tidyverse)
+library(readxl)
+library(sf)
+library(stringr)
+library(forcats)
+library(ggpubr)
+library(leaflet.providers)
+library(leaflet)
+
+# 把所有要用到的图从 RDS 里读进来
+leaflet_sv_durchschnitt <- readRDS("results/figures/SV/leaflet_sv_durchschnitt.rds")
+
+#_________________________________________________________________________________________________________
+hmk_korr_ponit_nach_stadtteile_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_ponit_nach_stadtteile_color.rds")
+hmk_korr_point_line_nach_stadtteile_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_stadtteile_color.rds")
+hmk_simpson_stadtteile_kleiner_0 <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_simpson_stadtteile_kleiner_0.rds")
+hmk_korr_gesamt_point_sw <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_gesamt_point_sw.rds")
+hmk_korr_point_nach_jahr_color <-  readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_nach_jahr_color.rds")
+hmk_korr_point_line_nach_jahr_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_jahr_color.rds")
+
+#______________________________________________________________________________
+ki_korr_raumlich   <- readRDS("results/figures/Kinderbetreuung/korr_raumlich.rds")
+ki_korr_zeitlich    <- readRDS("results/figures/Kinderbetreuung/korr_zeitlich.rds")
+ki_trend <- readRDS("results/figures/Kinderbetreuung/trend_ki.rds")
+ki_dual_trend <- readRDS("results/figures/Kinderbetreuung/ki_dual_trend.rds")
+sv_trend <- readRDS("results/figures/Kinderbetreuung/trend_sv.rds")
+ki_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_ki_2015.rds")
+sv_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_sv_2015.rds")
+#__________________________________________________________________________
+m_effekt_01 <- readRDS("results/figures/m_effekt/m_effekt_01.rds")
+m_effekt_02 <- readRDS("results/figures/m_effekt/m_effekt_02.rds")
+
+#_____________________________________________________________________________
+geburtenrate_dual_trend <- readRDS("results/figures/Geburtenrate/geburtenrate_dual_trend.rds")
+geburtenrate_trend_nach_stadtteile <- readRDS("results/figures/Geburtenrate/geburtenrate_trend_nach_stadtteile.rds")
+geburtenrate_korr_nach_stadtteile <- readRDS("results/figures/Geburtenrate/geburtenrate_korr_nach_stadtteile.rds")
+geburtenrate_korr_trend_nach_jahr <- readRDS("results/figures/Geburtenrate/geburtenrate_korr_trend_nach_jahr.rds")
+
+#_______________________________________________________________________________
+mea_gesamt_sw <- readRDS("results/figures/MEA/mea_gesamt_sw.rds")
+mea_korr_nach_stadtteilen_point <- readRDS("results/figures/MEA/mea_korr_nach_stadtteilen_point.rds")
+mea_korr_nach_stadtteilen_point_line <- readRDS("results/figures/MEA/mea_korr_nach_stadtteilen_point_line.rds")
+mea_korr_jahr_point <- readRDS("results/figures/MEA/mea_korr_jahr_point.rds")
+mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_line.rds")
+
+
+```
+
+## Agenda
+
+1.  Einleitung
+
+2.  Datenanalyse
+
+    -   Weiblich sozialversicherungspflichtig Beschäftigte
+
+    -   Zusammenhang
+
+        -   Haushalte mit Kindern
+
+        -   Kinderbetreuung
+
+        -   moderierender Effekt
+
+3.  Zusammenfassung
+
+## Agenda
+
+1.  Einleitung
+
+[2. Datenanalyse]{style="color:lightgray;"}
+
+-   [Weiblich sozialversicherungspflichtig Beschäftigte]{style="color:lightgray;"}
+-   [Zusammenhang]{style="color:lightgray;"}
+    -   [Haushalte mit Kindern]{style="color:lightgray;"}
+    -   [Kinderbetreuung]{style="color:lightgray;"}
+    -   [moderierender Effekt]{style="color:lightgray;"}
+
+[3. Zusammenfassung]{style="color:lightgray;"}
+
+## Motivation
+
+![](images/clipboard-1065721815.jpeg){fig-align="center"}
+
+## Daten
+表格
+
+ -   Datenaufbau <br>
+
+ -   Untersuchte Variablen <br>
+
+ -   Datenquellen (Fußnote) <br>
+
+
+## Agenda
+
+[1. Einleitung]{style="color:lightgray;"}
+
+2.  Datenanalyse
+
+    -   Weiblich sozialversicherungspflichtig Beschäftigte
+
+    -   [Zusammenhang]{style="color:lightgray;"}
+
+        -   [Haushalte mit Kindern]{style="color:lightgray;"}
+
+        -   [Kinderbetreuung]{style="color:lightgray;"}
+
+        -   [moderierender Effekt]{style="color:lightgray;"}
+
+[3. Zusammenfassung]{style="color:lightgray;"}
+
+------------------------------------------------------------------------
+
+## Frauenbeschäftigung  
+
+*(Anteil weiblicher sozialversicherungspflichtig Beschäftigter)*
+
+<br>
+<br>
+
+Weibliche Bevölkerung, die in einem Arbeitsverhältnis stehen und deren Einkommen der Pflicht zur Zahlung von Sozialversicherungsbeiträgen unterliegt
+
+## Frauenbeschäftigung
+
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+leaflet_sv_durchschnitt
+
+```
+
+## Frauenbeschäftigung
+
+Unterschied zwischen Stadtteilen über die Jahre (2000-2024)
+
+Hier wird noch Shiny-App eingefügt
+
+## Agenda
+
+[1. Einleitung]{style="color:lightgray;"}
+
+2.  Datenanalyse
+
+    -   [Weiblich sozialversicherungspflichtig Beschäftigte]{style="color:lightgray;"}
+
+    -   Zusammenhang
+
+        -   Haushalte mit Kindern
+
+        -   [Kinderbetreuung]{style="color:lightgray;"}
+
+        -   [moderierender Effekt]{style="color:lightgray;"}
+
+[3. Zusammenfassung]{style="color:lightgray;"}
+
+## Haushalte mit Kindern
+
+<br><br> Definition: Privathaushalte mit mindestens einem Kind bis 17 Jahre (mit mindestens einer Hauptwohnsitzperson)
+
+## Haushalte mit Kindern (gesamt)
+
+```{r}
+#| label: hmk_korr_gesamt_point_sw
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_korr_gesamt_point_sw
+```
+
+## Haushalte mit Kindern (Stadtteile)
+
+```{r}
+#| label: hmk_korr_ponit_nach_stadtteile_color
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_korr_ponit_nach_stadtteile_color
+```
+
+## Haushalte mit Kindern (Stadtteile)
+
+```{r}
+#| label: hmk_korr_point_line_nach_stadtteile_color
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_korr_point_line_nach_stadtteile_color
+```
+
+## Haushalte mit Kindern (Stadtteile)
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_simpson_stadtteile_kleiner_0
+
+```
+
+## Haushalte mit Kindern (Jahre)
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_korr_point_nach_jahr_color
+
+```
+
+## Haushalte mit Kindern (Jahre)
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_korr_point_line_nach_jahr_color
+
+```
+
+## Agenda
+
+[1. Einleitung]{style="color:lightgray;"}
+
+2.  Datenanalyse
+
+    -   [Weiblich sozialversicherungspflichtig Beschäftigte]{style="color:lightgray;"}
+
+    -   Zusammenhang
+
+        -   [Haushalte mit Kindern]{style="color:lightgray;"}
+
+        -   Kinderbetreuung
+
+        -   [moderierender Effekt]{style="color:lightgray;"}
+
+[3. Zusammenfassung]{style="color:lightgray;"}
+
+## Kinderbetreuung
+
+<br><br>
+
+::::: left-align-content
+::: tight-table
+| **Definition:**  Anteil der 0–2-jährigen Kinder, die eine Kita oder Tagespflege besuchen.
+:::
+
+<br><br>
+
+::: {style="font-size:1.8rem;"}
+$$
+\text{Kinderbetreuungsquote (0–2)}
+=
+\dfrac{
+  \hspace{0.6cm}\text{# Betreute Kinder (0–2)}\hspace{0.6cm}
+}{
+  \hspace{0.6cm}\text{# Alle Kinder (0–2)}\hspace{0.6cm}
+}
+\quad\times 100\%
+$$
+:::
+:::::
+
+## Kinderbetreuung
+
+```{r}
+#| label: ki-dual_trend
+#| echo: false
+#| fig-align: center
+#| fig-width: 9
+#| fig-height: 5
+#| fig-dpi: 300
+##| out.extra: 'style="margin-left:-60px;"'
+
+range_left  <- range(ki_dual_trend$data$share_enrolled, na.rm = TRUE)
+range_right <- range(ki_dual_trend$data$emp_women,       na.rm = TRUE)
+
+scale_factor <- (range_left[2] - range_left[1]) / (range_right[2] - range_right[1])
+
+ki_dual_trend
+```
+
+## Kinderbetreuung
+
+<br><br>
+
+:::::: {style="text-align:center;"}
+::::: columns
+::: column
+```{r}
+#| echo: false
+#| fig-width: 9
+#| fig-height: 5
+
+sv_trend
+```
+:::
+
+::: column
+```{r}
+#| echo: false
+#| fig-width: 9
+#| fig-height: 5
+#| fig-align: center
+
+ki_trend
+
+
+
+```
+:::
+:::::
+::::::
+
+## Kinderbetreuung
+
+```{r}
+#| label: ki-korr-raumlich
+#| echo: false
+#| fig-align: center
+#| fig-width: 7
+#| fig-height: 4
+#| fig-dpi: 300
+
+
+
+ki_korr_raumlich
+```
+
+## Kinderbetreuung
+
+<br><br>
+
+:::::: {style="text-align:center;"}
+::::: columns
+::: column
+```{r}
+#| echo: false
+#| fig-width: 7
+#| fig-height: 4
+
+sv_map_2015
+```
+:::
+
+::: column
+```{r}
+#| echo: false
+#| fig-width: 7
+#| fig-height: 4
+#| fig-align: center
+
+ki_map_2015
+
+
+
+```
+:::
+:::::
+::::::
+
+## Kinderbetreuung
+
+```{r}
+#| label: ki-korr-zeitlich
+#| echo: false
+#| fig-align: center
+#| fig-width: 7
+#| fig-height: 4
+#| fig-dpi: 300
+
+ki_korr_zeitlich
+```
+
+## Agenda
+
+[1. Einleitung]{style="color:lightgray;"}
+
+2.  Datenanalyse
+
+    -   [Weiblich sozialversicherungspflichtig Beschäftigte]{style="color:lightgray;"}
+
+    -   Zusammenhang
+
+        -   [Haushalte mit Kindern]{style="color:lightgray;"}
+
+        -   [Kinderbetreuung]{style="color:lightgray;"}
+
+        -   moderierender Effekt
+
+[3. Zusammenfassung]{style="color:lightgray;"}
+
+## Moderierender Effekt
+
+-   **Gruppenaufteilung:**
+
+    -   **Hohe Betreuung:** obere Drittel der Stadtteile mit der höchsten Kinderbetreuungsquote
+
+    -   **Niedrige Betreuung:** untere Drittel der Stadtteile mit der niedrigsten Kinderbetreuungsquote
+
+## Moderierender Effekt
+
+```{r}
+#| label: m_effekt_01
+#| echo: false
+#| fig-align: center
+#| fig-width: 9
+#| fig-height: 5
+#| fig-dpi: 300
+
+m_effekt_01
+```
+
+## Moderierender Effekt
+
+```{r}
+#| label: m_effekt_02
+#| echo: false
+#| fig-align: center
+#| fig-width: 9
+#| fig-height: 5
+#| fig-dpi: 300
+
+m_effekt_02
+```
+
+## Agenda
+
+[1. Einleitung]{style="color:lightgray;"}
+
+[2. Datenanalyse]{style="color:lightgray;"}
+
+-   [Weiblich sozialversicherungspflichtig Beschäftigte]{style="color:lightgray;"}
+-   [Zusammenhang]{style="color:lightgray;"}
+    -   [Haushalte mit Kindern]{style="color:lightgray;"}
+    -   [Kinderbetreuung]{style="color:lightgray;"}
+    -   [moderierender Effekt]{style="color:lightgray;"}
+
+3.  Zusammenfassung
+
+## Fazit
+
+### Frauenbeschäftigung
+
+```         
+- Deutliche regionale Unterschiede zwischen den Stadtteilen.  
+- Zentrale Stadtteile zeigen höhere Beschäftigungsanteile und stärkere Zuwächse.  
+- Periphere Stadtteile weisen geringere Anteile und langsamere Entwicklungen auf.  
+- Insgesamt wächst die Frauenbeschäftigung, jedoch nicht gleichmäßig über die Stadt verteilt.
+```
+
+<br>
+
+### Kinderbetreuung
+
+```         
+- Große Unterschiede zwischen den Stadtteilen, negative Korrelation nach Stadtteilen 
+- Stark positive Korrelation nach Jahre  
+
+  
+```
+
+## Limitation
+
+-   **Sozialversicherungspflichtige Beschäftigung** erfasst nicht alle Erwerbstätigen
+
+-   **Begrenzte Stichprobe:** nur 25 Stadtteilen → geringe Fallzahl bei Korrelationen.
+
+-   **Nicht kompatible Altersgruppen** zwischen Bevölkerungsdaten (BE) und Kinderbetreuungsdaten (KI) → Betreuungsquoten über 2 Jahre hinaus sind nicht exakt vergleichbar.
+
+-   **Unterschiedliche Zeitabdeckung:**\
+    Beschäftigungsdaten ab 2000, Kinderbetreuungsdaten erst ab 2007.
+
+## Ausblick
+
+-   **Feinere Datenebene:**\
+    Mikrodatensätze auf Haushaltsebene würden genauere Analysen ermöglichen
+
+-   **Kinderbetreuung weiter untersuchen:**
+
+    -   Politische und zeitliche Effekte berücksichtigen\
+    -   Analyse politischer Maßnahmen
+
+-   **Übertragbarkeit prüfen:**\
+    Wie verändern sich die Ergebnisse bei größeren Stichproben
+
+## Anhang
+
+#### Literatur
+
+<br> § 7 SGB IV und § 2 SGB IV
+
+## Anhang
+
+Geburtenrate
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+geburtenrate_dual_trend
+
+```
+
+------------------------------------------------------------------------
+
+Geburtenrate
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 21
+#| fig-height: 13
+#| fig-dpi: 300
+
+geburtenrate_trend_nach_stadtteile
+
+```
+
+------------------------------------------------------------------------
+
+Geburtenrate
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+geburtenrate_korr_nach_stadtteile
+
+```
+
+------------------------------------------------------------------------
+
+Geburtenrate
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+geburtenrate_korr_trend_nach_jahr
+
+```
+
+------------------------------------------------------------------------
+
+### Durchschnittsalter Mütter erstgebärend
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+mea_gesamt_sw
+
+```
+
+------------------------------------------------------------------------
+
+### Durchschnittsalter Mütter erstgebärend
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+mea_korr_nach_stadtteilen_point
+
+```
+
+------------------------------------------------------------------------
+
+### Durchschnittsalter Mütter erstgebärend
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+mea_korr_nach_stadtteilen_point_line
+
+```
+
+------------------------------------------------------------------------
+
+### Durchschnittsalter Mütter erstgebärend
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+mea_korr_jahr_point
+
+```
+
+------------------------------------------------------------------------
+
+### Durchschnittsalter Mütter erstgebärend
+
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+mea_korr_jahr_point_line
+
+```
