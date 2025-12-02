@@ -480,6 +480,19 @@ hmk_simpson_stadtteile_kleiner_0
 
 ```
 
+## Haushalte mit Kindern (gesamt)
+
+```{r}
+#| label: hmk_korr_gesamt_point_sw
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+hmk_korr_gesamt_point_sw
+```
+
 ## Haushalte mit Kindern (Jahre)
 
 ```{r}
