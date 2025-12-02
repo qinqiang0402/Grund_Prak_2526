@@ -251,7 +251,7 @@ m_effekt_colored_points <- ggplot() +
   
   scale_color_manual(
     values = farben,
-    name = "Linien / Punkte:"
+    name = "Linien:"
   ) +
   
   labs(

@@ -206,7 +206,7 @@ server <- function(input, output) {
         size   = 1.2
       ) +
       
-      scale_color_manual(values = farben, name = "Linien / Punkte:") +
+      scale_color_manual(values = farben, name = "Linien:") +
       
       labs(
         x = "Frauenbeschäftigung (%)",
