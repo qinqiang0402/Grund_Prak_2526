@@ -506,25 +506,81 @@ all_labels_year  <- sort(unique(plot_data_final_year$Jahr_Label))
 all_colors_year  <- scales::hue_pal()(length(all_labels_year))
 jahr_palette     <- all_colors_year
 names(jahr_palette) <- all_labels_year
+#————————————————————————————
+library(dplyr)
+library(RColorBrewer)
 
+# 1. 保证 Jahr 是数字，方便排序
+plot_data_final_year <- plot_data_final_year %>%
+  mutate(Jahr = as.integer(Jahr))
+
+# 2. 按 Jahr 排序 Jahr_Label，让 2007 在最上，2024 在最后
+plot_data_final_year <- plot_data_final_year %>%
+  arrange(Jahr) %>%
+  mutate(
+    Jahr_Label = factor(Jahr_Label, levels = unique(Jahr_Label))
+  )
+
+# 3. 生成红色从浅到深的调色板
+n_years <- length(levels(plot_data_final_year$Jahr_Label))  # 应该是 18 年
+jahr_palette <- colorRampPalette(brewer.pal(9, "Reds"))(n_years)
+
+
+#————————————————————————————
 # 画图：每年一条彩色回归线 + 黑色总体回归线
-ki_point_line_color <- ggplot(plot_data_final_year, aes(x = hmk, y = anteil)) +
-  geom_smooth(aes(color = Jahr_Label, group = Jahr_Label),
-              method = "lm", se = FALSE, linewidth = 1.1, alpha = 0.8) +
-  geom_point(aes(color = Jahr_Label), size = 1.1, alpha = 0.5) +
-  geom_smooth(aes(group = 1), method = "lm",
-              color = "black", linewidth = 1.1, se = FALSE) +
-  scale_color_manual(values = jahr_palette) +
+# 年份映射成连续变量，用于渐变色
+plot_data_final_year <- plot_data_final_year %>%
+  mutate(Jahr_num = as.numeric(as.character(Jahr)))
+
+ki_point_line_color <- ggplot(
+  plot_data_final_year,
+  aes(x = hmk, y = anteil)
+) +
+  
+  # 每年的回归线：颜色根据年份连续映射
+  geom_smooth(
+    aes(color = Jahr_num, group = Jahr_Label),
+    method    = "lm",
+    se        = FALSE,
+    linewidth = 1.1,
+    alpha     = 0.8
+  ) +
+  
+  # 散点：灰色
+  geom_point(
+    color = "grey60",
+    size  = 1.1,
+    alpha = 0.5
+  ) +
+  
+  # 总体回归线：黑色
+  geom_smooth(
+    aes(group = 1),
+    method    = "lm",
+    color     = "black",
+    linewidth = 1.1,
+    se        = FALSE
+  ) +
+  
+  # 连续颜色刻度：深到浅红
+  scale_color_gradient(
+    name = "",
+    limits = c(2007, 2024),
+    breaks = c(2024, 2007),
+    labels = c("2024", "2007"),
+    low  = "#fee5e5",   # 浅红
+    high = "#990000"    # 深红
+  ) +
+  
   coord_cartesian() +
   labs(
     title = "",
     x     = "Kinderbetreuung 0–2 Jahre (%)",
     y     = "Anteil Frauenbeschäftigung (%)"
   ) +
-  theme_minimal() +
-  theme(
-    legend.position = "none"   
-  )
+  theme_minimal()
+
+
 
 ki_point_line_color
 
@@ -780,8 +836,9 @@ ki_point_line_korr_nach_stadtteile_color <- ggplot(plot_data_final, aes(x = hmk,
     legend.text       = element_text(size = 7),
     legend.key.height = unit(0.4, "cm")
   ) +
-  guides(color = guide_legend(ncol = 1)) +
-  theme(legend.position = "none")
+  guides(color = guide_legend(ncol = 1)) 
+#+
+# theme(legend.position = "none")
 
 ki_point_line_korr_nach_stadtteile_color  
 
