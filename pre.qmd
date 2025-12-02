@@ -466,7 +466,7 @@ hmk_korr_gesamt_point_sw
 hmk_korr_point_line_nach_stadtteile_color
 ```
 
-## Haushalte mit Kindern (Stadtteile)
+## Simpson's Paradox
 
 ```{r}
 
