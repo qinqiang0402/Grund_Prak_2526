@@ -209,23 +209,23 @@ ts_dual <- ts_dual %>%
 # -----------------------------
 ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
   # Linke Achse (Betreuungsanteil)
-  geom_line(aes(y = share_enrolled, color = "Kinderbetreuung (0–2)"), size = 1.2) +
-  geom_point(aes(y = share_enrolled, color = "Kinderbetreuung (0–2)"), size = 2) +
+  geom_line(aes(y = share_enrolled, color = "Kinderbetreuung"), size = 1.2) +
+  geom_point(aes(y = share_enrolled, color = "Kinderbetreuung"), size = 2) +
   
   # Rechte Achse (Frauenbeschäftigung), jetzt mit emp_scaled
   geom_line(aes(y = emp_scaled, color = "Frauenbeschäftigung"), size = 1.2) +
   geom_point(aes(y = emp_scaled, color = "Frauenbeschäftigung"), size = 2) +
   
   scale_y_continuous(
-    name = "Kinderbetreuung (0–2) [%]",
+    name = "Kinderbetreuung [%]",
     sec.axis = sec_axis(
       ~ (. - range_left[1]) / scale_factor + range_right[1],
-      name = "Anteil Frauenbeschäftigung [%]"
+      name = "Frauenbeschäftigung [%]"
     )
   ) +
   scale_color_manual(
     name = NULL,
-    values = c("Kinderbetreuung (0–2)" = "#d62728",
+    values = c("Kinderbetreuung" = "#d62728",
                "Frauenbeschäftigung"      = "#1f77b4")
   ) +
   labs(
@@ -311,9 +311,9 @@ map_betreuung_2015 <- munich_map2 %>%
 p_map_betreuung <- plot_bezirk_map(
   map_betreuung_2015,
   value_col    = "betreuungsquote",
-  title        = paste0("Kinderbetreuung (0–2) – München, ", year_map),
+  title        = paste0("Kinderbetreuung – München, ", year_map),
   subtitle     = "",
-  legend_title = "Betreuungsquote (%)",
+  legend_title = "Kinderbetreuung [%]",
   limits       = c(10, 55),
   low_col      = "#fff5eb",  # 很浅的橙/米色
   high_col     = "#7f2704"   # 深橙/棕色
@@ -343,7 +343,7 @@ p_map_sozial <- plot_bezirk_map(
   value_col    = "sozial_weiblich_pct",
   title        = paste0("Frauenbeschäftigung – ", year_map),
   subtitle     = "",
-  legend_title = "Anteil Frauenbeschäftigung (%)",
+  legend_title = "Frauenbeschäftigung [%]",
   limits       = c(50, 62),
   low_col      = "#f7fbff",  # 浅蓝
   high_col     = "#08306b"   # 深蓝
@@ -454,8 +454,8 @@ ki_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) 
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   labs(
     title = "",
-    x = "Kinderbetreuung (0-2) (%)",
-    y = "Anteil Frauenbeschäftigung (%)"
+    x = "Kinderbetreuung (%)",
+    y = "Frauenbeschäftigung (%)"
   ) +
   theme_minimal()
 
@@ -479,8 +479,8 @@ ki_year_color_point <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)
   coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   labs(
     title = "Korrelationskoeffizient nach Jahren zwischen Kinderbetreuung und Frauenbeschäftigung",
-    x = "Anteil Kinderbetreuung (%)",
-    y = "Frauenbeschäftigung (%)",
+    x = "Kinderbetreuung [%]",
+    y = "Frauenbeschäftigung [%]",
     color = "Jahr"
   ) +
   guides(color = guide_legend(ncol = 1)) + 
@@ -589,8 +589,8 @@ ki_point_line_color <- ggplot(
   coord_cartesian() +
   labs(
     title = "",
-    x     = "Kinderbetreuung (0–2) (%)",
-    y     = "Anteil Frauenbeschäftigung (%)"
+    x     = "Kinderbetreuung [%]",
+    y     = "Frauenbeschäftigung [%]"
   ) +
   theme_minimal()
 
@@ -768,8 +768,8 @@ ki_korr_nach_stadtteile_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = 
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   labs(
     title = "",
-    x = "Kinderbetreuung (0–2) (%)",
-    y = "Anteil Frauenbeschäftigung (%)"
+    x = "Kinderbetreuung [%]",
+    y = "Frauenbeschäftigung [%]"
   ) +
   theme_minimal()
 
@@ -904,10 +904,10 @@ ki_simpson_sw <- ggplot(plot_data_highlight, aes(x = hmk, y = anteil)) +
   ) +
   scale_color_manual(values = stadtteil_palette) +
   labs(
-    title    = "Simpson's Paradox (nach Stadtteil)",
-    subtitle = "Grau = positiver Zusammenhang, Bunt = negativer Zusammenhang",
-    x        = "Kinderbetreuung (0–2) (%)",
-    y        = "Anteil Frauenbeschäftigung (%)",
+    title    = "",
+    subtitle = "",
+    x        = "Kinderbetreuung [%]",
+    y        = "Frauenbeschäftigung [%]",
     color    = "Stadtteile mit R < 0"
   ) +
   coord_cartesian(xlim = x_range, ylim = y_range) +
