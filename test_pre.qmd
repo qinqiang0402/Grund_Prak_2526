@@ -533,7 +533,7 @@ leafletOutput("map_output", height = "650px")
 
 ## Haushalte mit Kindern
 
-<br><br> Privathaushalte mit mindestens einem Kind bis 17 Jahre (mit mindestens einer Hauptwohnsitzperson)
+<br> Anteil der Privathaushalte <br> mit mindestens einem Kind bis 17 Jahre <br> (mit mindestens einer Hauptwohnsitzperson) <br> an allen Privathaushalten in Prozent
 
 ## Haushalte mit Kindern (gesamt)
 
@@ -561,7 +561,7 @@ hmk_korr_gesamt_point_sw
 hmk_korr_point_line_nach_stadtteile_color
 ```
 
-## Haushalte mit Kindern (Stadtteile)
+## Simpson's Paradox
 
 ```{r}
 
@@ -623,12 +623,12 @@ hmk_korr_point_line_nach_jahr_color
 
 ::: {style="font-size:1.8rem;"}
 $$
-\text{Kinderbetreuungsquote (0–2)}
+\text{Kinderbetreuung}
 =
 \dfrac{
-  \hspace{0.6cm}\text{# Betreute Kinder (0–2)}\hspace{0.6cm}
+  \hspace{0.6cm}\text{# Betreute Kinder (0–2 Jahre)}\hspace{0.6cm}
 }{
-  \hspace{0.6cm}\text{# Alle Kinder (0–2)}\hspace{0.6cm}
+  \hspace{0.6cm}\text{# Alle Kinder (0–2 Jahre)}\hspace{0.6cm}
 }
 \quad\times 100\%
 $$
@@ -636,7 +636,7 @@ $$
 
 ------------------------------------------------------------------------
 
-#### Dual-Trend: Kinderbetreuung vs. Frauenbeschäftigung (2007–2024)
+#### Dual-Trend: Kinderbetreuung und Frauenbeschäftigung (2007–2024)
 
 ```{r}
 #| label: ki-dual_trend
@@ -670,7 +670,7 @@ ki_dual_trend
 ki_point_korr_gesamt_sw
 ```
 
-## Korrelation nach Stadtteilen
+## Korrelation (Stadtteile)
 
 ```{r}
 
@@ -685,7 +685,7 @@ ki_point_korr_gesamt_sw
 ki_simpson_sw
 ```
 
-## Korrelation nach Stadtteilen
+## Korrelation (Stadtteile)
 
 ```{r}
 
@@ -715,7 +715,7 @@ ki_point_line_korr_nach_stadtteile_color
 ki_point_korr_gesamt_sw
 ```
 
-## Korrelation nach Jahre
+## Korrelation (Jahre)
 
 ```{r}
 #| echo: false
