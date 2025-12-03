@@ -53,8 +53,8 @@ selection <- tribble(
   ~Indikator,                                           ~Ausprägung, ~Jahr,  ~Raumbezug, ~Quelle,
   "Sozialversicherungspflichtig Beschäftigte - Anteil",                         "weiblich",   "2024","Stadt München", "Arbeitsmarkt",
   "Sozialversicherungspflichtig Beschäftigte - Anteil",                         "weiblich",   "2010","06 Sendling", "Arbeitsmarkt",
-  "Haushalte mit Kindern",                              "deutsch",    "2024","13 Bogenhausen", "Bevölkerung",
-  "Haushalte mit Kindern",                              "deutsch",    "2012","03 Maxvorstadt", "Bevölkerung",
+  "Haushalte mit Kindern",                              "insgesamt",    "2024","13 Bogenhausen", "Bevölkerung",
+  "Haushalte mit Kindern",                              "insgesamt",    "2012","03 Maxvorstadt", "Bevölkerung",
   "Altersgruppen",                                      "bis 2 Jahre", "2024","10 Moosach", "Bevölkerung",
   "Altersgruppen",                                      "bis 2 Jahre", "2000","20 Hadern", "Bevölkerung",
   "Altersgruppen",                                      "bis 2 Jahre", "2024","06 Sendling", "Kinderbetreuung",
@@ -135,7 +135,7 @@ df_data_final <- df_data_final %>%
 
 # Anzeigen & speichern wie
 View(df_data_final)
-saveRDS(df_data_final, "df_data_qiang.rds")
+saveRDS(df_data_final, "results/figures/table/df_data_qiang.rds")
 
 
 

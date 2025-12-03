@@ -311,17 +311,6 @@ df_merged <- df_emp %>%
 
 ![](images/clipboard-3386569485.png)
 
-## Daten {.smaller}
-
-```{r}
-#| echo: false
-#| results: asis
-
-knitr::kable(
-  table_datenaufbau,
-  caption = ""
-)
-```
 
 ## Daten {.smaller}
 
