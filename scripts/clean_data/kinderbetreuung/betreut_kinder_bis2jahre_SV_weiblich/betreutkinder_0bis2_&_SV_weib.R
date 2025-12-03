@@ -4,7 +4,7 @@ library(sf)
 library(stringr)
 library(forcats)
 library(ggpubr)
-
+library(grid)
 
 
 
@@ -23,6 +23,7 @@ add_sb <- function(x, var = "Raumbezug", new = "sb") {
 }
 
 # 画统一风格的 Stadtbezirk 地图
+# 画统一风格的 Stadtbezirk 地图
 plot_bezirk_map <- function(map_df, value_col, title, subtitle,
                             legend_title, limits = NULL,
                             low_col  = "#f7fbff",   # 新增：低值颜色
@@ -33,22 +34,32 @@ plot_bezirk_map <- function(map_df, value_col, title, subtitle,
             color = "white", linewidth = 0.25, na.rm = TRUE) +
     coord_sf(datum = NA) +
     scale_fill_gradient(
-      low = low_col,         # 用参数
-      high = high_col,       # 用参数
-      name = legend_title,
+      low   = low_col,         # 用参数
+      high  = high_col,        # 用参数
+      name  = legend_title,
       limits = limits,
       na.value = "grey90",
-      breaks = seq(limits[1], limits[2], by = 10)
+      breaks   = seq(limits[1], limits[2], by = 10),
+      guide = guide_colorbar(              # ⭐ 这里控制色条和标题
+        title.position = "top",            # 标题在上面
+        title.hjust    = 0.5,              # 标题居中
+        barwidth       = unit(4, "cm"),    # 色条宽度
+        barheight      = unit(0.35, "cm")  # 色条高度
+      )
     ) +
-    labs(title = title,
-         subtitle = subtitle,
-         caption = "") +
+    labs(
+      title    = title,
+      subtitle = subtitle,
+      caption  = ""
+    ) +
     theme_void(base_size = 12) +
     theme(
-      legend.position = "bottom",
-      plot.title = element_text(face = "bold")
+      legend.position    = "bottom",   # Legend 在图下方
+      legend.title.align = 0.5,        # 标题文字居中
+      plot.title         = element_text(face = "bold")
     )
 }
+
 
 # 画“每 Bezirk 的相关系数”条形图
 plot_corr_by_bezirk <- function(corr_df) {
@@ -59,7 +70,7 @@ plot_corr_by_bezirk <- function(corr_df) {
     geom_vline(xintercept = 0, color = "grey40") +
     labs(
       title    = "Korrelation pro Stadtteile (2007–2024)",
-      subtitle = "Frauenbeschäftigung und Kinderbetreuung (0–2 Jahre)",
+      subtitle = "Frauenbeschäftigung und Kinderbetreuung (0–2)",
       x        = "Korrelationskoeffizient",
       y        = "Stadtteile"
     ) +
@@ -300,7 +311,7 @@ map_betreuung_2015 <- munich_map2 %>%
 p_map_betreuung <- plot_bezirk_map(
   map_betreuung_2015,
   value_col    = "betreuungsquote",
-  title        = paste0("Kinderbetreuung (0–2 Jahre) – München, ", year_map),
+  title        = paste0("Kinderbetreuung (0–2) – München, ", year_map),
   subtitle     = "",
   legend_title = "Betreuungsquote (%)",
   limits       = c(10, 55),
@@ -443,7 +454,7 @@ ki_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) 
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   labs(
     title = "",
-    x = "Anteil Kinderbetreuung (%)",
+    x = "Kinderbetreuung (0-2) (%)",
     y = "Anteil Frauenbeschäftigung (%)"
   ) +
   theme_minimal()
@@ -509,6 +520,7 @@ names(jahr_palette) <- all_labels_year
 #————————————————————————————
 library(dplyr)
 library(RColorBrewer)
+library(grid)   
 
 # 1. 保证 Jahr 是数字，方便排序
 plot_data_final_year <- plot_data_final_year %>%
@@ -536,7 +548,6 @@ ki_point_line_color <- ggplot(
   plot_data_final_year,
   aes(x = hmk, y = anteil)
 ) +
-  
   # 每年的回归线：颜色根据年份连续映射
   geom_smooth(
     aes(color = Jahr_num, group = Jahr_Label),
@@ -564,22 +575,24 @@ ki_point_line_color <- ggplot(
   
   # 连续颜色刻度：深到浅红
   scale_color_gradient(
-    name = "",
+    name   = "Jahr",
     limits = c(2007, 2024),
     breaks = c(2024, 2007),
     labels = c("2024", "2007"),
-    low  = "#fee5e5",   # 浅红
-    high = "#990000"    # 深红
+    low    = "#fee5e5",
+    high   = "#990000",
+    guide  = guide_colorbar(
+      barheight = unit(6, "cm"),   # ✅ 比原来更长
+      barwidth  = unit(0.4, "cm")  # 可选：更细一点
+    )
   ) +
-  
   coord_cartesian() +
   labs(
     title = "",
-    x     = "Kinderbetreuung 0–2 Jahre (%)",
+    x     = "Kinderbetreuung (0–2) (%)",
     y     = "Anteil Frauenbeschäftigung (%)"
   ) +
   theme_minimal()
-
 
 
 ki_point_line_color
@@ -638,7 +651,7 @@ p_non_simpson <- ggplot(plot_data_highlight_year, aes(x = hmk, y = anteil)) +
   labs(
     title = "non Simpson's Paradox (nach Jahr)",
     subtitle = "Grau = positiver Zusammenhang (R ≥ 0), Bunt = negativer Zusammenhang (R < 0)",
-    x = "Kinderbetreuung 0–2 Jahre (%)",
+    x = "Kinderbetreuung (0–2) (%)",
     y = "Anteil Frauenbeschäftigung (%)",
     color = "Jahr mit R < 0" 
   ) +
@@ -693,7 +706,7 @@ ki_non_simpson_blau <- ggplot(plot_data_colored_year, aes(x = hmk, y = anteil)) 
   labs(
     title = "non Simpson's Paradox (nach Jahr)",
     subtitle = "Rot = positiver Zusammenhang (R ≥ 0), Blau = negativer Zusammenhang (R < 0)",
-    x = "Kinderbetreuung 0–2 Jahre (%)",
+    x = "Kinderbetreuung (0–2) (%)",
     y = "Anteil Frauenbeschäftigung (%)"
   ) +
   coord_cartesian(xlim = c(min(korrelations_daten_clean$hmk, na.rm = TRUE),
@@ -755,7 +768,7 @@ ki_korr_nach_stadtteile_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = 
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   labs(
     title = "",
-    x = "Kinderbetreuung 0–2 Jahre (%)",
+    x = "Kinderbetreuung (0–2) (%)",
     y = "Anteil Frauenbeschäftigung (%)"
   ) +
   theme_minimal()
@@ -826,7 +839,7 @@ ki_point_line_korr_nach_stadtteile_color <- ggplot(plot_data_final, aes(x = hmk,
   scale_color_manual(values = stadtteil_palette) +
   labs(
     title = "",
-    x     = "Kinderbetreuung 0–2 Jahre (%)",
+    x     = "Kinderbetreuung (0–2) (%)",
     y     = "Anteil Frauenbeschäftigung (%)",
     color = "Stadtteil"
   ) +
@@ -836,9 +849,8 @@ ki_point_line_korr_nach_stadtteile_color <- ggplot(plot_data_final, aes(x = hmk,
     legend.text       = element_text(size = 7),
     legend.key.height = unit(0.4, "cm")
   ) +
-  guides(color = guide_legend(ncol = 1)) 
-#+
-# theme(legend.position = "none")
+  guides(color = guide_legend(ncol = 1)) +
+ theme(legend.position = "none")
 
 ki_point_line_korr_nach_stadtteile_color  
 
@@ -894,7 +906,7 @@ ki_simpson_sw <- ggplot(plot_data_highlight, aes(x = hmk, y = anteil)) +
   labs(
     title    = "Simpson's Paradox (nach Stadtteil)",
     subtitle = "Grau = positiver Zusammenhang, Bunt = negativer Zusammenhang",
-    x        = "Kinderbetreuung 0–2 Jahre (%)",
+    x        = "Kinderbetreuung (0–2) (%)",
     y        = "Anteil Frauenbeschäftigung (%)",
     color    = "Stadtteile mit R < 0"
   ) +
@@ -946,7 +958,7 @@ ki_simpson_blau_rot <- ggplot(plot_data_colored, aes(x = hmk, y = anteil)) +
   labs(
     title    = "Simpson's Paradox (nach Stadtteil)",
     subtitle = "Rot = positiver Zusammenhang (R ≥ 0), Blau = negativer Zusammenhang (R < 0)",
-    x        = "Betreuungsquote Kinder 0–2 Jahre (%)",
+    x        = "Betreuungsquote Kinder (0–2) (%)",
     y        = "Anteil sozialversicherungspflichtig beschäftigter Frauen (%)"
   ) +
   coord_cartesian(xlim = x_range, ylim = y_range) +

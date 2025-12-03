@@ -87,3 +87,13 @@
     margin-left: 0 !important;
     transform: translateX(0) !important; 
 }
+
+
+
+/* Shiny sidebar 面板变高，不要内部滚动条 */
+.reveal .shiny-input-panel {
+  max-height: 100vh !important;  /* 允许用满一整页的高度 */
+  height: auto !important;
+  overflow-y: visible !important; /* 不要内部滚动条 */
+}
+
