@@ -2,6 +2,8 @@ library(tidyverse)
 library(sf)
 library(leaflet)
 library(readxl)
+library(htmltools)
+
 
 # =================================================================
 # 1. Datenvorbereitung
@@ -75,7 +77,7 @@ popup_content <- paste0(
   "<b>Kinderbetreuung:</b> ", round(final_sf$anteil_betreuung, 1), " %"
 )
 
-leaflet(final_sf, options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
+m_effekt_03 <- leaflet(final_sf, options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
   addTiles(
     urlTemplate = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
     attribution = '&copy; CartoDB'
@@ -99,3 +101,7 @@ leaflet(final_sf, options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
     title = "Kinderbetreuung (%)",
     position = "bottomright"
   )
+
+m_effekt_03
+
+saveRDS(m_effekt_03, "results/figures/m_effekt/m_effekt_03.rds")

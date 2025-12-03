@@ -32,6 +32,7 @@ library(stringr)
 library(forcats)
 library(ggpubr)
 library(leaflet)
+library(htmltools)
 
 # 把所有要用到的图从 RDS 里读进来
 table_datenaufbau <- readRDS("results/figures/table/df_data.rds")
@@ -59,6 +60,8 @@ ki_point_line_korr_nach_stadtteile_color <- readRDS("results/figures/Kinderbetre
 #__________________________________________________________________________
 m_effekt_01 <- readRDS("results/figures/m_effekt/m_effekt_01_singleline.rds")
 m_effekt_02 <- readRDS("results/figures/m_effekt/m_effekt_02_colored.rds")
+m_effekt_03 <- readRDS("results/figures/m_effekt/m_effekt_03.rds")
+m_effekt_04 <- readRDS("results/figures/m_effekt/m_effekt_04.rds")
 
 #_____________________________________________________________________________
 geburtenrate_dual_trend <- readRDS("results/figures/Geburtenrate/geburtenrate_dual_trend.rds")
@@ -951,6 +954,51 @@ sliderInput(
 plotOutput("plot", height = "450px")
 
 ```
+
+## Moderierender Effekt
+
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+#| out.width: "100%"
+#| fig-height: 3
+#| fig-dpi: 300
+#| fig-align: center
+
+m_effekt_03
+m_effekt_04
+```
+
+## Moderierender Effekt
+
+<br>
+
+:::: columns
+::: column
+```{r}
+#| echo: false
+#| out.width: "100%"
+#| out.height: "400px"
+
+m_effekt_04
+
+```
+:::
+
+::: column
+
+```{r}
+#| echo: false
+#| out.width: "100%"
+#| out.height: "400px"
+
+m_effekt_03
+
+```
+
+:::
+::::
 
 ## Agenda
 
