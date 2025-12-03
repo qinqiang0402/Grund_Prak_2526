@@ -975,8 +975,9 @@ plotOutput("plot", height = "450px")
 ### Kinderbetreuung
 
 ```         
-- Große Unterschiede zwischen den Stadtteilen, negative Korrelation nach Stadtteilen 
-- Stark positive Korrelation nach Jahre  
+- Mehr Kinderbetreuung -> höheren Frauenbeschäftigungsquote
+- Stark positive Korrelation nach Stadtteilen
+- negative Korrelation nach Jahre
 
   
 ```
