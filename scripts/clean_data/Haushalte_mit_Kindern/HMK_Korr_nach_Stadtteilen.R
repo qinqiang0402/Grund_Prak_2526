@@ -47,8 +47,8 @@ hmk_korr_gesamt_point_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = an
   geom_point(size = 1.3, color = "grey", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   labs(
-    x = "Anteil Haushalte mit Kindern (%)",
-    y = "Anteil Frauenbeschäftigung (%)",
+    x = "Haushalte mit Kindern (%)",
+    y = "Frauenbeschäftigung (%)",
     caption = fussnote_text
   ) +
   theme_minimal() +
@@ -77,8 +77,8 @@ hmk_korr_point_line_nach_stadtteile_color<- ggplot(plot_data_final, aes(x = hmk,
   geom_point(color = "grey", size = 1.1, alpha = 0.5) +
   geom_smooth(aes(group = 1), method = "lm", color = "black", linewidth = 1.1, se = FALSE) +
   labs(
-    x = "Anteil Haushalte mit Kindern (%)",
-    y = "Anteil Frauenbeschäftigung (%)"
+    x = "Haushalte mit Kindern (%)",
+    y = "Frauenbeschäftigung (%)"
   ) +
   coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   theme_minimal() +
@@ -130,8 +130,8 @@ hmk_simpson_stadtteile_kleiner_0 <- ggplot(plot_data_highlight, aes(x = hmk, y =
     se = FALSE
   ) +
   labs(
-    x = "Anteil Haushalte mit Kindern (%)",
-    y = "Anteil Frauenbeschäftigung (%)"
+    x = "Haushalte mit Kindern (%)",
+    y = "Frauenbeschäftigung (%)"
   ) +
   coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   theme_minimal() +
@@ -139,4 +139,3 @@ hmk_simpson_stadtteile_kleiner_0 <- ggplot(plot_data_highlight, aes(x = hmk, y =
 
 hmk_simpson_stadtteile_kleiner_0
 saveRDS(hmk_simpson_stadtteile_kleiner_0, "results/figures/Haushalt_mit_Kindern/hmk_simpson_stadtteile_kleiner_0.rds")
-

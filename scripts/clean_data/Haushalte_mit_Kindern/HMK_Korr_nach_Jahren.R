@@ -2,6 +2,7 @@ library(readxl)
 library(tidyverse)
 library(ggpubr)
 library(ggplot2)
+library(scales)
 
 export_be <- read_excel("data/raw/export_be.xlsx")
 be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
@@ -44,8 +45,8 @@ fussnote_text <- paste0("R = ", round(test_res$estimate, 2), ", p = ", p_txt)
 hmk_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_point(size = 1.3, color = "grey", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +labs(
-    x = "Anteil Haushalte mit Kindern (%)",
-    y = "Anteil Frauenbeschäftigung (%)",
+    x = "Haushalte mit Kindern (%)",
+    y = "Frauenbeschäftigung (%)",
     caption = fussnote_text
   ) +
   theme_minimal() +
@@ -70,8 +71,8 @@ hmk_point_line_nach_jahr_color <- ggplot(korrelations_daten_clean, aes(x = hmk, 
   ) +
   coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   labs(
-    x = "Anteil Haushalte mit Kindern (%)",
-    y = "Anteil Frauenbeschäftigung (%)",
+    x = "Haushalte mit Kindern (%)",
+    y = "Frauenbeschäftigung (%)",
     color = "Jahr"
   ) +
   theme_minimal() +
@@ -80,56 +81,3 @@ hmk_point_line_nach_jahr_color <- ggplot(korrelations_daten_clean, aes(x = hmk, 
 hmk_point_line_nach_jahr_color
 saveRDS(hmk_point_line_nach_jahr_color, "results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_jahr_color.rds")
 
-# ----------------------------------------------------------------------------
-r_werte_check_year <- korrelations_daten_clean %>%
-  group_by(Jahr) %>% 
-  summarise(
-    r_wert = cor(hmk, anteil)
-  ) %>%
-  mutate(
-    is_negative = r_wert < 0,
-    Jahr_Label = paste0(Jahr, " (R=", round(r_wert, 2), ")")
-  )
-
-plot_data_highlight_year <- korrelations_daten_clean %>%
-  left_join(r_werte_check_year, by = "Jahr") 
-
-hmk_non_simpson_nach_jahr <- ggplot(plot_data_highlight_year, aes(x = hmk, y = anteil)) +
-  geom_smooth(
-    data = subset(plot_data_highlight_year, is_negative == FALSE),
-    aes(group = Jahr), 
-    method = "lm", 
-    se = FALSE, 
-    color = "grey85", 
-    linewidth = 0.8,
-    alpha = 0.5
-  ) +
-  geom_smooth(
-    data = subset(plot_data_highlight_year, is_negative == TRUE),
-    aes(color = Jahr_Label, group = Jahr), 
-    method = "lm", 
-    se = FALSE, 
-    linewidth = 1.1, 
-    alpha = 1
-  ) +
-  geom_smooth(
-    aes(group = 1), 
-    method = "lm", 
-    color = "black", 
-    linewidth = 1.1, 
-    se = FALSE
-  ) +
-  scale_color_manual(values = jahr_palette) +
-  labs(
-    title = "non Simpson's Paradox (nach Jahr)",
-    subtitle = "Grau = Positiver Zusammenhang (R ≥ 0), Bunt = Negativer Zusammenhang (R < 0)",
-    x = "Anteil Haushalte mit Kindern (%)",
-    y = "Anteil Frauenbeschäftigung (%)",
-    color = "Jahr mit R < 0" 
-  ) +
-  coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
-  theme_minimal() +
-  theme(legend.position = "right")
-
-hmk_non_simpson_nach_jahr
-saveRDS(hmk_non_simpson_nach_jahr, "results/figures/Haushalt_mit_Kindern/hmk_non_simpson_nach_jahr.rds")
