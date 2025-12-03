@@ -117,7 +117,7 @@ library(dplyr)
 h_cut <- mean_HaKi_city
 f_cut <- mean_FE_city
 
-ggplot(data_2024, aes(x = anteil_kinder, y = anteil)) +
+m_effekt_2.5 <- ggplot(data_2024, aes(x = anteil_kinder, y = anteil)) +
   
   # 所有散点
   geom_point(aes(color = gruppe), size = 4, alpha = 0.8) +
@@ -134,7 +134,7 @@ ggplot(data_2024, aes(x = anteil_kinder, y = anteil)) +
   
   labs(
     x = "Haushalte mit Kindern (%)",
-    y = "Frauenbeschäftigungsquote (%)",
+    y = "Frauenbeschäftigung (%)",
     color = ""
   ) +
   
@@ -143,3 +143,6 @@ ggplot(data_2024, aes(x = anteil_kinder, y = anteil)) +
     legend.position = "bottom"
   )
 
+m_effekt_2.5
+
+saveRDS(m_effekt_2.5, "results/figures/m_effekt/m_effekt_2.5.rds")

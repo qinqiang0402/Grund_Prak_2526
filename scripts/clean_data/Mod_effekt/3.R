@@ -104,7 +104,7 @@ data_2024 <- data_2024 %>%
       TRUE ~ "Andere"
     ),
     color = case_when(
-      gruppe == "hohe Haushalte mit Kindern + niedrige Beschäftigung" ~ "#d73027",  # 红色
+      gruppe == "hohe Haushalte mit Kindern + niedrige Beschäftigung" ~ "#e75480",  # 红色
       TRUE ~ "#d9d9d9"  # 灰色（HEX）
     )
   )
@@ -137,7 +137,7 @@ m_effekt_04 <- leaflet(data_2024) %>%
     )
   ) %>%
   addLegend(
-    colors = c("#d73027", "#d9d9d9"),
+    colors = c("#e75480", "#d9d9d9"),
     labels = c("hohe Haushalte mit Kindern + niedrige Beschäftigung", "Andere"),
     title = "Kategorien (2024)",
     position = "bottomright"

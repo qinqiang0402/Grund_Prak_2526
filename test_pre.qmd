@@ -60,6 +60,7 @@ ki_point_line_korr_nach_stadtteile_color <- readRDS("results/figures/Kinderbetre
 #__________________________________________________________________________
 m_effekt_01 <- readRDS("results/figures/m_effekt/m_effekt_01_singleline.rds")
 m_effekt_02 <- readRDS("results/figures/m_effekt/m_effekt_02_colored.rds")
+m_effekt_2.5 <- readRDS("results/figures/m_effekt/m_effekt_2.5.rds")
 m_effekt_03 <- readRDS("results/figures/m_effekt/m_effekt_03.rds")
 m_effekt_04 <- readRDS("results/figures/m_effekt/m_effekt_04.rds")
 
@@ -688,21 +689,6 @@ ki_point_korr_gesamt_sw
 ki_simpson_sw
 ```
 
-## Korrelation (Stadtteile)
-
-```{r}
-
-#| echo: false
-#| fig-align: center
-#| fig-width: 7
-#| fig-height: 4
-#| fig-dpi: 300
-
-
-
-ki_point_line_korr_nach_stadtteile_color
-```
-
 ## Korrelation (gesamt)
 
 ```{r}
@@ -957,17 +943,15 @@ plotOutput("plot", height = "450px")
 
 ## Moderierender Effekt
 
-
 ```{r}
+
 #| echo: false
-#| layout-ncol: 2
-#| out.width: "100%"
-#| fig-height: 3
-#| fig-dpi: 300
+#| out-width: 100%
+#| out-height: 600px
 #| fig-align: center
 
-m_effekt_03
-m_effekt_04
+m_effekt_2.5
+
 ```
 
 ## Moderierender Effekt
@@ -1047,16 +1031,20 @@ m_effekt_03
 
 ## Ausblick
 
--   **Feinere Datenebene:**\
-    Mikrodatensätze auf Haushaltsebene würden genauere Analysen ermöglichen
+<div style="font-size:85%;">
 
--   **Kinderbetreuung weiter untersuchen:**
+- **Feinere Datenebene:**  
+  konkret analysieren und bedingte Wahrscheinlichkeiten berechnen  
+  (ob eine Frau in einem Haushalt mit Kind und erwerbstätig ist)
 
-    -   Politische und zeitliche Effekte berücksichtigen\
-    -   Analyse politischer Maßnahmen
+- **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**  
+  Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
 
--   **Übertragbarkeit prüfen:**\
-    Wie verändern sich die Ergebnisse bei größeren Stichproben
+- **Erhöhung der Stichprobengröße:**  
+  Postleitzahlen statt Stadtteile
+
+</div>
+
 
 ## Anhang
 
