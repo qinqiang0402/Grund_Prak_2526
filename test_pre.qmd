@@ -16,6 +16,7 @@ format:
 css: customstyle.css
 editor: visual
 server: shiny
+freeze: auto
 ---
 
 ```{r}
@@ -311,7 +312,6 @@ df_merged <- df_emp %>%
 
 ![](images/clipboard-3386569485.png)
 
-
 ## Daten {.smaller}
 
 ```{=html}
@@ -375,12 +375,12 @@ Weibliche Bevölkerung, die in einem Arbeitsverhältnis stehen und deren Einkomm
 ```{r}
 
 #| echo: false
+#| out-width: 100%
+#| out-height: 600px
 #| fig-align: center
-#| fig-width: 16
-#| fig-height: 9
-#| fig-dpi: 300
 
 leaflet_sv_durchschnitt
+
 
 ```
 
@@ -401,11 +401,13 @@ filtered_sf_data <- reactive({
 })
 
 # 2. Grundkarte (wird einmal initialisiert)
+
 output$map_output <- renderLeaflet({
   leaflet(options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
-    addTiles() %>%  # 默认 OSM 底图，稳定不报错
+    addProviderTiles(providers$CartoDB.Positron) %>%   # 黑白底图
     setView(lng = 11.5761, lat = 48.1372, zoom = 10)
 })
+
 
 # 3. Karte bei Änderung von Slider / Variable neu einfärben
 observe({
@@ -797,6 +799,10 @@ m_effekt_02
 
 ```{r}
 #| context: server
+#| out-width: 100%
+#| out-height: 900px
+
+
 
 # Jahresdatensatz (abhängig vom Slider input$year)
 
@@ -919,7 +925,7 @@ annotate(
 
 theme_minimal(base_size = 14)
 
-})
+}, width = 1600, height = 900)
 
 ```
 

@@ -80,7 +80,10 @@ popup_content_2024 <- paste0(
 
 ## 7. leaflet
 leaflet_sv_durchschnitt <- leaflet(data_2024, options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
-  addTiles() %>%
+  addTiles(
+    urlTemplate = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+    attribution = '&copy; CartoDB'
+  )%>%   # ⭐ 灰度底图
   setView(lng = 11.5761, lat = 48.1372, zoom = 10) %>%
   addPolygons(
     fillColor = ~pal_div(Value_dev),
@@ -102,6 +105,7 @@ leaflet_sv_durchschnitt <- leaflet(data_2024, options = leafletOptions(minZoom =
     labFormat = labelFormat(suffix = " % ", digits = 1),
     position = "bottomright"
   )
+
 
 leaflet_sv_durchschnitt
 
