@@ -4,6 +4,7 @@ library(sf)
 library(tidyverse)
 library(sf)
 library(readxl)
+library(htmltools)
 
 # === Load Geometry ===
 geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gsm_wfs:vablock_stadtbezirke_opendata&outputFormat=application/json"
@@ -112,7 +113,7 @@ data_2024 <- data_2024 %>%
 # ================================================================
 # 4. Leaflet 地图
 # ================================================================
-leaflet(data_2024) %>%
+m_effekt_04 <- leaflet(data_2024) %>%
   addTiles(
     urlTemplate = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
     attribution = '&copy; CartoDB'
@@ -141,3 +142,6 @@ leaflet(data_2024) %>%
     title = "Kategorien (2024)",
     position = "bottomright"
   )
+
+m_effekt_04
+saveRDS(m_effekt_04, "results/figures/m_effekt/m_effekt_04.rds")
