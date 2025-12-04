@@ -454,8 +454,8 @@ ki_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) 
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   labs(
     title = "",
-    x = "Kinderbetreuung (%)",
-    y = "Frauenbeschäftigung (%)"
+    x = "Kinderbetreuung [%]",
+    y = "Frauenbeschäftigung [%]"
   ) +
   theme_minimal()
 
