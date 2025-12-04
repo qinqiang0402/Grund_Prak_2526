@@ -2,12 +2,12 @@ library(leaflet)
 library(dplyr)
 library(sf)
 library(tidyverse)
-library(sf)
 library(readxl)
+library(htmltools)
 
 # === Load Geometry ===
-geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gsm_wfs:vablock_stadtbezirke_opendata&outputFormat=application/json"
-munich_map <- st_read(geojson_url, quiet = TRUE) %>% st_transform(4326)
+munich_map <- st_read("results/geo/bezirk_map.gpkg", quiet = TRUE) |>
+  st_transform(4326)
 
 # === Load tables ===
 be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
@@ -25,7 +25,7 @@ hh_data_long <- be_sheet %>%
   ) %>%
   mutate(
     anteil_kinder = 100 * `Basiswert 1` / `Basiswert 2`,
-    bezirksnummer = sprintf("%02d", as.numeric(str_extract(Raumbezug, "^\\d+")))
+    bezirksnummer = sprintf("%02d", as.numeric(stringr::str_extract(Raumbezug, "^\\d+")))
   ) %>%
   select(Jahr, bezirksnummer, anteil_kinder)
 
@@ -38,7 +38,7 @@ ar_data_long <- ar_sheet %>%
   ) %>%
   mutate(
     anteil = 100 * `Basiswert 1` / `Basiswert 2`,
-    bezirksnummer = sprintf("%02d", as.numeric(str_extract(Raumbezug, "^\\d+")))
+    bezirksnummer = sprintf("%02d", as.numeric(stringr::str_extract(Raumbezug, "^\\d+")))
   ) %>%
   select(Jahr, bezirksnummer, anteil)
 
@@ -48,19 +48,33 @@ combined_data_all <- hh_data_long %>%
 
 # === Attach geometry ===
 final_sf_data_long <- munich_map %>%
-  left_join(combined_data_all, by = c("sb_nummer" = "bezirksnummer")) %>%
+  left_join(
+    combined_data_all,
+    by = c("sb_nummer" = "bezirksnummer"),
+    relationship = "many-to-many"   # 消掉 many-to-many 的 warning
+  ) %>%
+  mutate(Jahr = as.numeric(Jahr)) %>%  # 防止 Jahr 是字符
   filter(!is.na(Jahr))
+
+# 确保它是 sf 对象（通常 join 后还是 sf，但这里稳妥一点）
+final_sf_data_long <- sf::st_as_sf(final_sf_data_long)
 
 # ================================================================
 # 1. 过滤 2024 年数据
+#    注意：这里不要手动选 geometry，sf 会自动保留几何列
 # ================================================================
 data_2024 <- final_sf_data_long %>%
   filter(Jahr == 2024) %>%
-  select(
-    sb_nummer, name, geometry,
-    anteil_kinder,        # HaKi (%)
-    anteil                # Frauenbeschäftigung (%)
+  dplyr::select(
+    sb_nummer,
+    name,
+    anteil_kinder,   # HaKi (%)
+    anteil           # Frauenbeschäftigung (%)
+    # geometry 会自动跟着保留
   )
+
+# 再保险一次：保持 sf 属性
+data_2024 <- sf::st_as_sf(data_2024)
 
 # ================================================================
 # 2. Stadt München 市平均值 (HaKi & Frauenbeschäftigung)
@@ -91,58 +105,91 @@ mean_FE_city <- ar_sheet %>%
 cat("City mean HaKi 2024 =", mean_HaKi_city, "\n")
 cat("City mean FE   2024 =", mean_FE_city, "\n")
 
-
 # ================================================================
 # 3. 分类：A = HaKi 高 + 就业低
 # ================================================================
 data_2024 <- data_2024 %>%
   mutate(
-    gruppe = case_when(
+    gruppe = dplyr::case_when(
       anteil_kinder > mean_HaKi_city & anteil < mean_FE_city ~
         "hohe Haushalte mit Kindern + niedrige Beschäftigung",
       TRUE ~ "Andere"
     ),
-    color = case_when(
+    color = dplyr::case_when(
       gruppe == "hohe Haushalte mit Kindern + niedrige Beschäftigung" ~ "#e75480",  # 红色
-      TRUE ~ "#d9d9d9"  # 灰色（HEX）
+      TRUE ~ "#d9d9d9"  # 灰色
     )
   )
 
+
+# ================================================================
+# 4A. Leaflet 地图（如果你也想要）
+# ================================================================
+
+###
+#m_effekt_04 <- leaflet(data_2024) %>%
+#  addTiles(
+#    urlTemplate = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+#    attribution = '&copy; CartoDB'
+#  ) %>%
+#  addPolygons(
+#    fillColor = ~color,
+#    color = "white",
+#    weight = 1,
+#    fillOpacity = 0.8,
+#    label = ~paste0(
+#     "<b>", name, "</b><br/>",
+#      "Haushalte mit Kindern: ", round(anteil_kinder, 1), "%<br/>",
+#      "Frauenbeschäftigung: ", round(anteil, 1), "%<br/>",
+#      "<b>Gruppe:</b> ", gruppe
+#    ) %>% lapply(htmltools::HTML),
+#    highlightOptions = highlightOptions(
+#      weight = 2,
+#      color = "grey85",
+#      fillOpacity = 0.9,
+#      bringToFront = TRUE
+#    )
+#  ) %>%
+#  addLegend(
+#    colors = c("#e75480", "#d9d9d9"),
+#    labels = c("hohe Haushalte mit Kindern + niedrige Beschäftigung", "Andere"),
+#    title = "Kategorien (2024)",
+#    position = "bottomright"
+#  )
+###
+# 如果不需要 leaflet，可以注释掉下面两行
+#m_effekt_04
+#saveRDS(m_effekt_04, "results/figures/m_effekt/m_effekt_04.rds")
+
+
+# ================================================================
+# 4B. 散点图（你定义的 m_effekt_2.5）
+# ================================================================
 library(ggplot2)
-library(dplyr)
 
-# ---- 使用你前面定义的 data_2024（含 gruppe 和 color） ----
-
-# 构建四象限定义线
 h_cut <- mean_HaKi_city
 f_cut <- mean_FE_city
 
 m_effekt_2.5 <- ggplot(data_2024, aes(x = anteil_kinder, y = anteil)) +
-  
   # 所有散点
   geom_point(aes(color = gruppe), size = 4, alpha = 0.8) +
-  
   # 四象限分割线
   geom_vline(xintercept = h_cut, linetype = "dashed", color = "black") +
   geom_hline(yintercept = f_cut, linetype = "dashed", color = "black") +
-  
-  # 颜色定义：A = 红色，其他 = 灰色
+  # 颜色定义
   scale_color_manual(values = c(
     "hohe Haushalte mit Kindern + niedrige Beschäftigung" = "#e75480",
-    "Andere" = "#bdbdbd"   # 更柔和的灰色
+    "Andere" = "#bdbdbd"
   )) +
-  
   labs(
     x = "Haushalte mit Kindern (%)",
     y = "Frauenbeschäftigung (%)",
     color = ""
   ) +
-  
   theme_minimal(base_size = 14) +
   theme(
     legend.position = "bottom"
   )
 
 m_effekt_2.5
-
 saveRDS(m_effekt_2.5, "results/figures/m_effekt/m_effekt_2.5.rds")

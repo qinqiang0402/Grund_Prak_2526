@@ -7,8 +7,8 @@ library(readxl)
 library(htmltools)
 
 # === Load Geometry ===
-geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gsm_wfs:vablock_stadtbezirke_opendata&outputFormat=application/json"
-munich_map <- st_read(geojson_url, quiet = TRUE) %>% st_transform(4326)
+munich_map <- st_read("results/geo/bezirk_map.gpkg", quiet = TRUE) |>
+  st_transform(4326)
 
 # === Load tables ===
 be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
@@ -48,67 +48,50 @@ combined_data_all <- hh_data_long %>%
   full_join(ar_data_long, by = c("Jahr", "bezirksnummer"))
 
 # === Attach geometry ===
+# === Attach geometry ===
+# 这里不需要在 join 之后立刻 select，先把所有列都保留
 final_sf_data_long <- munich_map %>%
-  left_join(combined_data_all, by = c("sb_nummer" = "bezirksnummer")) %>%
+  left_join(
+    combined_data_all,
+    by = c("sb_nummer" = "bezirksnummer"),
+    relationship = "many-to-many"   # 消除 warning，用于一对多 / 多对多
+  ) %>%
+  # Jahr 可能是字符，统一转成 numeric 比较安全
+  mutate(Jahr = as.numeric(Jahr)) %>%
   filter(!is.na(Jahr))
 
 # ================================================================
 # 1. 过滤 2024 年数据
+#    注意：这里 **不要** 手动选 geometry 列，sf 会自动保留
 # ================================================================
 data_2024 <- final_sf_data_long %>%
   filter(Jahr == 2024) %>%
-  select(
-    sb_nummer, name, geometry,
-    anteil_kinder,        # HaKi (%)
-    anteil                # Frauenbeschäftigung (%)
+  dplyr::select(
+    sb_nummer,
+    name,
+    anteil_kinder,   # HaKi (%)
+    anteil           # Frauenbeschäftigung (%)
+    # 几何列会自动保留，无需写 geometry
   )
 
-# ================================================================
-# 2. Stadt München 市平均值 (HaKi & Frauenbeschäftigung)
-# ================================================================
-
-# HaKi 来自 be_sheet
-mean_HaKi_city <- be_sheet %>%
-  filter(
-    Jahr == 2024,
-    Raumbezug == "Stadt München",
-    Indikator == "Haushalte mit Kindern",
-    Ausprägung == "insgesamt"
-  ) %>%
-  mutate(anteil_kinder = 100 * `Basiswert 1` / `Basiswert 2`) %>%
-  pull(anteil_kinder)
-
-# Frauenbeschäftigung 来自 ar_sheet
-mean_FE_city <- ar_sheet %>%
-  filter(
-    Jahr == 2024,
-    Raumbezug == "Stadt München",
-    Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
-    Ausprägung == "weiblich"
-  ) %>%
-  mutate(anteil = 100 * `Basiswert 1` / `Basiswert 2`) %>%
-  pull(anteil)
-
-cat("City mean HaKi 2024 =", mean_HaKi_city, "\n")
-cat("City mean FE   2024 =", mean_FE_city, "\n")
-
+# 保险起见，强制成 sf（通常不需要，但加上也没坏处）
+data_2024 <- sf::st_as_sf(data_2024)
 
 # ================================================================
 # 3. 分类：A = HaKi 高 + 就业低
 # ================================================================
 data_2024 <- data_2024 %>%
   mutate(
-    gruppe = case_when(
+    gruppe = dplyr::case_when(
       anteil_kinder > mean_HaKi_city & anteil < mean_FE_city ~
         "hohe Haushalte mit Kindern + niedrige Beschäftigung",
       TRUE ~ "Andere"
     ),
-    color = case_when(
-      gruppe == "hohe Haushalte mit Kindern + niedrige Beschäftigung" ~ "#e75480",  # 红色
-      TRUE ~ "#d9d9d9"  # 灰色（HEX）
+    color = dplyr::case_when(
+      gruppe == "hohe Haushalte mit Kindern + niedrige Beschäftigung" ~ "#e75480",  # 红
+      TRUE ~ "#d9d9d9"  # 灰
     )
   )
-
 
 # ================================================================
 # 4. Leaflet 地图
@@ -145,3 +128,4 @@ m_effekt_04 <- leaflet(data_2024) %>%
 
 m_effekt_04
 saveRDS(m_effekt_04, "results/figures/m_effekt/m_effekt_04.rds")
+

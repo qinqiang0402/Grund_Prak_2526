@@ -16,14 +16,13 @@ format:
 css: customstyle.css
 editor: visual
 server: shiny
-freeze: auto
 ---
 
 ```{r}
 #| label: setup
 #| include: false
 
-source("env_setup.R")
+#source("env_setup.R")
 
 # 加载你需要的包
 library(shiny)
@@ -90,9 +89,7 @@ mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_lin
 # =================================================================
 
 # 1. Geometrie der Münchner Stadtbezirke laden
-geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gsm_wfs:vablock_stadtbezirke_opendata&outputFormat=application/json"
-munich_map <- st_read(geojson_url, quiet = TRUE) %>% 
-  st_transform(4326)
+munich_map <- st_read("results/geo/bezirk_map.json", quiet = TRUE) 
 
 # 2. Excel-Daten laden
 # 注意：这里相对路径用项目根目录的写法，而不是 ../../
@@ -777,6 +774,8 @@ m_effekt_01
 
 ## Moderierender Effekt
 
+<br>
+
 ```{r}
 #| label: m_effekt_02
 #| echo: false
@@ -789,6 +788,8 @@ m_effekt_02
 ```
 
 ## Moderierender Effekt
+
+<br>
 
 ```{r}
 #| context: server
@@ -947,6 +948,8 @@ plotOutput("plot", height = "450px")
 
 ## Moderierender Effekt
 
+<br>
+
 ```{r}
 
 #| echo: false
@@ -962,7 +965,7 @@ m_effekt_2.5
 
 <br>
 
-:::: columns
+::::: columns
 ::: column
 ```{r}
 #| echo: false
@@ -975,7 +978,6 @@ m_effekt_04
 :::
 
 ::: column
-
 ```{r}
 #| echo: false
 #| out.width: "100%"
@@ -984,9 +986,8 @@ m_effekt_04
 m_effekt_03
 
 ```
-
 :::
-::::
+:::::
 
 ## Agenda
 
@@ -1003,56 +1004,46 @@ m_effekt_03
 
 ## Fazit
 
+::: {style="font-size:75%;"}
 ### Frauenbeschäftigung
+- Regionale Unterschiede zwischen den Stadtteilen  
+- In zentralen Stadtteilen höhere Beschäftigungsanteile und stärkere Zuwächse  
+- Periphere Stadtteile geringere Anteile und langsamere Zuwächse  
 
-```         
-- Deutliche regionale Unterschiede zwischen den Stadtteilen.  
-- Zentrale Stadtteile zeigen höhere Beschäftigungsanteile und stärkere Zuwächse.  
-- Periphere Stadtteile weisen geringere Anteile und langsamere Entwicklungen auf.  
-- Insgesamt wächst die Frauenbeschäftigung, jedoch nicht gleichmäßig über die Stadt verteilt.
-```
-
-<br>
+### Haushalte mit Kindern
+- Nach Stadtteil: meistens positive Korrelation  
+- Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt.  
 
 ### Kinderbetreuung
-
-```         
-- Mehr Kinderbetreuung -> höheren Frauenbeschäftigungsquote
-- Stark positive Korrelation nach Stadtteilen
-- negative Korrelation nach Jahre
-
-  
-```
+- Nach Stadtteil: stark positive Korrelation  
+- Nach Jahr: negative Korrelation  
+- Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
+:::
 
 ## Limitation
 
-<div style="font-size:85%;">
-
+::: {style="font-size:85%;"}
 -   **Sozialversicherungspflichtige Beschäftigung** erfasst nicht alle Erwerbstätigen
 
 -   **Nicht kompatible Altersgruppen** zwischen Bevölkerungsdaten (BE) und Kinderbetreuungsdaten (KI) → Betreuungsquoten über 2 Jahre hinaus sind nicht exakt vergleichbar.
 
 -   **Unterschiedliche Zeitabdeckung:**\
     Beschäftigungsdaten ab 2000, Kinderbetreuungsdaten erst ab 2007.
-
-</div>
+:::
 
 ## Ausblick
 
-<div style="font-size:85%;">
+::: {style="font-size:85%;"}
+-   **Feinere Datenebene:**\
+    konkret analysieren und bedingte Wahrscheinlichkeiten berechnen\
+    (ob eine Frau in einem Haushalt mit Kind und erwerbstätig ist)
 
-- **Feinere Datenebene:**  
-  konkret analysieren und bedingte Wahrscheinlichkeiten berechnen  
-  (ob eine Frau in einem Haushalt mit Kind und erwerbstätig ist)
+-   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**\
+    Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
 
-- **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**  
-  Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
-
-- **Erhöhung der Stichprobengröße:**  
-  Postleitzahlen statt Stadtteile
-
-</div>
-
+-   **Erhöhung der Stichprobengröße:**\
+    Postleitzahlen statt Stadtteile
+:::
 
 ## Anhang
 

@@ -10,8 +10,7 @@ library(htmltools)
 # =================================================================
 
 # 1.1. Geometrie laden
-geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gsm_wfs:vablock_stadtbezirke_opendata&outputFormat=application/json"
-munich_map <- st_read(geojson_url, quiet = TRUE) %>% 
+munich_map <- st_read("results/geo/bezirk_map.gpkg", quiet = TRUE) |>
   st_transform(4326)
 
 # 1.2. Daten laden

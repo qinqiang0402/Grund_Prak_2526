@@ -311,7 +311,6 @@ df_merged <- df_emp %>%
 
 ![](images/clipboard-3386569485.png)
 
-
 ## Daten {.smaller}
 
 ```{=html}
@@ -728,7 +727,6 @@ ki_point_line_color
 ```
 
 ## Zusammenhang 2015
-
 
 ```{r}
 #| echo: false

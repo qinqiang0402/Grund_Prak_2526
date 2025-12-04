@@ -5,9 +5,9 @@ library(leaflet)
 library(readxl)
 library(stringr)
 
-geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gsm_wfs:vablock_stadtbezirke_opendata&outputFormat=application/json"
-munich_map <- st_read(geojson_url, quiet = TRUE) %>% 
-  st_transform(4326) 
+
+munich_map <- st_read("results/geo/bezirk_map.gpkg", quiet = TRUE) |>
+  st_transform(4326)
 
 ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 
