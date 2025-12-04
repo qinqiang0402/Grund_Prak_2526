@@ -89,7 +89,7 @@ mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_lin
 # =================================================================
 
 # 1. Geometrie der Münchner Stadtbezirke laden
-munich_map <- st_read("results/geo/bezirk_map.json", quiet = TRUE) 
+munich_map <- st_read("results/geo/bezirk_map.json", quiet = TRUE) |> st_transform(4326)
 
 # 2. Excel-Daten laden
 # 注意：这里相对路径用项目根目录的写法，而不是 ../../
@@ -538,9 +538,13 @@ leafletOutput("map_output", height = "650px")
 
 ## Haushalte mit Kindern
 
+<br>
+<br>
+
 <br> Anteil der Privathaushalte <br> mit mindestens einem Kind bis 17 Jahre <br> (mit mindestens einer Hauptwohnsitzperson) <br> an allen Privathaushalten in Prozent
 
 ## Haushalte mit Kindern (gesamt)
+
 
 ```{r}
 #| label: hmk_korr_gesamt_point_sw

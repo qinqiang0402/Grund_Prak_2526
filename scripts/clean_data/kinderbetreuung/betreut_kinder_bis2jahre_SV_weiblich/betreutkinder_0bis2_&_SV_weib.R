@@ -140,9 +140,8 @@ df_betreut_bezirk <- df_betreut %>%
   filter(!is.na(sb))
 
 # 地图
-geojson_url <- "https://geoportal.muenchen.de/geoserver/gsm_wfs/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gsm_wfs:vablock_stadtbezirke_opendata&outputFormat=application/json"
-munich_map2 <- st_read(geojson_url, quiet = TRUE) %>%
-  add_sb("sb_nummer", "sb_nummer")
+
+munich_map2 <- st_read("results/geo/bezirk_map.json", quiet = TRUE)  %>% add_sb("sb_nummer", "sb_nummer")
 
 # 合并“儿童托管 + 女性 Beschäftigung”到 Bezirk×Jahr
 df_merge <- df_betreut_bezirk %>%
@@ -311,7 +310,7 @@ map_betreuung_2015 <- munich_map2 %>%
 p_map_betreuung <- plot_bezirk_map(
   map_betreuung_2015,
   value_col    = "betreuungsquote",
-  title        = paste0("Kinderbetreuung – München, ", year_map),
+  title        = paste0("Kinderbetreuung - ", year_map),
   subtitle     = "",
   legend_title = "Kinderbetreuung [%]",
   limits       = c(10, 55),
