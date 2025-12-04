@@ -68,8 +68,8 @@ pal_div <- colorNumeric(
 
 ## 6. popup 
 popup_content_2024 <- paste0(
-  "<b>Stadtbezirk:</b> ", data_2024[["name"]], "<br/>",
-  "<b>Frauenbeschäftigungsquote 2024:</b> ",
+  "<b>Stadtteil:</b> ", data_2024[["name"]], "<br/>",
+  "<b>Frauenbeschäftigung 2024:</b> ",
   round(data_2024$Value, 1), " %", "<br/>",
   "<b>München-Durchschnitt 2024:</b> ",
   round(mean_2024, 1), " %", "<br/>",
@@ -101,7 +101,7 @@ leaflet_sv_durchschnitt <- leaflet(data_2024, options = leafletOptions(minZoom =
     pal = pal_div,
     values = c(-max_abs, max_abs),
     opacity = 0.7,
-    title = HTML("Abweichung von der<br>Frauenbeschäftigungsquote 2024"),
+    title = HTML("Abweichung von der<br>Frauenbeschäftigung 2024"),
     labFormat = labelFormat(suffix = " % ", digits = 1),
     position = "bottomright"
   )

@@ -5,7 +5,7 @@ author: "Qiang Qin, Shihan Hu, Yuechen Wang, Yuqin Huang"
 institute: | 
   <br> Eugen Gorich <br><br>
   München
-date: today
+date: "2025-12-15"
 
 format:
   revealjs:
@@ -22,6 +22,8 @@ freeze: auto
 ```{r}
 #| label: setup
 #| include: false
+
+source("env_setup.R")
 
 # 加载你需要的包
 library(shiny)
@@ -204,9 +206,9 @@ MAX_YEAR <- max(final_sf_data_long$Jahr, na.rm = TRUE)
 
 variable_choices <- c(
   "Muttererstgeburtsalter"                   = "age_mean",
-  "Anteil Frauenbeschäftigung (%)"          = "anteil",
-  "Anteil Haushalte mit Kindern (%)"        = "anteil_kinder",
-  "Betreuungsquote Kinder 0-2 Jahre (%)"    = "anteil_betreuung",
+  "Frauenbeschäftigung (%)"          = "anteil",
+  "Haushalte mit Kindern (%)"        = "anteil_kinder",
+  "Kinderbetreuung (%)"    = "anteil_betreuung",
   "Geburtenrate (%)"                        = "new_baby"
 )
 
@@ -376,11 +378,13 @@ Weibliche Bevölkerung, die in einem Arbeitsverhältnis stehen und deren Einkomm
 
 ## Frauenbeschäftigung
 
+<br>
+
 ```{r}
 
 #| echo: false
 #| out-width: 100%
-#| out-height: 600px
+#| out-height: 650px
 #| fig-align: center
 
 leaflet_sv_durchschnitt
@@ -454,7 +458,7 @@ observe({
   pal <- colorNumeric(palette = pal_name, domain = c(c_min, c_max))
   
   popup_content <- paste0(
-    "<b>Bezirk:</b> ", current_sf[[MAP_NAME_COLUMN]], "<br/>",
+    "<b>Stadtteil:</b> ", current_sf[[MAP_NAME_COLUMN]], "<br/>",
     "<b>", var_label, ":</b> ", round(current_sf$Value, dec), unit
   )
   
@@ -494,14 +498,14 @@ observe({
 # 这里是 Shiny 的 UI 控件（侧边栏）
 selectInput(
   "variable_select",
-  "Indikator wählen:",
+  "",
   choices  = variable_choices,
   selected = "anteil"    # 默认先看 Frauenbeschäftigung
 )
 
 sliderInput(
   "time_slider",
-  "Jahr:",
+  "Jahr",
   min     = MIN_YEAR,
   max     = MAX_YEAR,
   value   = MAX_YEAR,
@@ -1022,12 +1026,16 @@ m_effekt_03
 
 ## Limitation
 
+<div style="font-size:85%;">
+
 -   **Sozialversicherungspflichtige Beschäftigung** erfasst nicht alle Erwerbstätigen
 
 -   **Nicht kompatible Altersgruppen** zwischen Bevölkerungsdaten (BE) und Kinderbetreuungsdaten (KI) → Betreuungsquoten über 2 Jahre hinaus sind nicht exakt vergleichbar.
 
 -   **Unterschiedliche Zeitabdeckung:**\
     Beschäftigungsdaten ab 2000, Kinderbetreuungsdaten erst ab 2007.
+
+</div>
 
 ## Ausblick
 
