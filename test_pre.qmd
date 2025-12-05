@@ -538,13 +538,11 @@ leafletOutput("map_output", height = "650px")
 
 ## Haushalte mit Kindern
 
-<br>
-<br>
+<br> <br>
 
 <br> Anteil der Privathaushalte <br> mit mindestens einem Kind bis 17 Jahre <br> (mit mindestens einer Hauptwohnsitzperson) <br> an allen Privathaushalten in Prozent
 
 ## Haushalte mit Kindern (gesamt)
-
 
 ```{r}
 #| label: hmk_korr_gesamt_point_sw
@@ -755,7 +753,9 @@ ki_map_2015
 
 [3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
 
-## Moderierender Effekt
+## Betreuungsbedingte Korrelation
+
+<br>
 
 -   **Gruppenaufteilung:**
 
@@ -763,7 +763,7 @@ ki_map_2015
 
     -   **Niedrige Betreuung:** untere Drittel der Stadtteile mit der niedrigsten Kinderbetreuungsquote
 
-## Moderierender Effekt
+## Korrelation (gesamt)
 
 ```{r}
 #| label: m_effekt_01
@@ -776,8 +776,7 @@ ki_map_2015
 m_effekt_01
 ```
 
-## Moderierender Effekt
-
+## Betreuungsbedingte Korrelation 2024
 <br>
 
 ```{r}
@@ -791,7 +790,7 @@ m_effekt_01
 m_effekt_02
 ```
 
-## Moderierender Effekt
+## Betreuungsbedingte Korrelation
 
 <br>
 
@@ -950,7 +949,7 @@ plotOutput("plot", height = "450px")
 
 ```
 
-## Moderierender Effekt
+## Betreuungsbedarf 2024
 
 <br>
 
@@ -965,7 +964,7 @@ m_effekt_2.5
 
 ```
 
-## Moderierender Effekt
+## Betreuungsbedarf 2024
 
 <br>
 
@@ -1008,31 +1007,35 @@ m_effekt_03
 
 ## Fazit
 
-::: {style="font-size:75%;"}
+::: {style="font-size:65%;"}
 ### Frauenbeschäftigung
-- Regionale Unterschiede zwischen den Stadtteilen  
-- In zentralen Stadtteilen höhere Beschäftigungsanteile und stärkere Zuwächse  
-- Periphere Stadtteile geringere Anteile und langsamere Zuwächse  
+
+-   Regionale Unterschiede zwischen den Stadtteilen\
+
 
 ### Haushalte mit Kindern
-- Nach Stadtteil: meistens positive Korrelation  
-- Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt.  
+
+-   Nach Stadtteil: meistens positive Korrelation\
+-   Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt
 
 ### Kinderbetreuung
-- Nach Stadtteil: stark positive Korrelation  
-- Nach Jahr: negative Korrelation  
-- Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
+
+-   Nach Stadtteil: stark positive Korrelation\
+-   Nach Jahr: negative Korrelation\
+-   Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
 :::
 
 ## Limitation
 
 ::: {style="font-size:85%;"}
--   **Sozialversicherungspflichtige Beschäftigung** erfasst nicht alle Erwerbstätigen
+-   **Sozialversicherungspflichtige Beschäftigung:**\
+    nicht alle Erwerbstätigen fassen
 
--   **Nicht kompatible Altersgruppen** zwischen Bevölkerungsdaten (BE) und Kinderbetreuungsdaten (KI) → Betreuungsquoten über 2 Jahre hinaus sind nicht exakt vergleichbar.
+-   **Altersgruppen nicht vollständig kompatibel:**\
+    Nur 0–2 Jahre stimmen überein; andere Altersgruppen sind nicht vergleichbar
 
 -   **Unterschiedliche Zeitabdeckung:**\
-    Beschäftigungsdaten ab 2000, Kinderbetreuungsdaten erst ab 2007.
+    Beschäftigungsdaten ab 2000, Kinderbetreuungsdaten erst ab 2007
 :::
 
 ## Ausblick
