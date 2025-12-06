@@ -216,10 +216,10 @@ ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
   geom_point(aes(y = emp_scaled, color = "Frauenbeschäftigung"), size = 2) +
   
   scale_y_continuous(
-    name = "Kinderbetreuung [%]",
+    name = "Kinderbetreuung (%)",
     sec.axis = sec_axis(
       ~ (. - range_left[1]) / scale_factor + range_right[1],
-      name = "Frauenbeschäftigung [%]"
+      name = "Frauenbeschäftigung (%)"
     )
   ) +
   scale_color_manual(
@@ -312,7 +312,7 @@ p_map_betreuung <- plot_bezirk_map(
   value_col    = "betreuungsquote",
   title        = paste0("Kinderbetreuung - ", year_map),
   subtitle     = "",
-  legend_title = "Kinderbetreuung [%]",
+  legend_title = "Kinderbetreuung (%)",
   limits       = c(10, 55),
   low_col      = "#fff5eb",  # 很浅的橙/米色
   high_col     = "#7f2704"   # 深橙/棕色
@@ -342,7 +342,7 @@ p_map_sozial <- plot_bezirk_map(
   value_col    = "sozial_weiblich_pct",
   title        = paste0("Frauenbeschäftigung – ", year_map),
   subtitle     = "",
-  legend_title = "Frauenbeschäftigung [%]",
+  legend_title = "Frauenbeschäftigung (%)",
   limits       = c(50, 62),
   low_col      = "#f7fbff",  # 浅蓝
   high_col     = "#08306b"   # 深蓝
@@ -453,8 +453,8 @@ ki_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) 
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   labs(
     title = "",
-    x = "Kinderbetreuung [%]",
-    y = "Frauenbeschäftigung [%]"
+    x = "Kinderbetreuung (%)",
+    y = "Frauenbeschäftigung (%)"
   ) +
   theme_minimal()
 
@@ -478,8 +478,8 @@ ki_year_color_point <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)
   coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   labs(
     title = "Korrelationskoeffizient nach Jahren zwischen Kinderbetreuung und Frauenbeschäftigung",
-    x = "Kinderbetreuung [%]",
-    y = "Frauenbeschäftigung [%]",
+    x = "Kinderbetreuung (%)",
+    y = "Frauenbeschäftigung (%)",
     color = "Jahr"
   ) +
   guides(color = guide_legend(ncol = 1)) + 
@@ -576,20 +576,21 @@ ki_point_line_color <- ggplot(
   scale_color_gradient(
     name   = "Jahr",
     limits = c(2007, 2024),
-    breaks = c(2024, 2007),
-    labels = c("2024", "2007"),
-    low    = "#fee5e5",
-    high   = "#990000",
+    breaks = c(2007, 2011, 2015, 2020, 2024),          # 只在 2007 和 2024 两个位置打刻度
+    labels = c("2007", "2011", "2015", "2020" , "2024"),      # 刻度文字
+    low    = "#fee5e5",              # 2007 的颜色（浅）
+    high   = "#990000",              # 2024 的颜色（深）
     guide  = guide_colorbar(
-      barheight = unit(6, "cm"),   # ✅ 比原来更长
-      barwidth  = unit(0.4, "cm")  # 可选：更细一点
+      title.position = "top",
+      barheight      = unit(6, "cm"),
+      barwidth       = unit(0.4, "cm")
     )
   ) +
   coord_cartesian() +
   labs(
     title = "",
-    x     = "Kinderbetreuung [%]",
-    y     = "Frauenbeschäftigung [%]"
+    x     = "Kinderbetreuung (%)",
+    y     = "Frauenbeschäftigung (%)"
   ) +
   theme_minimal()
 
@@ -767,8 +768,8 @@ ki_korr_nach_stadtteile_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = 
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   labs(
     title = "",
-    x = "Kinderbetreuung [%]",
-    y = "Frauenbeschäftigung [%]"
+    x = "Kinderbetreuung (%)",
+    y = "Frauenbeschäftigung (%)"
   ) +
   theme_minimal()
 

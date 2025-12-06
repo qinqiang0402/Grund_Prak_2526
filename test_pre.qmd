@@ -571,7 +571,7 @@ leafletOutput("map_output", height = "650px")
 
 <br> Anteil der Privathaushalte <br> mit mindestens einem Kind bis 17 Jahre <br> (mit mindestens einer Hauptwohnsitzperson) <br> an allen Privathaushalten in Prozent
 
-## Haushalte mit Kindern (gesamt)
+## Korrelation (gesamt)
 
 ```{r}
 #| label: hmk_korr_gesamt_point_sw
@@ -584,7 +584,7 @@ leafletOutput("map_output", height = "650px")
 hmk_korr_gesamt_point_sw
 ```
 
-## Haushalte mit Kindern (Stadtteile)
+## Korrelation (Stadtteile)
 
 ```{r}
 #| label: hmk_korr_point_line_nach_stadtteile_color
@@ -611,7 +611,7 @@ hmk_simpson_stadtteile_kleiner_0
 
 ```
 
-## Haushalte mit Kindern (gesamt)
+## Korrelation (gesamt)
 
 ```{r}
 #| echo: false
@@ -623,7 +623,7 @@ hmk_simpson_stadtteile_kleiner_0
 hmk_korr_gesamt_point_sw
 ```
 
-## Haushalte mit Kindern (Jahre)
+## Korrelation (Jahre)
 
 ```{r}
 
@@ -735,6 +735,20 @@ ki_simpson_sw
 
 ki_point_line_color
 ```
+
+
+## Dual-Trend: Kinderbetreuung und Frauenbeschäftigung (2007–2024)
+
+```{r}
+#| echo: false
+#| fig-align: center
+#| fig-width: 9
+#| fig-height: 5
+#| fig-dpi: 300
+
+ki_dual_trend
+```
+
 
 ## Zusammenhang 2015
 
@@ -1069,19 +1083,18 @@ m_effekt_03
 ## Fazit
 
 ::: {style="font-size:65%;"}
-### Frauenbeschäftigung
+### Frauenbeschäftigung:
 
--   Regionale Unterschiede zwischen den Stadtteilen\
--   Zentrale Stadtteile höhere Anteil, frühere und schnellere Zuwächse
--   periphere Stadtteile niedrigere Anteil im Vergleich zu Stadtzentren, und langsamere Zuwächse
+-   Zuwachs in allen Stadtteilen\
+-   Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil
 
 
-### Haushalte mit Kindern
+### Haushalte mit Kindern:
 
 -   Nach Stadtteil: meistens positive Korrelation\
 -   Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt
 
-### Kinderbetreuung
+### Kinderbetreuung:
 
 -   Nach Stadtteil: stark positive Korrelation\
 -   Nach Jahr: negative Korrelation\
