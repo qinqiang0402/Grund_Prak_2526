@@ -409,7 +409,7 @@ observeEvent(input$play_pause, {
 # 自动推进年份（只有在 playing() == TRUE 时才会动）
 observe({
   req(playing())                  # 如果没在播放，下面不执行
-  invalidateLater(500, session)   # 播放速度：800ms 一步
+  invalidateLater(1000, session)   # 播放速度：800ms 一步
 
   current   <- isolate(input$time_slider)
   next_year <- if (current >= MAX_YEAR) MIN_YEAR else current + 1L
@@ -444,31 +444,26 @@ observe({
   
   # ---- Farbbereich & Einheit je nach Variable ----
   if (var_id == "age_mean") {
-    # Mütteralter -> pink ("RdPu")
     c_min <- GLOBAL_MIN_AGE;       c_max <- GLOBAL_MAX_AGE
     unit  <- " Jahre";             dec   <- 2
     pal_name <- "RdPu"
     
   } else if (var_id == "anteil") {
-    # Frauenbeschäftigung -> blau
     c_min <- GLOBAL_MIN_ANTEIL;    c_max <- GLOBAL_MAX_ANTEIL
     unit  <- " %";                 dec   <- 1
     pal_name <- "Blues"
     
   } else if (var_id == "anteil_kinder") {
-    # Haushalte mit Kindern -> grün
     c_min <- GLOBAL_MIN_KINDER;    c_max <- GLOBAL_MAX_KINDER
     unit  <- " %";                 dec   <- 1
     pal_name <- "Greens"
     
   } else if (var_id == "anteil_betreuung") {
-    # Kinderbetreuung -> violett
     c_min <- GLOBAL_MIN_BETREUUNG; c_max <- GLOBAL_MAX_BETREUUNG
     unit  <- " %";                 dec   <- 1
     pal_name <- "Purples"
     
   } else {
-    # Geburtenrate -> rot (Werte klein,多几位小数)
     c_min <- GLOBAL_MIN_BABY;      c_max <- GLOBAL_MAX_BABY
     unit  <- "";                   dec   <- 4
     pal_name <- "Reds"
@@ -506,8 +501,25 @@ observe({
       title    = var_label,
       labFormat= labelFormat(suffix = unit, digits = dec),
       position = "bottomright"
+    ) %>%
+    # ✅ 右上角年份
+    addControl(
+      html = sprintf(
+        "<div style='font-size:26px;
+                     font-weight:bold;
+                     background:rgba(255,255,255,0.8);
+                     padding:4px 8px;
+                     border-radius:4px;
+                     box-shadow:0 0 3px rgba(0,0,0,0.3);'>
+           Jahr: %s
+         </div>",
+        input$time_slider
+      ),
+      position = "topright"
     )
 })
+
+
 
 ```
 
@@ -544,7 +556,7 @@ actionButton(
 ```{r}
 #| panel: fill
 # 主区域放地图
-leafletOutput("map_output", height = "650px")
+leafletOutput("map_output", height = "550px")
 ```
 
 ------------------------------------------------------------------------
@@ -571,6 +583,179 @@ leafletOutput("map_output", height = "650px")
 
 <br> Anteil der Privathaushalte <br> mit mindestens einem Kind bis 17 Jahre <br> (mit mindestens einer Hauptwohnsitzperson) <br> an allen Privathaushalten in Prozent
 
+
+## Haushalte mit Kindern
+
+```{r}
+#| context: server
+
+# ---- Play / Pause 状态（第三套）----
+playing_3 <- reactiveVal(FALSE)
+
+# 点击按钮切换播放状态 + 修改按钮文字
+observeEvent(input$play_pause_3, {
+  if (playing_3()) {
+    playing_3(FALSE)
+    updateActionButton(session, "play_pause_3", label = "▶ Play")
+  } else {
+    playing_3(TRUE)
+    updateActionButton(session, "play_pause_3", label = "⏸ Pause")
+  }
+})
+
+# 自动推进年份（只有在 playing_3() == TRUE 时才会动）
+observe({
+  req(playing_3())
+  invalidateLater(1000, session)
+
+  current   <- isolate(input$time_slider_3)
+  next_year <- if (current >= MAX_YEAR) MIN_YEAR else current + 1L
+
+  updateSliderInput(session, "time_slider_3", value = next_year)
+})
+
+# 1. Reaktive gefilterte Daten (immer aktuelles Jahr + gewählte Variable)
+filtered_sf_data_3 <- reactive({
+  final_sf_data_long %>% 
+    filter(Jahr == input$time_slider_3) %>%
+    select(
+      sb_nummer,
+      !!sym(MAP_NAME_COLUMN),
+      geometry,
+      Value = !!sym(input$variable_select_3)
+    )
+})
+
+# 2. Grundkarte (wird einmal initialisiert)
+output$map_output_3 <- renderLeaflet({
+  leaflet(options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
+    addProviderTiles(providers$CartoDB.Positron) %>%   # 黑白底图
+    setView(lng = 11.5761, lat = 48.1372, zoom = 10)
+})
+
+# 3. Karte bei Änderung von Slider / Variable neu einfärben
+observe({
+  current_sf <- filtered_sf_data_3()
+  var_id     <- input$variable_select_3
+  var_label  <- names(variable_choices)[variable_choices == var_id]
+  
+  # ---- Farbbereich & Einheit je nach Variable ----
+  if (var_id == "age_mean") {
+    c_min <- GLOBAL_MIN_AGE;       c_max <- GLOBAL_MAX_AGE
+    unit  <- " Jahre";             dec   <- 2
+    pal_name <- "RdPu"
+    
+  } else if (var_id == "anteil") {
+    c_min <- GLOBAL_MIN_ANTEIL;    c_max <- GLOBAL_MAX_ANTEIL
+    unit  <- " %";                 dec   <- 1
+    pal_name <- "Blues"
+    
+  } else if (var_id == "anteil_kinder") {
+    c_min <- GLOBAL_MIN_KINDER;    c_max <- GLOBAL_MAX_KINDER
+    unit  <- " %";                 dec   <- 1
+    pal_name <- "Greens"
+    
+  } else if (var_id == "anteil_betreuung") {
+    c_min <- GLOBAL_MIN_BETREUUNG; c_max <- GLOBAL_MAX_BETREUUNG
+    unit  <- " %";                 dec   <- 1
+    pal_name <- "Reds"
+    
+  } else {
+    c_min <- GLOBAL_MIN_BABY;      c_max <- GLOBAL_MAX_BABY
+    unit  <- "";                   dec   <- 4
+    pal_name <- ""
+  }
+  
+  pal <- colorNumeric(palette = pal_name, domain = c(c_min, c_max))
+  
+  popup_content <- paste0(
+    "<b>Stadtteil:</b> ", current_sf[[MAP_NAME_COLUMN]], "<br/>",
+    "<b>", var_label, ":</b> ", round(current_sf$Value, dec), unit
+  )
+  
+  leafletProxy("map_output_3", data = current_sf) %>%
+    clearShapes() %>%
+    clearControls() %>%
+    addPolygons(
+      fillColor = ~pal(Value),
+      weight = 1.5,
+      opacity = 1,
+      color = "white",
+      dashArray = "1",
+      fillOpacity = 0.7,
+      label = lapply(popup_content, HTML),
+      highlightOptions = highlightOptions(
+        weight = 3,
+        color  = "#666",
+        fillOpacity = 0.9,
+        bringToFront = TRUE
+      )
+    ) %>%
+    addLegend(
+      pal      = pal,
+      values   = c(c_min, c_max),
+      opacity  = 0.7,
+      title    = var_label,
+      labFormat= labelFormat(suffix = unit, digits = dec),
+      position = "bottomright"
+    ) %>%
+    # 右上角年份（第三套用 time_slider_3）
+    addControl(
+      html = sprintf(
+        "<div style='font-size:26px;
+                     font-weight:bold;
+                     background:rgba(255,255,255,0.8);
+                     padding:4px 8px;
+                     border-radius:4px;
+                     box-shadow:0 0 3px rgba(0,0,0,0.3);'>
+           Jahr: %s
+         </div>",
+        input$time_slider_3
+      ),
+      position = "topright"
+    )
+})
+```
+
+
+```{r}
+#| panel: sidebar
+# 这里是 Shiny 的 UI 控件（侧边栏）
+selectInput(
+  "variable_select_3",
+  "",
+  choices  = variable_choices,
+  selected = "anteil_kinder"    # 默认先看 Haushalte mit Kidern
+)
+
+sliderInput(
+  "time_slider_3",
+  "Jahr",
+  min     = 2012,
+  max     = 2024,
+  value   = 2012,
+  step    = 1,
+  sep     = "",
+  animate = FALSE
+)
+
+actionButton(
+  "play_pause_3",
+  "▶ Play",
+  width = "100%"
+)
+```
+
+```{r}
+#| panel: fill
+# 主区域放地图
+leafletOutput("map_output_3", height = "550px")
+```
+
+
+
+
+
 ## Korrelation (gesamt)
 
 ```{r}
@@ -584,7 +769,7 @@ leafletOutput("map_output", height = "650px")
 hmk_korr_gesamt_point_sw
 ```
 
-## Korrelation (Stadtteile)
+## Simpson's Paradox
 
 ```{r}
 #| label: hmk_korr_point_line_nach_stadtteile_color
@@ -595,20 +780,6 @@ hmk_korr_gesamt_point_sw
 #| fig-dpi: 300
 
 hmk_korr_point_line_nach_stadtteile_color
-```
-
-## Simpson's Paradox
-
-```{r}
-
-#| echo: false
-#| fig-align: center
-#| fig-width: 16
-#| fig-height: 9
-#| fig-dpi: 300
-
-hmk_simpson_stadtteile_kleiner_0
-
 ```
 
 ## Korrelation (gesamt)
@@ -669,6 +840,178 @@ $$
 \quad\times 100\%
 $$
 :::
+
+## Kinderbetreuung
+
+```{r}
+#| context: server
+
+# ---- Play / Pause 状态（第二套）----
+playing_2 <- reactiveVal(FALSE)
+
+# 点击按钮切换播放状态 + 修改按钮文字
+observeEvent(input$play_pause_2, {
+  if (playing_2()) {
+    playing_2(FALSE)
+    updateActionButton(session, "play_pause_2", label = "▶ Play")
+  } else {
+    playing_2(TRUE)
+    updateActionButton(session, "play_pause_2", label = "⏸ Pause")
+  }
+})
+
+# 自动推进年份（只有在 playing_2() == TRUE 时才会动）
+observe({
+  req(playing_2())                # 如果没在播放，下面不执行
+  invalidateLater(1000, session)  # 播放速度：1000ms 一步
+
+  current   <- isolate(input$time_slider_2)
+  next_year <- if (current >= MAX_YEAR) MIN_YEAR else current + 1L
+
+  updateSliderInput(session, "time_slider_2", value = next_year)
+})
+
+# 1. Reaktive gefilterte Daten (immer aktuelles Jahr + gewählte Variable)
+filtered_sf_data_2 <- reactive({
+  final_sf_data_long %>% 
+    filter(Jahr == input$time_slider_2) %>%
+    select(
+      sb_nummer,
+      !!sym(MAP_NAME_COLUMN),
+      geometry,
+      Value = !!sym(input$variable_select_2)
+    )
+})
+
+# 2. Grundkarte (wird einmal initialisiert)
+output$map_output_2 <- renderLeaflet({
+  leaflet(options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
+    addProviderTiles(providers$CartoDB.Positron) %>%   # 黑白底图
+    setView(lng = 11.5761, lat = 48.1372, zoom = 10)
+})
+
+# 3. Karte bei Änderung von Slider / Variable neu einfärben
+observe({
+  current_sf <- filtered_sf_data_2()
+  var_id     <- input$variable_select_2
+  var_label  <- names(variable_choices)[variable_choices == var_id]
+  
+  # ---- Farbbereich & Einheit je nach Variable ----
+  if (var_id == "age_mean") {
+    c_min <- GLOBAL_MIN_AGE;       c_max <- GLOBAL_MAX_AGE
+    unit  <- " Jahre";             dec   <- 2
+    pal_name <- "RdPu"
+    
+  } else if (var_id == "anteil") {
+    c_min <- GLOBAL_MIN_ANTEIL;    c_max <- GLOBAL_MAX_ANTEIL
+    unit  <- " %";                 dec   <- 1
+    pal_name <- "Blues"
+    
+  } else if (var_id == "anteil_kinder") {
+    c_min <- GLOBAL_MIN_KINDER;    c_max <- GLOBAL_MAX_KINDER
+    unit  <- " %";                 dec   <- 1
+    pal_name <- "Greens"
+    
+  } else if (var_id == "anteil_betreuung") {
+    c_min <- GLOBAL_MIN_BETREUUNG; c_max <- GLOBAL_MAX_BETREUUNG
+    unit  <- " %";                 dec   <- 1
+    pal_name <- "Reds"
+    
+  } else {
+    c_min <- GLOBAL_MIN_BABY;      c_max <- GLOBAL_MAX_BABY
+    unit  <- "";                   dec   <- 4
+    pal_name <- ""
+  }
+  
+  pal <- colorNumeric(palette = pal_name, domain = c(c_min, c_max))
+  
+  popup_content <- paste0(
+    "<b>Stadtteil:</b> ", current_sf[[MAP_NAME_COLUMN]], "<br/>",
+    "<b>", var_label, ":</b> ", round(current_sf$Value, dec), unit
+  )
+  
+  leafletProxy("map_output_2", data = current_sf) %>%
+    clearShapes() %>%
+    clearControls() %>%
+    addPolygons(
+      fillColor = ~pal(Value),
+      weight = 1.5,
+      opacity = 1,
+      color = "white",
+      dashArray = "1",
+      fillOpacity = 0.7,
+      label = lapply(popup_content, HTML),
+      highlightOptions = highlightOptions(
+        weight = 3,
+        color  = "#666",
+        fillOpacity = 0.9,
+        bringToFront = TRUE
+      )
+    ) %>%
+    addLegend(
+      pal      = pal,
+      values   = c(c_min, c_max),
+      opacity  = 0.7,
+      title    = var_label,
+      labFormat= labelFormat(suffix = unit, digits = dec),
+      position = "bottomright"
+    ) %>%
+    # ✅ 右上角年份（第二套用 time_slider_2）
+    addControl(
+      html = sprintf(
+        "<div style='font-size:26px;
+                     font-weight:bold;
+                     background:rgba(255,255,255,0.8);
+                     padding:4px 8px;
+                     border-radius:4px;
+                     box-shadow:0 0 3px rgba(0,0,0,0.3);'>
+           Jahr: %s
+         </div>",
+        input$time_slider_2
+      ),
+      position = "topright"
+    )
+})
+
+```
+
+
+```{r}
+#| panel: sidebar
+# 这里是 Shiny 的 UI 控件（侧边栏）
+selectInput(
+  "variable_select_2",
+  "",
+  choices  = variable_choices,
+  selected = "anteil_betreuung"    # 默认先看 Kinderbetreuung
+)
+
+sliderInput(
+  "time_slider_2",
+  "Jahr",
+  min     = 2007,
+  max     = 2024,
+  value   = 2007,
+  step    = 1,
+  sep     = "",
+  animate = FALSE
+)
+
+actionButton(
+  "play_pause_2",
+  "▶ Play",
+  width = "100%"
+)
+```
+
+```{r}
+#| panel: fill
+# 主区域放地图
+leafletOutput("map_output_2", height = "550px")
+```
+
+
+
 
 ------------------------------------------------------------------------
 
@@ -816,20 +1159,6 @@ hmk_korr_point_line_nach_jahr_color
 m_effekt_01
 ```
 
-## Betreuungsbedingte Korrelation 2024
-
-<br>
-
-```{r}
-#| label: m_effekt_02
-#| echo: false
-#| fig-align: center
-#| fig-width: 9
-#| fig-height: 5
-#| fig-dpi: 300
-
-m_effekt_02
-```
 
 ## Betreuungsbedingte Korrelation
 
@@ -856,6 +1185,12 @@ observeEvent(input$play_pause_scatter, {
 year_seq <- sort(unique(df_merged$Jahr))
 year_min <- min(year_seq, na.rm = TRUE)
 year_max <- max(year_seq, na.rm = TRUE)
+
+# 全年份的固定坐标轴范围
+x_range <- range(df_merged$households_pct, na.rm = TRUE)
+y_range <- range(df_merged$emp_female_pct, na.rm = TRUE)
+
+
 
 # 自动推进年份（只有在 playing_scatter() == TRUE 时才会动）
 observe({
@@ -921,6 +1256,7 @@ farben <- c(
 )
 
 # Plot-Ausgabe
+# Plot-Ausgabe
 output$plot <- renderPlot({
 
   df <- df_year_grouped()
@@ -952,7 +1288,7 @@ output$plot <- renderPlot({
     # Punkte: Gesamt (grau)
     geom_point(
       data  = df_points_gesamt,
-      aes(x = emp_female_pct, y = households_pct),
+      aes(x = households_pct, y = emp_female_pct),
       color = "grey50",
       alpha = 0.6
     ) +
@@ -960,14 +1296,24 @@ output$plot <- renderPlot({
     # Punkte: Hoch / Niedrig (farbig)
     geom_point(
       data  = df_points_grouped,
-      aes(x = emp_female_pct, y = households_pct, color = gruppe),
+      aes(x = households_pct, y = emp_female_pct, color = gruppe),
       alpha = 0.8
+    ) +
+
+    # 固定坐标轴范围
+    scale_x_continuous(
+      limits = x_range,
+      name   = "Haushalte mit Kindern (%)"
+    ) +
+    scale_y_continuous(
+      limits = y_range,
+      name   = "Frauenbeschäftigung (%)"
     ) +
 
     # Regressionslinien
     geom_smooth(
       data  = df_lines,
-      aes(x = emp_female_pct, y = households_pct, color = gruppe),
+      aes(x = households_pct, y = emp_female_pct, color = gruppe),
       method = "lm",
       se     = FALSE,
       linewidth   = 1.2
@@ -975,22 +1321,21 @@ output$plot <- renderPlot({
 
     scale_color_manual(values = farben, name = "Linien:") +
 
-    labs(
-      x = "Frauenbeschäftigung (%)",
-      y = "Haushalte mit Kindern (%)"
-    ) +
-
+    # 年份右上角
     annotate(
-      "text", x = -Inf, y = Inf,
+      "text", x = Inf, y = Inf,
       label = paste("Jahr:", input$year),
-      hjust  = -0.1,
-      vjust  =  1.5,
-      size   =  5
-    ) +
+      hjust  = 1.1,
+      vjust  = 1.5,
+      size   = 20
+    ) + 
 
-    theme_minimal(base_size = 14)
+    theme_bw(base_size = 14) +
+theme(
+  aspect.ratio = 4/7     # ← 这里控制图形比例
+)
 
-}, width = 1600, height = 900)
+})
 ```
 
 ```{r}
@@ -1041,29 +1386,16 @@ m_effekt_2.5
 
 <br>
 
-::::: columns
-::: column
 ```{r}
 #| echo: false
+#| layout-ncol: 2
 #| out.width: "100%"
-#| out.height: "400px"
+#| fig-height: 8
+#| fig-dpi: 300
+#| fig-align: center
 
-m_effekt_04
 
 ```
-:::
-
-::: column
-```{r}
-#| echo: false
-#| out.width: "100%"
-#| out.height: "400px"
-
-m_effekt_03
-
-```
-:::
-:::::
 
 ## Agenda
 
@@ -1080,36 +1412,113 @@ m_effekt_03
 
 ## Fazit
 
-::: {style="font-size:65%;"}
-### Frauenbeschäftigung:
+::: {style="font-size:80%;"}
+-   **Frauenbeschäftigung:**
+    - Zuwachs in allen Stadtteilen
+    - Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil
 
--   Zuwachs in allen Stadtteilen\
--   Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil
+-   **[Haushalte mit Kindern:]{style="color:lightgray;"}**
+    - [Nach Stadtteil: meistens positive Korrelation]{style="color:lightgray;"}
+    - [Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt]{style="color:lightgray;"}
 
-### Haushalte mit Kindern:
-
--   Nach Stadtteil: meistens positive Korrelation\
--   Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt
-
-### Kinderbetreuung:
-
--   Nach Stadtteil: stark positive Korrelation\
--   Nach Jahr: negative Korrelation\
--   Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
+-   **[Kinderbetreuung:]{style="color:lightgray;"}**
+    - [Nach Stadtteil: stark positive Korrelation]{style="color:lightgray;"}
+    - [Nach Jahr: negative Korrelation]{style="color:lightgray;"}
+    - [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
 :::
+
+
+## Fazit
+
+::: {style="font-size:80%;"}
+-   **[Frauenbeschäftigung:]{style="color:lightgray;"}**
+    - [Zuwachs in allen Stadtteilen]{style="color:lightgray;"}
+    - [Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil]{style="color:lightgray;"}
+
+-   **Haushalte mit Kindern:**
+    - Nach Stadtteil: meistens positive Korrelation
+    - Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt
+
+-   **[Kinderbetreuung:]{style="color:lightgray;"}**
+    - [Nach Stadtteil: stark positive Korrelation]{style="color:lightgray;"}
+    - [Nach Jahr: negative Korrelation]{style="color:lightgray;"}
+    - [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
+:::
+
+
+## Fazit
+
+::: {style="font-size:80%;"}
+-   **[Frauenbeschäftigung:]{style="color:lightgray;"}**
+    - [Zuwachs in allen Stadtteilen]{style="color:lightgray;"}
+    - [Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil]{style="color:lightgray;"}
+
+-   **[Haushalte mit Kindern:]{style="color:lightgray;"}**
+    - [Nach Stadtteil: meistens positive Korrelation]{style="color:lightgray;"}
+    - [Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt]{style="color:lightgray;"}
+
+-   **Kinderbetreuung:**
+    - Nach Stadtteil: stark positive Korrelation\
+    - Nach Jahr: negative Korrelation\
+    - Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
+:::
+
+
+
+
 
 ## Limitation
 
 ::: {style="font-size:85%;"}
 -   **Sozialversicherungspflichtige Beschäftigung:**\
-    nicht alle Erwerbstätigen umfassen
+    - Nicht alle Erwerbstätigen umfassen
+
+-   **[Altersgruppen nicht vollständig kompatibel:]{style="color:lightgray;"}**\
+    - [Nur 0–2 Jahre stimmen überein]{style="color:lightgray;"}
+    - [Andere Altersgruppen sind nicht vergleichbar]{style="color:lightgray;"}
+
+-   **[Unterschiedliche Zeitabdeckung:]{style="color:lightgray;"}**
+    - [Daten über Frauenbeschäftigung ab 2000]{style="color:lightgray;"}
+    - [Daten über Kinderbetreuung ab 2007]{style="color:lightgray;"}
+    - [Daten über Haushalte mit Kindern ab 2012]{style="color:lightgray;"}
+:::
+
+
+## Limitation
+
+::: {style="font-size:85%;"}
+-   **[Sozialversicherungspflichtige Beschäftigung:]{style="color:lightgray;"}**\
+    [nicht alle Erwerbstätigen umfassen]{style="color:lightgray;"}
 
 -   **Altersgruppen nicht vollständig kompatibel:**\
-    Nur 0–2 Jahre stimmen überein; andere Altersgruppen sind nicht vergleichbar
+    - Nur 0–2 Jahre stimmen überein
+    - Andere Altersgruppen sind nicht vergleichbar
 
--   **Unterschiedliche Zeitabdeckung:**\
-    Beschäftigungsdaten ab 2000, Kinderbetreuungsdaten erst ab 2007
+-   **[Unterschiedliche Zeitabdeckung:]{style="color:lightgray;"}**
+    - [Daten über Frauenbeschäftigung ab 2000]{style="color:lightgray;"}
+    - [Daten über Kinderbetreuung ab 2007]{style="color:lightgray;"}
+    - [Daten über Haushalte mit Kindern ab 2012]{style="color:lightgray;"}
 :::
+
+
+## Limitation
+
+::: {style="font-size:85%;"}
+-   **[Sozialversicherungspflichtige Beschäftigung:]{style="color:lightgray;"}**\
+    [nicht alle Erwerbstätigen umfassen]{style="color:lightgray;"}
+
+-   **[Altersgruppen nicht vollständig kompatibel:]{style="color:lightgray;"}**\
+    - [Nur 0–2 Jahre stimmen überein]{style="color:lightgray;"}
+    - [Andere Altersgruppen sind nicht vergleichbar]{style="color:lightgray;"}
+
+-   **Unterschiedliche Zeitabdeckung:**
+    - Daten über Frauenbeschäftigung ab 2000
+    - Daten über Kinderbetreuung ab 2007
+    - Daten über Haushalte mit Kindern ab 2012
+:::
+
+
+
 
 ## Ausblick
 
@@ -1124,6 +1533,11 @@ m_effekt_03
 -   **Erhöhung der Stichprobengröße:**\
     Postleitzahlen statt Stadtteile
 :::
+
+##  
+
+![](images/clipboard-3386569485.png)
+
 
 ## Anhang
 
