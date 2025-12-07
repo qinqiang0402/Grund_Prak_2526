@@ -51,6 +51,7 @@ hmk_korr_point_line_nach_jahr_color <- readRDS("results/figures/Haushalt_mit_Kin
 
 #______________________________________________________________________________
 ki_dual_trend <- readRDS("results/figures/Kinderbetreuung/ki_dual_trend.rds")
+ki_trend_sv <- readRDS("results/figures/Kinderbetreuung/trend_sv.rds")
 ki_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_ki_2015.rds")
 sv_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_sv_2015.rds")
 ki_point_korr_gesamt_sw <- readRDS("results/figures/Kinderbetreuung/ki_point_korr_gesamt_sw.rds")
@@ -282,6 +283,10 @@ df_merged <- df_emp %>%
 
 ```
 
+## 
+
+![](images/clipboard-3386569485.png)
+
 ## Agenda
 
 1.  Datenüberblick
@@ -310,10 +315,6 @@ df_merged <- df_emp %>%
     -   [Kinderbetreuung]{style="color:lightgray;"}
 
 [3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
-
-## 
-
-![](images/clipboard-3386569485.png)
 
 ## Daten {.smaller}
 
@@ -583,7 +584,6 @@ leafletOutput("map_output", height = "550px")
 
 <br> Anteil der Privathaushalte <br> mit mindestens einem Kind bis 17 Jahre <br> (mit mindestens einer Hauptwohnsitzperson) <br> an allen Privathaushalten in Prozent
 
-
 ## Haushalte mit Kindern
 
 ```{r}
@@ -717,7 +717,6 @@ observe({
 })
 ```
 
-
 ```{r}
 #| panel: sidebar
 # 这里是 Shiny 的 UI 控件（侧边栏）
@@ -751,10 +750,6 @@ actionButton(
 # 主区域放地图
 leafletOutput("map_output_3", height = "550px")
 ```
-
-
-
-
 
 ## Korrelation (gesamt)
 
@@ -975,7 +970,6 @@ observe({
 
 ```
 
-
 ```{r}
 #| panel: sidebar
 # 这里是 Shiny 的 UI 控件（侧边栏）
@@ -1010,12 +1004,22 @@ actionButton(
 leafletOutput("map_output_2", height = "550px")
 ```
 
+## Zeitliche Entwicklung der Frauenbeschäftigung (2007–2024)
 
+```{r}
+#| echo: false
+#| fig-align: center
+#| fig-width: 9
+#| fig-height: 5
+#| fig-dpi: 300
 
+ki_trend_sv
+
+```
 
 ------------------------------------------------------------------------
 
-## Dual-Trend: Kinderbetreuung und Frauenbeschäftigung (2007–2024)
+## Kinderbetreuung und Frauenbeschäftigung (2007–2024)
 
 ```{r}
 #| label: ki-dual_trend
@@ -1078,7 +1082,7 @@ ki_simpson_sw
 ki_point_line_color
 ```
 
-## Dual-Trend: Kinderbetreuung und Frauenbeschäftigung (2007–2024)
+## Kinderbetreuung und Frauenbeschäftigung (2007–2024)
 
 ```{r}
 #| echo: false
@@ -1159,18 +1163,20 @@ hmk_korr_point_line_nach_jahr_color
 m_effekt_01
 ```
 
-
 ## Betreuungsbedingte Korrelation
 
 <br>
 
 ```{r}
 #| context: server
+#| fig-width: 18
+#| fig-height: 12
+#| fig-align: center
 
-# ---- 只给「散点图 Shiny」用的 Play / Pause 状态 ----
+
+# ---- Play / Pause ----
 playing_scatter <- reactiveVal(FALSE)
 
-# 点击按钮切换播放状态 + 修改按钮文字（注意 ID：play_pause_scatter）
 observeEvent(input$play_pause_scatter, {
   if (playing_scatter()) {
     playing_scatter(FALSE)
@@ -1181,22 +1187,15 @@ observeEvent(input$play_pause_scatter, {
   }
 })
 
-# 年份序列（防止不是连续整数）
+# ---- Year sequence ----
 year_seq <- sort(unique(df_merged$Jahr))
 year_min <- min(year_seq, na.rm = TRUE)
 year_max <- max(year_seq, na.rm = TRUE)
 
-# 全年份的固定坐标轴范围
-x_range <- range(df_merged$households_pct, na.rm = TRUE)
-y_range <- range(df_merged$emp_female_pct, na.rm = TRUE)
-
-
-
-# 自动推进年份（只有在 playing_scatter() == TRUE 时才会动）
 observe({
-  invalidateLater(1200, session)   # 播放速度：800ms 一步
-  req(playing_scatter())          # 没在播放就直接停在这里
-  req(!is.null(input$year))       # 确保 slider 已经有值
+  invalidateLater(1200, session)
+  req(playing_scatter())
+  req(!is.null(input$year))
 
   current <- isolate(input$year)
   idx <- match(current, year_seq)
@@ -1210,14 +1209,14 @@ observe({
   updateSliderInput(session, "year", value = next_year)
 })
 
-# Jahresdatensatz (abhängig vom Slider input$year)
+# ---- Jahresdatensatz ----
 df_year <- reactive({
   req(input$year)
 
   df_merged %>%
     filter(
       Jahr == input$year,
-      Raumbezug != "Stadt München"   # Stadt München raus
+      Raumbezug != "Stadt München"
     ) %>%
     inner_join(
       df_betreut %>%
@@ -1227,9 +1226,9 @@ df_year <- reactive({
     )
 })
 
-# Jahresdatensatz + Betreuungsgruppen
+# ---- Gruppierung: Hoch / Mittel / Niedrig ----
 df_year_grouped <- reactive({
-  d  <- df_year()
+  d <- df_year()
 
   qs <- quantile(
     d$anteil_betreut,
@@ -1248,94 +1247,78 @@ df_year_grouped <- reactive({
     )
 })
 
-# Farben für Linien & Punkte
+# ---- ⭐标准化（z-score），确保斜率符合相关性强弱 ----
+df_year_scaled <- reactive({
+  df_year_grouped() %>%
+    group_by(betreuung_group) %>%
+    mutate(
+      x_std = as.numeric(scale(households_pct)),
+      y_std = as.numeric(scale(emp_female_pct))
+    ) %>%
+    ungroup()
+})
+
+
+# Farben
 farben <- c(
-  "Gesamt"             = "black",
-  "Hohe Betreuung"     = "#e66101",
-  "Niedrige Betreuung" = "#fdb863"
+  "Hohe Betreuung"     = "#8C3F00",
+  "Mittel Betreuung"   = "#D97400",
+  "Niedrige Betreuung" = "#FFB84D"
 )
 
-# Plot-Ausgabe
-# Plot-Ausgabe
+# Plot
 output$plot <- renderPlot({
 
-  df <- df_year_grouped()
+  df <- df_year_scaled()
 
-  # Linien-Datensatz (3 Linien)
-  df_lines <- bind_rows(
-    df %>% mutate(gruppe = "Gesamt"),
-    df %>% filter(betreuung_group == "Hoch")    %>% mutate(gruppe = "Hohe Betreuung"),
-    df %>% filter(betreuung_group == "Niedrig") %>% mutate(gruppe = "Niedrige Betreuung")
-  )
+  df <- df %>%
+    mutate(gruppe = case_when(
+      betreuung_group == "Hoch"    ~ "Hohe Betreuung",
+      betreuung_group == "Mittel"  ~ "Mittel Betreuung",
+      betreuung_group == "Niedrig" ~ "Niedrige Betreuung"
+    ))
 
-  # Punkte für Hoch + Niedrig (farbig)
-  df_points_grouped <- df %>%
-    filter(betreuung_group %in% c("Hoch", "Niedrig")) %>%
-    mutate(
-      gruppe = case_when(
-        betreuung_group == "Hoch"    ~ "Hohe Betreuung",
-        betreuung_group == "Niedrig" ~ "Niedrige Betreuung"
-      )
-    )
+  ggplot(df) +
 
-  # Punkte für Gesamt (grau)
-  df_points_gesamt <- df %>%
-    filter(betreuung_group == "Mittel" | is.na(betreuung_group)) %>%
-    mutate(gruppe = "Gesamt")
-
-  ggplot() +
-
-    # Punkte: Gesamt (grau)
+    # Punkte
     geom_point(
-      data  = df_points_gesamt,
-      aes(x = households_pct, y = emp_female_pct),
-      color = "grey50",
-      alpha = 0.6
-    ) +
-
-    # Punkte: Hoch / Niedrig (farbig)
-    geom_point(
-      data  = df_points_grouped,
-      aes(x = households_pct, y = emp_female_pct, color = gruppe),
-      alpha = 0.8
-    ) +
-
-    # 固定坐标轴范围
-    scale_x_continuous(
-      limits = x_range,
-      name   = "Haushalte mit Kindern (%)"
-    ) +
-    scale_y_continuous(
-      limits = y_range,
-      name   = "Frauenbeschäftigung (%)"
+      aes(x = x_std, y = y_std, color = gruppe),
+      size = 6, alpha = 0.9
     ) +
 
     # Regressionslinien
     geom_smooth(
-      data  = df_lines,
-      aes(x = households_pct, y = emp_female_pct, color = gruppe),
+      aes(x = x_std, y = y_std, color = gruppe),
       method = "lm",
-      se     = FALSE,
-      linewidth   = 1.2
+      se = FALSE,
+      linewidth = 5
     ) +
 
     scale_color_manual(values = farben, name = "Linien:") +
 
-    # 年份右上角
+    labs(
+      x = "Haushalte mit Kindern (standardisiert)",
+      y = "Frauenbeschäftigung (standardisiert)"
+    ) +
+
     annotate(
-      "text", x = Inf, y = Inf,
+      "text",
+      x = -Inf, y = Inf,
       label = paste("Jahr:", input$year),
-      hjust  = 1.1,
-      vjust  = 1.5,
-      size   = 20
-    ) + 
+      hjust = -0.15, vjust = 1.5,
+      size = 10
+    ) +
 
-    theme_bw(base_size = 14) +
-theme(
-  aspect.ratio = 4/7     # ← 这里控制图形比例
-)
+   theme_bw(base_size = 28) +
+    theme(
+      plot.title      = element_text(size = 36, face = "bold"),
+      axis.title      = element_text(size = 32, face = "bold"),
+      axis.text       = element_text(size = 28),
+      legend.title    = element_text(size = 30),
+      legend.text     = element_text(size = 26)
+    )
 
-})
+}, width = 1920, height = 1080)  
 ```
 
 ```{r}
@@ -1362,9 +1345,9 @@ actionButton(
 
 ```{r}
 #| panel: fill
+#| fill: true
 
-plotOutput("plot", height = "450px")
-
+plotOutput("plot")  # 用视窗高度，图会占满大部分幻灯片
 ```
 
 ## Betreuungsbedarf 2024
@@ -1397,6 +1380,8 @@ m_effekt_2.5
 
 ```
 
+## Test
+
 ## Agenda
 
 [1. Datenüberblick]{style="color:lightgray;"}
@@ -1414,136 +1399,145 @@ m_effekt_2.5
 
 ::: {style="font-size:80%;"}
 -   **Frauenbeschäftigung:**
-    - Zuwachs in allen Stadtteilen
-    - Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil
-
--   **[Haushalte mit Kindern:]{style="color:lightgray;"}**
-    - [Nach Stadtteil: meistens positive Korrelation]{style="color:lightgray;"}
-    - [Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt]{style="color:lightgray;"}
-
--   **[Kinderbetreuung:]{style="color:lightgray;"}**
-    - [Nach Stadtteil: stark positive Korrelation]{style="color:lightgray;"}
-    - [Nach Jahr: negative Korrelation]{style="color:lightgray;"}
-    - [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
+    -   Zuwachs in allen Stadtteilen
+    -   Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil
+-   [**Haushalte mit Kindern:**]{style="color:lightgray;"}
+    -   [Nach Stadtteil: meistens positive Korrelation]{style="color:lightgray;"}
+    -   [Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt]{style="color:lightgray;"}
+-   [**Kinderbetreuung:**]{style="color:lightgray;"}
+    -   [Nach Stadtteil: stark positive Korrelation]{style="color:lightgray;"}
+    -   [Nach Jahr: negative Korrelation]{style="color:lightgray;"}
+    -   [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
 :::
-
 
 ## Fazit
 
 ::: {style="font-size:80%;"}
--   **[Frauenbeschäftigung:]{style="color:lightgray;"}**
-    - [Zuwachs in allen Stadtteilen]{style="color:lightgray;"}
-    - [Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil]{style="color:lightgray;"}
-
+-   [**Frauenbeschäftigung:**]{style="color:lightgray;"}
+    -   [Zuwachs in allen Stadtteilen]{style="color:lightgray;"}
+    -   [Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil]{style="color:lightgray;"}
 -   **Haushalte mit Kindern:**
-    - Nach Stadtteil: meistens positive Korrelation
-    - Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt
-
--   **[Kinderbetreuung:]{style="color:lightgray;"}**
-    - [Nach Stadtteil: stark positive Korrelation]{style="color:lightgray;"}
-    - [Nach Jahr: negative Korrelation]{style="color:lightgray;"}
-    - [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
+    -   Nach Stadtteil: meistens positive Korrelation
+    -   Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt
+-   [**Kinderbetreuung:**]{style="color:lightgray;"}
+    -   [Nach Stadtteil: stark positive Korrelation]{style="color:lightgray;"}
+    -   [Nach Jahr: negative Korrelation]{style="color:lightgray;"}
+    -   [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
 :::
-
 
 ## Fazit
 
 ::: {style="font-size:80%;"}
--   **[Frauenbeschäftigung:]{style="color:lightgray;"}**
-    - [Zuwachs in allen Stadtteilen]{style="color:lightgray;"}
-    - [Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil]{style="color:lightgray;"}
-
--   **[Haushalte mit Kindern:]{style="color:lightgray;"}**
-    - [Nach Stadtteil: meistens positive Korrelation]{style="color:lightgray;"}
-    - [Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt]{style="color:lightgray;"}
-
+-   [**Frauenbeschäftigung:**]{style="color:lightgray;"}
+    -   [Zuwachs in allen Stadtteilen]{style="color:lightgray;"}
+    -   [Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil]{style="color:lightgray;"}
+-   [**Haushalte mit Kindern:**]{style="color:lightgray;"}
+    -   [Nach Stadtteil: meistens positive Korrelation]{style="color:lightgray;"}
+    -   [Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt]{style="color:lightgray;"}
 -   **Kinderbetreuung:**
-    - Nach Stadtteil: stark positive Korrelation\
-    - Nach Jahr: negative Korrelation\
-    - Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
+    -   Nach Stadtteil: stark positive Korrelation\
+    -   Nach Jahr: negative Korrelation\
+    -   Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
 :::
-
-
-
-
 
 ## Limitation
 
 ::: {style="font-size:85%;"}
 -   **Sozialversicherungspflichtige Beschäftigung:**\
-    - Nicht alle Erwerbstätigen umfassen
-
--   **[Altersgruppen nicht vollständig kompatibel:]{style="color:lightgray;"}**\
-    - [Nur 0–2 Jahre stimmen überein]{style="color:lightgray;"}
-    - [Andere Altersgruppen sind nicht vergleichbar]{style="color:lightgray;"}
-
--   **[Unterschiedliche Zeitabdeckung:]{style="color:lightgray;"}**
-    - [Daten über Frauenbeschäftigung ab 2000]{style="color:lightgray;"}
-    - [Daten über Kinderbetreuung ab 2007]{style="color:lightgray;"}
-    - [Daten über Haushalte mit Kindern ab 2012]{style="color:lightgray;"}
+    -   Nicht alle Erwerbstätigen umfassen
+-   [**Altersgruppen nicht vollständig kompatibel:**]{style="color:lightgray;"}\
+    -   [Nur 0–2 Jahre stimmen überein]{style="color:lightgray;"}
+    -   [Andere Altersgruppen sind nicht vergleichbar]{style="color:lightgray;"}
+-   [**Unterschiedliche Zeitabdeckung:**]{style="color:lightgray;"}
+    -   [Daten über Frauenbeschäftigung ab 2000]{style="color:lightgray;"}
+    -   [Daten über Kinderbetreuung ab 2007]{style="color:lightgray;"}
+    -   [Daten über Haushalte mit Kindern ab 2012]{style="color:lightgray;"}
 :::
-
 
 ## Limitation
 
 ::: {style="font-size:85%;"}
--   **[Sozialversicherungspflichtige Beschäftigung:]{style="color:lightgray;"}**\
-    [nicht alle Erwerbstätigen umfassen]{style="color:lightgray;"}
-
+-   [**Sozialversicherungspflichtige Beschäftigung:**]{style="color:lightgray;"}\
+    -   [Nicht alle Erwerbstätigen umfassen]{style="color:lightgray;"}
 -   **Altersgruppen nicht vollständig kompatibel:**\
-    - Nur 0–2 Jahre stimmen überein
-    - Andere Altersgruppen sind nicht vergleichbar
-
--   **[Unterschiedliche Zeitabdeckung:]{style="color:lightgray;"}**
-    - [Daten über Frauenbeschäftigung ab 2000]{style="color:lightgray;"}
-    - [Daten über Kinderbetreuung ab 2007]{style="color:lightgray;"}
-    - [Daten über Haushalte mit Kindern ab 2012]{style="color:lightgray;"}
+    -   Nur 0–2 Jahre stimmen überein
+    -   Andere Altersgruppen sind nicht vergleichbar
+-   [**Unterschiedliche Zeitabdeckung:**]{style="color:lightgray;"}
+    -   [Daten über Frauenbeschäftigung ab 2000]{style="color:lightgray;"}
+    -   [Daten über Kinderbetreuung ab 2007]{style="color:lightgray;"}
+    -   [Daten über Haushalte mit Kindern ab 2012]{style="color:lightgray;"}
 :::
-
 
 ## Limitation
 
 ::: {style="font-size:85%;"}
--   **[Sozialversicherungspflichtige Beschäftigung:]{style="color:lightgray;"}**\
-    [nicht alle Erwerbstätigen umfassen]{style="color:lightgray;"}
-
--   **[Altersgruppen nicht vollständig kompatibel:]{style="color:lightgray;"}**\
-    - [Nur 0–2 Jahre stimmen überein]{style="color:lightgray;"}
-    - [Andere Altersgruppen sind nicht vergleichbar]{style="color:lightgray;"}
-
+-   [**Sozialversicherungspflichtige Beschäftigung:**]{style="color:lightgray;"}\
+    -   [Nicht alle Erwerbstätigen umfassen]{style="color:lightgray;"}
+-   [**Altersgruppen nicht vollständig kompatibel:**]{style="color:lightgray;"}\
+    -   [Nur 0–2 Jahre stimmen überein]{style="color:lightgray;"}
+    -   [Andere Altersgruppen sind nicht vergleichbar]{style="color:lightgray;"}
 -   **Unterschiedliche Zeitabdeckung:**
-    - Daten über Frauenbeschäftigung ab 2000
-    - Daten über Kinderbetreuung ab 2007
-    - Daten über Haushalte mit Kindern ab 2012
+    -   Daten über Frauenbeschäftigung ab 2000
+    -   Daten über Kinderbetreuung ab 2007
+    -   Daten über Haushalte mit Kindern ab 2012
 :::
-
-
-
 
 ## Ausblick
 
 ::: {style="font-size:85%;"}
 -   **Feinere Datenebene:**\
-    konkret analysieren und bedingte Wahrscheinlichkeiten berechnen\
-    (ob eine Frau in einem Haushalt mit Kind und erwerbstätig ist)
+    -   Stadtteile durch Postleitzahlen ersetzen
+    -   Wir berechnen die bedingte Wahrscheinlichkeit
+
+\[ P(\text{Frau lebt in einem Haushalt mit Kindern} \mid \text{Frau ist erwerbstätig}) = \frac{P(\text{Frau lebt in einem Haushalt mit Kindern} 
+           \cap \text{Frau ist erwerbstätig})} {P(\text{Frau ist erwerbstätig})}. \]
 
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**\
-    Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
-
--   **Erhöhung der Stichprobengröße:**\
-    Postleitzahlen statt Stadtteile
+    -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
+-   **Moderierter Effekt::**\
+    -   Komplexere Modelle lernen und verwenden
 :::
 
-##  
+## 
 
 ![](images/clipboard-3386569485.png)
-
 
 ## Anhang
 
 #### Literatur
 
 <br> § 7 SGB IV und § 2 SGB IV
+
+## Anhang
+
+<br><br>
+
+::::: columns
+::: column
+```{r}
+#| echo: false
+#| out.width: "100%"
+#| out.height: "400px"
+#| 
+#| 
+
+m_effekt_04
+```
+:::
+
+::: column
+```{r}
+#| echo: false
+#| out.width: "100%"
+#| out.height: "400px"
+
+
+
+
+m_effekt_03
+```
+:::
+:::::
 
 ## Anhang
 
