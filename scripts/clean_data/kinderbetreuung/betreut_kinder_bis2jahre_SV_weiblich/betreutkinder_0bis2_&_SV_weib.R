@@ -162,6 +162,9 @@ df_merge <- df_betreut_bezirk %>%
 
 
 # (A) Non-enrolled 0–2 share, weighted by number of children
+# -----------------------------
+# 1) 数据
+# -----------------------------
 enrolled_year <- df_betreut %>%
   filter(Jahr >= 2007, Jahr <= 2024) %>%
   group_by(Jahr) %>%
@@ -171,71 +174,68 @@ enrolled_year <- df_betreut %>%
     .groups = "drop"
   )
 
-# (B) Female unemployment – prefer the city total row if available
-#     If you DON'T have "Stadt München", uncomment the second block.
-
-# Option 1: direct city total row
 emp_year <- sozial_anteil_weiblich %>%
   filter(Jahr >= 2007, Jahr <= 2024, Raumbezug == "Stadt München") %>%
   transmute(Jahr, emp_women = sozial_weiblich * 100)
 
-# Option 2 (fallback): average across districts (simple mean)
-# unemp_year <- arbeitslos_weiblich %>%
-#   filter(Jahr >= 2007, Jahr <= 2024, str_detect(Raumbezug, "^[0-9]+")) %>%
-#   group_by(Jahr) %>%
-#   summarise(unemp_women = mean(arbeitslos_weiblich, na.rm = TRUE), .groups = "drop")
-
-# Merge both series
 ts_dual <- enrolled_year %>%
   inner_join(emp_year, by = "Jahr")
 
 # -----------------------------
-# 2) Build a scaling to map right-axis data to left scale
+# 2) scaling（这次是把 emp_women 缩放到 Kinderbetreuung 那边）
 # -----------------------------
-range_left  <- range(ts_dual$share_enrolled, na.rm = TRUE)
-range_right <- range(ts_dual$emp_women,      na.rm = TRUE)
+range_left  <- range(ts_dual$emp_women,      na.rm = TRUE)  # 左轴：Frauenbeschäftigung
+range_right <- range(ts_dual$share_enrolled, na.rm = TRUE)  # 右轴：Kinderbetreuung
 
-scale_factor <- (range_left[2] - range_left[1]) / (range_right[2] - range_right[1])
+scale_factor <- (range_left[2] - range_left[1]) / 
+  (range_right[2] - range_right[1])
 
-# ⭐ 新增：把 rescale 完成后直接存进数据框
 ts_dual <- ts_dual %>%
   mutate(
-    emp_scaled = (emp_women - range_right[1]) * scale_factor + range_left[1]
+    share_scaled = (share_enrolled - range_right[1]) * scale_factor + range_left[1]
   )
 
 # -----------------------------
-# 3) Plot dual-axis trend
+# 3) Plot （左右 y 轴已对调）
 # -----------------------------
 ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
-  # Linke Achse (Betreuungsanteil)
-  geom_line(aes(y = share_enrolled, color = "Kinderbetreuung"), size = 1.2) +
-  geom_point(aes(y = share_enrolled, color = "Kinderbetreuung"), size = 2) +
   
-  # Rechte Achse (Frauenbeschäftigung), jetzt mit emp_scaled
-  geom_line(aes(y = emp_scaled, color = "Frauenbeschäftigung"), size = 1.2) +
-  geom_point(aes(y = emp_scaled, color = "Frauenbeschäftigung"), size = 2) +
+  # 左轴：Frauenbeschäftigung (blue)
+  geom_line(aes(y = emp_women, color = "Frauenbeschäftigung"), size = 1.2) +
+  geom_point(aes(y = emp_women, color = "Frauenbeschäftigung"), size = 2) +
   
+  # 右轴：Kinderbetreuung (red) —— 使用 share_scaled
+  geom_line(aes(y = share_scaled, color = "Kinderbetreuung"), size = 1.2) +
+  geom_point(aes(y = share_scaled, color = "Kinderbetreuung"), size = 2) +
+  
+  # 左轴 = Frauenbeschäftigung；右轴 = Kinderbetreuung
   scale_y_continuous(
-    name = "Kinderbetreuung (%)",
+    name = "Frauenbeschäftigung (%)",
     sec.axis = sec_axis(
       ~ (. - range_left[1]) / scale_factor + range_right[1],
-      name = "Frauenbeschäftigung (%)"
+      name = "Kinderbetreuung (%)"
     )
-  ) +scale_x_continuous(breaks = c(2007, 2011, 2015, 2019, 2022, 2024))+
+  ) +
+  
+  scale_x_continuous(breaks = c(2007, 2011, 2015, 2019, 2022, 2024)) +
+  
   scale_color_manual(
     name = NULL,
-    values = c("Kinderbetreuung" = "#d62728",
-               "Frauenbeschäftigung"      = "#1f77b4")
+    values = c(
+      "Kinderbetreuung"     = "#d62728",
+      "Frauenbeschäftigung" = "#1f77b4"
+    )
   ) +
-  labs(
-    title    = "",
-    subtitle = "",
-    x        = "Jahr"
-  ) +
-  theme_minimal(base_size = 13) +
+  
+  labs(x = "Jahr", title = "", subtitle = "") +
+  theme_bw(base_size = 13) +
   theme(
     legend.position   = "top",
-    panel.grid.minor  = element_blank()
+    panel.grid.minor  = element_blank(),
+    axis.title.y.right = element_text(margin = margin(l = 0)),
+    axis.text.y.right  = element_text(margin = margin(l = 0)),
+    axis.ticks.length.y.right = unit(0, "pt")
+    
   )
 
 ki_dual_trend
@@ -273,25 +273,37 @@ p_trend_kita
 #__________________________________________________________________________________
 
 p_trend_emp <- ggplot(emp_year, aes(x = Jahr, y = emp_women)) +
-  geom_line(color = "#08306b", linewidth = 1.3) +
-  geom_point(color = "#08306b", size = 2) +
+  
+  # 把颜色映射写进 aes()
+  geom_line(aes(color = "Frauenbeschäftigung"), linewidth = 1.3) +
+  geom_point(aes(color = "Frauenbeschäftigung"), size = 2) +
+  
   scale_y_continuous(
-    labels = percent_format(scale = 1),
-    name   = "Anteil Frauenbeschäftigung [%]"
+    name   = "Frauenbeschäftigung (%)"
   ) +
-  labs(
-    title    = "Trend der Frauenbeschäftigung in München (2007–2024)",
-    subtitle = "Anteil Frauenbeschäftigung (Stadt insgesamt)",
-    x        = "Jahr"
+  
+  scale_x_continuous(breaks = c(2007, 2011, 2015, 2019, 2022, 2024)) +
+  
+  # ⭐ 手动指定图例颜色
+  scale_color_manual(
+    name = NULL,
+    values = c("Frauenbeschäftigung" = "#1f77b4")
   ) +
-  theme_minimal(base_size = 13) +
+  
+  labs(x = "Jahr", title = "", subtitle = "") +
+  
+  theme_bw(base_size = 13) +
   theme(
-    panel.grid.minor = element_blank()
+    legend.position = "top",       # ⭐ 把 legend 放到顶部
+    panel.grid.minor = element_blank(),
+    axis.title.y.right = element_text(margin = margin(l = 0)),
+    axis.text.y.right  = element_text(margin = margin(l = 0)),
+    axis.ticks.length.y.right = unit(0, "pt")
   )
 
 p_trend_emp
 
-#saveRDS(p_trend_emp, "results/figures/Kinderbetreuung/trend_sv.rds")
+saveRDS(p_trend_emp, "results/figures/Kinderbetreuung/trend_sv.rds")
 
 
 #──────────────────────── 3. 图 2 & 3：2015 年两张地图 ─────────────────────
