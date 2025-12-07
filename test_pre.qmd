@@ -721,7 +721,6 @@ ki_point_korr_gesamt_sw
 ki_simpson_sw
 ```
 
-
 ## Korrelation (Jahre)
 
 ```{r}
@@ -736,7 +735,6 @@ ki_simpson_sw
 ki_point_line_color
 ```
 
-
 ## Dual-Trend: Kinderbetreuung und Frauenbeschäftigung (2007–2024)
 
 ```{r}
@@ -748,7 +746,6 @@ ki_point_line_color
 
 ki_dual_trend
 ```
-
 
 ## Zusammenhang 2015
 
@@ -820,6 +817,7 @@ m_effekt_01
 ```
 
 ## Betreuungsbedingte Korrelation 2024
+
 <br>
 
 ```{r}
@@ -1087,7 +1085,6 @@ m_effekt_03
 
 -   Zuwachs in allen Stadtteilen\
 -   Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil
-
 
 ### Haushalte mit Kindern:
 

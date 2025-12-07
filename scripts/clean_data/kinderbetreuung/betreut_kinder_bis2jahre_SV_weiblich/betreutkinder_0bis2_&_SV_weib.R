@@ -221,7 +221,7 @@ ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
       ~ (. - range_left[1]) / scale_factor + range_right[1],
       name = "Frauenbeschäftigung (%)"
     )
-  ) +
+  ) +scale_x_continuous(breaks = c(2007, 2011, 2015, 2019, 2022, 2024))+
   scale_color_manual(
     name = NULL,
     values = c("Kinderbetreuung" = "#d62728",
