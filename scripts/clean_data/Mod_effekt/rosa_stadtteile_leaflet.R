@@ -96,7 +96,7 @@ data_2024 <- data_2024 %>%
 # ================================================================
 # 4. Leaflet 地图
 # ================================================================
-m_effekt_04 <- leaflet(data_2024) %>%
+leaflet(data_2024) %>%
   addTiles(
     urlTemplate = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
     attribution = '&copy; CartoDB'
@@ -126,6 +126,5 @@ m_effekt_04 <- leaflet(data_2024) %>%
     position = "bottomright"
   )
 
-m_effekt_04
-saveRDS(m_effekt_04, "results/figures/m_effekt/m_effekt_04.rds")
+
 

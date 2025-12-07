@@ -165,31 +165,59 @@ data_2024 <- data_2024 %>%
 # ================================================================
 # 4B. 散点图（你定义的 m_effekt_2.5）
 # ================================================================
+# ================================================================
+# 4B. 散点图（最终正确版本）
+# ================================================================
+# ================================================================
+# 4B. 散点图（最终正确版本）
+# ================================================================
 library(ggplot2)
 
 h_cut <- mean_HaKi_city
 f_cut <- mean_FE_city
 
-m_effekt_2.5 <- ggplot(data_2024, aes(x = anteil_kinder, y = anteil)) +
-  # 所有散点
-  geom_point(aes(color = gruppe), size = 4, alpha = 0.8) +
-  # 四象限分割线
+# 换成最终两行图例标签
+data_2024_plot <- data_2024 %>%
+  mutate(
+    gruppe_lab = if_else(
+      gruppe == "hohe Haushalte mit Kindern + niedrige Beschäftigung",
+      "Haushalte mit Kindern hoch\nund Frauenbeschäftigung niedrig",  # ← 你想要的两行版本
+      "Andere"
+    )
+  )
+
+m_effekt_2.5 <- ggplot(data_2024_plot,
+                       aes(x = anteil_kinder, y = anteil, color = gruppe_lab)) +
+  geom_point(size = 4, alpha = 0.8) +
+  
+  # 四象限线
   geom_vline(xintercept = h_cut, linetype = "dashed", color = "black") +
   geom_hline(yintercept = f_cut, linetype = "dashed", color = "black") +
-  # 颜色定义
-  scale_color_manual(values = c(
-    "hohe Haushalte mit Kindern + niedrige Beschäftigung" = "#e75480",
-    "Andere" = "#bdbdbd"
-  )) +
+  
+  # 手动颜色 + 图例顺序（粉色 → 灰色）
+  scale_color_manual(
+    values = c(
+      "Haushalte mit Kindern hoch\nund Frauenbeschäftigung niedrig" = "#e75480",  # 粉色
+      "Andere"                                                      = "#bdbdbd"   # 灰色
+    ),
+    breaks = c(
+      "Haushalte mit Kindern hoch\nund Frauenbeschäftigung niedrig",
+      "Andere"
+    )
+  ) +
+  
   labs(
     x = "Haushalte mit Kindern (%)",
     y = "Frauenbeschäftigung (%)",
     color = ""
   ) +
+  
   theme_minimal(base_size = 14) +
   theme(
-    legend.position = "bottom"
+    legend.position = "bottom",
+    legend.text = element_text(size = 12)
   )
 
 m_effekt_2.5
 saveRDS(m_effekt_2.5, "results/figures/m_effekt/m_effekt_2.5.rds")
+
