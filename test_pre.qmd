@@ -1,5 +1,5 @@
 ---
-title: "Frauen, Kinder und Arbeit"
+title: "Frauen - Kinder und Arbeit"
 subtitle: "Grundlegendes Praxisprojekt"
 author: "Qiang Qin, Shihan Hu, Yuechen Wang, Yuqin Huang"
 institute: | 
