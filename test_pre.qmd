@@ -394,21 +394,15 @@ knitr::kable(table_data_03, format = "html", table.attr = 'class="no-wrap"')
 </div>
 ```
 
-## Agenda
+## Agenda { .agenda-slide }
 
-[1. Datenüberblick]{style="color:lightgray;"}
-
-2.  Datenanalyse
-
-    -   Frauenbeschäftigung
-
-    -   [Zusammenhang]{style="color:lightgray;"}
-
-        -   [Haushalte mit Kindern]{style="color:lightgray;"}
-
-        -   [Kinderbetreuung]{style="color:lightgray;"}
-
-[3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
+1. [Datenüberblick]{.dim-past}
+2. Datenanalyse
+    - Frauenbeschäftigung
+    - [Zusammenhang]{.dim-past}
+        - [Haushalte mit Kindern]{.dim-past}
+        - [Kinderbetreuung]{.dim-past}
+3. [Fazit - Limitation - Ausblick]{.dim-future}
 
 ------------------------------------------------------------------------
 
@@ -608,21 +602,16 @@ leafletOutput("map_output", height = "550px")
 
 ------------------------------------------------------------------------
 
-## Agenda
+## Agenda { .agenda-slide }
 
-[1. Datenüberblick]{style="color:lightgray;"}
+1. [Datenüberblick]{.dim-past}
+2. Datenanalyse
+    - [Frauenbeschäftigung]{.dim-past}
+    - Zusammenhang
+        - Haushalte mit Kindern
+        - [Kinderbetreuung]{.dim-past}
+3. [Fazit - Limitation - Ausblick]{.dim-future}
 
-2.  Datenanalyse
-
-    -   [Frauenbeschäftigung]{style="color:lightgray;"}
-
-    -   Zusammenhang
-
-        -   Haushalte mit Kindern
-
-        -   [Kinderbetreuung]{style="color:lightgray;"}
-
-[3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
 
 ## Haushalte mit Kindern
 
@@ -851,21 +840,15 @@ hmk_korr_point_line_nach_jahr_color
 
 ```
 
-## Agenda
+## Agenda { .agenda-slide }
 
-[1. Datenüberblick]{style="color:lightgray;"}
-
-2.  Datenanalyse
-
-    -   [Frauenbeschäftigung]{style="color:lightgray;"}
-
-    -   Zusammenhang
-
-        -   [Haushalte mit Kindern]{style="color:lightgray;"}
-
-        -   Kinderbetreuung
-
-[3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
+1. [Datenüberblick]{.dim-past}
+2. Datenanalyse
+    - [Frauenbeschäftigung]{.dim-past}
+    - Zusammenhang
+        - [Haushalte mit Kindern]{.dim-past}
+        - Kinderbetreuung
+3. [Fazit - Limitation - Ausblick]{.dim-future}
 
 ## Kinderbetreuung
 
@@ -1158,21 +1141,15 @@ sv_map_2015
 ki_map_2015
 ```
 
-## Agenda
+## Agenda { .agenda-slide }
 
-[1. Datenüberblick]{style="color:lightgray;"}
-
-2.  Datenanalyse
-
-    -   [Frauenbeschäftigung]{style="color:lightgray;"}
-
-    -   Zusammenhang
-
-        -   [Haushalte mit Kindern]{style="color:lightgray;"}
-
-        -   [Kinderbetreuung]{style="color:lightgray;"}
-
-[3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
+1. [Datenüberblick]{.dim-past}
+2. Datenanalyse
+    - [Frauenbeschäftigung]{.dim-past}
+    - Zusammenhang
+        - [Haushalte mit Kindern]{.dim-past}
+        - [Kinderbetreuung]{.dim-past}
+3. [Fazit - Limitation - Ausblick]{.dim-future}
 
 ## Korrelation (Jahre)
 
@@ -1420,18 +1397,15 @@ m_effekt_03_plot
 
 ## Test
 
-## Agenda
+## Agenda { .agenda-slide }
 
-[1. Datenüberblick]{style="color:lightgray;"}
-
-[2. Datenanalyse]{style="color:lightgray;"}
-
--   [Frauenbeschäftigung]{style="color:lightgray;"}
--   [Zusammenhang]{style="color:lightgray;"}
-    -   [Haushalte mit Kindern]{style="color:lightgray;"}
-    -   [Kinderbetreuung]{style="color:lightgray;"}
-
-<br> 3. Fazit - Limitation - Ausblick
+1. [Datenüberblick]{.dim-past}
+2. [Datenanalyse]{.dim-future}
+    - [Frauenbeschäftigung]{.dim-past}
+    - [Zusammenhang]{.dim-future}
+        - [Haushalte mit Kindern]{.dim-past}
+        - [Kinderbetreuung]{.dim-past}
+3. Fazit - Limitation - Ausblick
 
 ## Fazit
 
