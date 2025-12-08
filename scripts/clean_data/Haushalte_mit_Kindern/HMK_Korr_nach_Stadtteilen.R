@@ -10,11 +10,6 @@ be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 export_ar <- read_excel("data/raw/export_ar.xlsx")
 ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 
-library(readxl)
-library(tidyverse)
-library(ggpubr)
-library(ggplot2)
-
 
 all_districts_and_city <- be_sheet %>%
   filter(
@@ -53,8 +48,8 @@ hmk_korr_gesamt_point_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = an
   coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   theme_bw() + 
   theme(
-    axis.title = element_text(size = 16, face = "bold"),
-    axis.text = element_text(size = 14, color = "black"),
+    axis.title = element_text(size = 28, face = "bold"),
+    axis.text = element_text(size = 20, color = "black"),
     panel.grid.major = element_line(color = "grey90"),
     panel.grid.minor = element_blank()
   )
@@ -88,8 +83,8 @@ hmk_korr_point_line_nach_stadtteile_color <- ggplot(plot_data_final, aes(x = hmk
   theme_bw() +
   theme(
     legend.position = "none",
-    axis.title = element_text(size = 16, face = "bold"), 
-    axis.text = element_text(size = 14, color = "black"),
+    axis.title = element_text(size = 28, face = "bold"), 
+    axis.text = element_text(size = 20, color = "black"),
     panel.grid.major = element_line(color = "grey90"),
     panel.grid.minor = element_blank()
   )

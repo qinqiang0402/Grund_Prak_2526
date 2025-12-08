@@ -48,8 +48,8 @@ hmk_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil))
   coord_cartesian(xlim = c(8, 28), ylim = c(48, 68)) +
   theme_bw() + 
   theme(
-    axis.title = element_text(size = 16, face = "bold"),
-    axis.text = element_text(size = 14, color = "black"),
+    axis.title = element_text(size = 28, face = "bold"),
+    axis.text = element_text(size = 20, color = "black"),
     panel.grid.major = element_line(color = "grey90"),
     panel.grid.minor = element_blank()
   )
@@ -61,7 +61,7 @@ saveRDS(hmk_korr_gesamt_sw, "results/figures/Haushalt_mit_Kindern/hmk_korr_gesam
 # -----------------------------------------------------------------------
 hmk_point_line_nach_jahr_color <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_smooth(aes(color = Jahr, group = Jahr),
-              method = "lm", se = FALSE, linewidth = 1, alpha = 0.7) +
+              method = "lm", se = FALSE, linewidth = 1.2, alpha = 0.7) +
   geom_point(aes(color = Jahr), size = 1.4, alpha = 0.7) +
   geom_smooth(aes(group = 1), method = "lm", color = "black", linewidth = 1.2, se = FALSE) +
   scale_color_gradient(
@@ -77,8 +77,8 @@ hmk_point_line_nach_jahr_color <- ggplot(korrelations_daten_clean, aes(x = hmk, 
   ) +
   theme_bw() + 
   theme(
-    axis.title = element_text(size = 16, face = "bold"), 
-    axis.text = element_text(size = 14, color = "black"), 
+    axis.title = element_text(size = 28, face = "bold"), 
+    axis.text = element_text(size = 20, color = "black"), 
     panel.grid.major = element_line(color = "grey90"),
     panel.grid.minor = element_blank(),
     legend.title = element_text(size = 14, face = "bold"),
