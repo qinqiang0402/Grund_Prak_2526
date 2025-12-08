@@ -6,10 +6,13 @@ library(forcats)
 library(ggpubr)
 library(grid)
 
-
-
-
-
+#-——————————————————————————————————————————————————————————————————————————————
+axis_theme_common <- theme(
+  axis.title.x = element_text(size = 26, face = "bold"),
+  axis.title.y = element_text(size = 26, face = "bold"),
+  axis.text.x  = element_text(size = 22),
+  axis.text.y  = element_text(size = 22)
+)
 
 
 #──────────────────────── 0. 帮助函数 ────────────────────────
@@ -93,7 +96,7 @@ plot_corr_by_year <- function(corr_df) {
       x        = "Jahr",
       y        = "Korrelationskoeffizient"
     ) +
-    theme_minimal(base_size = 13) +
+    theme_bw(base_size = 13) +
     theme(panel.grid.minor = element_blank())
 }
 
@@ -230,15 +233,8 @@ ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
   ) +
   
   labs(x = "Jahr", title = "", subtitle = "") +
-  theme_bw(base_size = 13) +
-  theme(
-    legend.position   = "top",
-    panel.grid.minor  = element_blank(),
-    axis.title.y.right = element_text(margin = margin(l = 0)),
-    axis.text.y.right  = element_text(margin = margin(l = 0)),
-    axis.ticks.length.y.right = unit(0, "pt")
-    
-  )
+  ttheme_bw(base_size = 13) +
+  axis_theme_common
 
 ki_dual_trend
 
@@ -256,17 +252,15 @@ p_trend_kita <- ggplot(enrolled_year, aes(x = Jahr, y = share_enrolled)) +
   geom_point(color = "#7f2704", size = 2) +
   scale_y_continuous(
     labels = percent_format(scale = 1),   # 直接用百分比标注，比如 20%
-    name   = "Betreuungsanteil (0–2 Jahre) [%]"
+    name   = "Kinderbetreuung (0–2 Jahre) (%)"
   ) +
   labs(
-    title    = "Trend der Kinderbetreuung (0–2 Jahre) in München (2007–2024)",
-    subtitle = "Stadtweit gewichteter Durchschnittsanteil der betreuten 0–2-Jährigen",
+    title    = "",
+    subtitle = "",
     x        = "Jahr"
   ) +
-  theme_minimal(base_size = 13) +
-  theme(
-    panel.grid.minor = element_blank()
-  )
+  theme_bw(base_size = 13) +
+  axis_theme_common
 
 p_trend_kita
 
@@ -295,12 +289,11 @@ p_trend_emp <- ggplot(emp_year, aes(x = Jahr, y = emp_women)) +
   labs(x = "Jahr", title = "", subtitle = "") +
   
   theme_bw(base_size = 13) +
-  theme(
-    legend.position = "top",       # ⭐ 把 legend 放到顶部
-    panel.grid.minor = element_blank(),
-    axis.title.y.right = element_text(margin = margin(l = 0)),
-    axis.text.y.right  = element_text(margin = margin(l = 0)),
-    axis.ticks.length.y.right = unit(0, "pt")
+  theme( legend.position = "top",
+    axis.title.x = element_text(size = 26, face = "bold"),
+    axis.title.y = element_text(size = 26, face = "bold"),
+    axis.text.x  = element_text(size = 22),
+    axis.text.y  = element_text(size = 22)
   )
 
 p_trend_emp
@@ -459,6 +452,7 @@ korrelations_daten_clean <- korrelations_daten %>%
 
 
 
+
 #_________________________________________________________________________________-
 
 
@@ -470,7 +464,8 @@ ki_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) 
     x = "Kinderbetreuung (%)",
     y = "Frauenbeschäftigung (%)"
   ) +
-  theme_bw()
+  theme_bw(base_size = 13) +
+  axis_theme_common
 
 ki_korr_gesamt_sw
 
@@ -608,7 +603,8 @@ ki_point_line_color <- ggplot(
     y     = "Frauenbeschäftigung (%)"
   ) +
   
-  theme_bw()
+  theme_bw(base_size = 13) +
+  axis_theme_common
 
 
 ki_point_line_color
@@ -787,7 +783,8 @@ ki_korr_nach_stadtteile_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = 
     x = "Kinderbetreuung (%)",
     y = "Frauenbeschäftigung (%)"
   ) +
-  theme_bw()
+  theme_bw(base_size = 13) +
+  axis_theme_common
 
 
 ki_korr_nach_stadtteile_sw
@@ -870,7 +867,7 @@ ki_point_line_korr_nach_stadtteile_color <- ggplot(plot_data_final, aes(x = hmk,
 
 ki_point_line_korr_nach_stadtteile_color  
 
-saveRDS(ki_point_line_korr_nach_stadtteile_color, "results/figures/Kinderbetreuung/ki_point_line_korr_nach_stadtteile_color.rds")
+#saveRDS(ki_point_line_korr_nach_stadtteile_color, "results/figures/Kinderbetreuung/ki_point_line_korr_nach_stadtteile_color.rds")
 
 #——————————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -944,10 +941,8 @@ ki_simpson_sw <- ggplot(plot_data_highlight, aes(x = hmk, y = anteil)) +
     color    = "Stadtteile mit R < 0"
   ) +
   coord_cartesian(xlim = x_range, ylim = y_range) +
-  theme_minimal() +
-  theme(
-    legend.position = "right"
-  )
+  theme_bw(base_size = 13) +
+  axis_theme_common
 
 ki_simpson_sw
 

@@ -1,12 +1,4 @@
 ---
-title: "Frauen - Kinder und Arbeit"
-subtitle: "Grundlegendes Praxisprojekt"
-author: "Qiang Qin, Shihan Hu, Yuechen Wang, Yuqin Huang"
-institute: | 
-  <br> Eugen Gorich <br><br>
-  München
-date: "2025-12-15"
-
 format:
   revealjs:
     embed-resources: true
@@ -287,6 +279,10 @@ df_merged <- df_emp %>%
 
 ## 
 
+![](images/clipboard-2285594112.png)
+
+## 
+
 ![](images/clipboard-3386569485.png)
 
 ## Agenda
@@ -395,10 +391,6 @@ knitr::kable(table_data_02, format = "html", table.attr = 'class="no-wrap"')
 
 knitr::kable(table_data_03, format = "html", table.attr = 'class="no-wrap"')
 ```
-
-
-
-
 
 ```{=html}
 <div class="data-footer">
@@ -855,7 +847,7 @@ hmk_korr_gesamt_point_sw
 #| fig-align: center
 #| fig-width: 16
 #| fig-height: 9
-#| fig-dpi: 300
+#| fig-dpi: 200
 
 hmk_korr_point_line_nach_jahr_color
 
@@ -1154,7 +1146,7 @@ ki_dual_trend
 
 ## Zusammenhang 2015
 
-<br><br>
+<br>
 
 ```{r}
 #| echo: false
@@ -1210,18 +1202,6 @@ hmk_korr_point_line_nach_jahr_color
 
     -   **Niedrige Betreuung:** unteres Drittel der Stadtteile mit der niedrigsten Kinderbetreuung
 
-## Korrelation (gesamt) 2024
-
-```{r}
-#| label: m_effekt_01
-#| echo: false
-#| fig-align: center
-#| fig-width: 9
-#| fig-height: 5
-#| fig-dpi: 300
-
-m_effekt_01
-```
 
 ## Betreuungsbedingte Korrelation
 
@@ -1830,15 +1810,13 @@ actionButton(
 #| panel: fill
 
 tagList(
-  h4("Haushalte mit Kindern + Beschäftigung"),
+  h4(""),
   leafletOutput("map_left_4", height = "250px"),
   br(),
-  h4("Kinderbetreuung (0–2 Jahre)"),
+  h4(""),
   leafletOutput("map_right_4", height = "250px")
 )
 ```
-
-
 
 ## Anhang
 
