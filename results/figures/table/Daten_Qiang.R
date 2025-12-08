@@ -55,8 +55,8 @@ ki_tab <- be_raw %>%
 selection <- tribble(
   ~Indikator,                                           ~Ausprägung, ~Jahr,  ~Raumbezug, ~Quelle,
   "Sozialversicherungspflichtig Beschäftigte - Anteil", "weiblich",   "2024","Stadt München", "Arbeitsmarkt",
-  "Sozialversicherungspflichtig Beschäftigte - Anteil", "weiblich",   "2000","06 Sendling", "Arbeitsmarkt",
-  "Haushalte mit Kindern",                              "insgesamt",  "2024","13 Bogenhausen", "Bevölkerung",
+  "Sozialversicherungspflichtig Beschäftigte - Anteil", "weiblich",   "2000","13 Bogenhausen", "Arbeitsmarkt",
+  "Haushalte mit Kindern",                              "insgesamt",  "2024","06 Sendling", "Bevölkerung",
   "Haushalte mit Kindern",                              "insgesamt",  "2012","03 Maxvorstadt", "Bevölkerung"
 )
 
@@ -68,20 +68,20 @@ df_data <- bind_rows(ar_tab, be_tab_household) %>%
   mutate(
     Indikator = ifelse(
       Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
-      "Anteil Frauenbeschäftigung",
+      "Frauenbeschäftigung",
       Indikator
     ),
     # 手动设定分组顺序：先 Anteil，再 Haushalt
     Indikator = factor(
       Indikator,
-      levels = c("Anteil Frauenbeschäftigung", "Haushalte mit Kindern")
+      levels = c("Frauenbeschäftigung", "Haushalte mit Kindern")
     )
   ) %>%
   arrange(Indikator, Jahr)   # 先按指标，再按年份升序
 df_data
 # 6. devide into seperate dataframes
 df_employment <- df_data %>%
-  filter(Indikator == "Anteil Frauenbeschäftigung") %>%
+  filter(Indikator == "Frauenbeschäftigung") %>%
   arrange(Jahr)
 
 df_household <- df_data %>%
@@ -113,7 +113,7 @@ df_data_final <- df_data_final %>%
 # results
 df_employment
 df_data
-df_data_final
+View(df_data_final)
 saveRDS(df_data_final, "results/figures/table/table_data_03.rds")
 saveRDS(df_employment, "results/figures/table/table_data_01.rds")
 saveRDS(df_data, "results/figures/table/table_data_02.rds")
