@@ -97,3 +97,53 @@
   overflow-y: visible !important; /* 不要内部滚动条 */
 }
 
+
+
+/* —— Agenda 页的统一列表间距 —— */
+.reveal .slides section.agenda-slide ul,
+.reveal .slides section.agenda-slide ol {
+  line-height: 1.3;         /* 行距：你可以改成 1.25 / 1.35 自己试 */
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+}
+
+/* 已经讲过的部分：更深一点的灰 */
+.dim-past {
+  color: #aaaaaa !important;
+}
+
+/* 还没讲到的部分：更淡一点灰（你也可以改成同一种灰） */
+.dim-future {
+  color: #c0c0c0 !important;
+}
+
+
+.small-math {
+  font-size: 60%;
+}
+
+
+/* Ausblick-Slides – andere Punkte ausgrauen */
+
+/* Ausblick：先把最外层三个大点都设为黑色，子项跟随 */
+.ausblick-list > ul > li {
+  color: #000000;
+}
+
+/* 第 1 页：灰掉第 2、3 个大点（连同它们的子 bullet & 公式） */
+.ausblick-1 .ausblick-list > ul > li:nth-of-type(2),
+.ausblick-1 .ausblick-list > ul > li:nth-of-type(3) {
+  color: #999999;
+}
+
+/* 第 2 页：灰掉第 1、3 个大点 → 第 2 个整块高亮 */
+.ausblick-2 .ausblick-list > ul > li:nth-of-type(1),
+.ausblick-2 .ausblick-list > ul > li:nth-of-type(3) {
+  color: #999999;
+}
+
+/* 第 3 页：灰掉第 1、2 个大点 → 第 3 个整块高亮 */
+.ausblick-3 .ausblick-list > ul > li:nth-of-type(1),
+.ausblick-3 .ausblick-list > ul > li:nth-of-type(2) {
+  color: #999999;
+}

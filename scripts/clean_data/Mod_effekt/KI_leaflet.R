@@ -3,7 +3,7 @@ library(sf)
 library(leaflet)
 library(readxl)
 library(htmltools)
-
+library(htmlwidgets)  # ⭐ 为了使用 prependContent()
 
 # =================================================================
 # 1. Datenvorbereitung
@@ -59,16 +59,13 @@ final_sf <- munich_map %>%
   left_join(betreuung_2024, by = c("sb_nummer" = "bezirksnummer")) %>%
   filter(!is.na(anteil_betreuung))
 
-MIN_BETR <- min(final_sf$anteil_betreuung, na.rm = TRUE)
-MAX_BETR <- max(final_sf$anteil_betreuung, na.rm = TRUE)
-
 # =================================================================
-# 4. Leaflet-Karte (ohne Shiny)
+# 4. Farbpalette + Popup
 # =================================================================
 
 pal <- colorNumeric(
-  palette = "Purples",
-  domain = c(0, 100)
+  palette = c("#fff5eb", "#7f2704"),   # ⭐ 浅 → 深红
+  domain  = c(0, 100)
 )
 
 popup_content <- paste0(
@@ -76,11 +73,15 @@ popup_content <- paste0(
   "<b>Kinderbetreuung:</b> ", round(final_sf$anteil_betreuung, 1), " %"
 )
 
-leaflet(final_sf, options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
+# =================================================================
+# 5. Leaflet-Karte erzeugen 并保存为对象
+# =================================================================
+
+ki_leaflet_2024 <- leaflet(final_sf, options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
   addTiles(
     urlTemplate = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
     attribution = '&copy; CartoDB'
-  )%>%
+  ) %>%
   setView(lng = 11.5761, lat = 48.1372, zoom = 10) %>%
   addPolygons(
     fillColor = ~pal(anteil_betreuung),
@@ -90,14 +91,41 @@ leaflet(final_sf, options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
     fillOpacity = 0.7,
     label = lapply(popup_content, HTML),
     highlightOptions = highlightOptions(
-      weight = 3, color = "#666", fillOpacity = 0.9, bringToFront = TRUE
+      weight = 3,
+      color = "#666",
+      fillOpacity = 0.9,
+      bringToFront = TRUE
     )
   ) %>%
   addLegend(
     pal = pal,
-    values = c(0, 100), 
+    values = c(0, 100),
     opacity = 0.7,
     title = "Kinderbetreuung (%)",
-    position = "bottomright"
+    position = "bottomright",
+    className = "small-legend"   # ⭐ 用 CSS 缩小 legend
+  ) %>%
+  htmlwidgets::prependContent(
+    tags$style(HTML("
+      .small-legend {
+        font-size: 10px !important;
+        line-height: 10px !important;
+        padding: 3px !important;
+      }
+      .small-legend .leaflet-control-legend-scale {
+        height: 6px !important;
+      }
+    "))
   )
 
+# 看一下效果（在 R 里）
+ki_leaflet_2024
+
+# =================================================================
+# 6. 保存为 RDS
+# =================================================================
+
+saveRDS(
+  ki_leaflet_2024,
+  file = "results/figures/m_effekt/m_effekt_03.rds"
+)

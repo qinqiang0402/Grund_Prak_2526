@@ -26,6 +26,7 @@ library(forcats)
 library(ggpubr)
 library(leaflet)
 library(htmltools)
+library(htmlwidgets)
 
 # 把所有要用到的图从 RDS 里读进来
 table_data_01 <- readRDS("results/figures/table/table_data_01.rds")
@@ -285,34 +286,29 @@ df_merged <- df_emp %>%
 
 ![](images/clipboard-3386569485.png)
 
-## Agenda
+## Agenda { .agenda-slide }
 
-1.  Datenüberblick
+1. Datenüberblick
+2. Datenanalyse
+    - Frauenbeschäftigung
+    - Zusammenhang
+        - Haushalte mit Kindern
+        - Kinderbetreuung
+3. Fazit - Limitation - Ausblick
 
-2.  Datenanalyse
+---
 
-    -   Frauenbeschäftigung
+## Agenda { .agenda-slide }
 
-    -   Zusammenhang
+1. Datenüberblick
+2. [Datenanalyse]{.dim-past}
+    - [Frauenbeschäftigung]{.dim-past}
+    - [Zusammenhang]{.dim-past}
+        - [Haushalte mit Kindern]{.dim-past}
+        - [Kinderbetreuung]{.dim-past}
+3. [Fazit - Limitation - Ausblick]{.dim-future}
 
-        -   Haushalte mit Kindern
 
-        -   Kinderbetreuung
-
-3.  Fazit - Limitation - Ausblick
-
-## Agenda
-
-1.  Datenüberblick
-
-[2. Datenanalyse]{style="color:lightgray;"}
-
--   [Frauenbeschäftigung]{style="color:lightgray;"}
--   [Zusammenhang]{style="color:lightgray;"}
-    -   [Haushalte mit Kindern]{style="color:lightgray;"}
-    -   [Kinderbetreuung]{style="color:lightgray;"}
-
-[3. Fazit - Limitation - Ausblick]{style="color:lightgray;"}
 
 ## Daten {.smaller}
 
@@ -634,7 +630,6 @@ leafletOutput("map_output", height = "550px")
 
 <br> Anteil der Privathaushalte <br> mit mindestens einem Kind bis 17 Jahre <br> (mit mindestens einer Hauptwohnsitzperson) <br> an allen Privathaushalten in Prozent
 
-<<<<<<< Updated upstream
 ## Haushalte mit Kindern
 
 ```{r}
@@ -802,13 +797,9 @@ actionButton(
 leafletOutput("map_output_3", height = "550px")
 ```
 
-=======
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
+
 ## Korrelation (gesamt)
-=======
-## Haushalte mit Kindern (gesamt)
->>>>>>> Stashed changes
+
 
 ```{r}
 #| label: hmk_korr_gesamt_point_sw
@@ -1444,7 +1435,6 @@ m_effekt_03_plot
 
 ## Fazit
 
-<<<<<<< Updated upstream
 ::: {style="font-size:80%;"}
 -   **Frauenbeschäftigung:**
     -   Zuwachs in allen Stadtteilen
@@ -1457,11 +1447,7 @@ m_effekt_03_plot
     -   [Nach Jahr: negative Korrelation]{style="color:lightgray;"}
     -   [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
 :::
-=======
-<<<<<<< Updated upstream
-::: {style="font-size:65%;"}
-### Frauenbeschäftigung:
->>>>>>> Stashed changes
+
 
 ## Fazit
 
@@ -1478,43 +1464,25 @@ m_effekt_03_plot
     -   [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
 :::
 
+
 ## Fazit
 
-<<<<<<< Updated upstream
 ::: {style="font-size:80%;"}
 -   [**Frauenbeschäftigung:**]{style="color:lightgray;"}
     -   [Zuwachs in allen Stadtteilen]{style="color:lightgray;"}
     -   [Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil]{style="color:lightgray;"}
--   [**Haushalte mit Kindern:**]{style="color:lightgray;"}
+-   **[Haushalte mit Kindern:]{style="color:lightgray;"}**
     -   [Nach Stadtteil: meistens positive Korrelation]{style="color:lightgray;"}
     -   [Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt]{style="color:lightgray;"}
 -   **Kinderbetreuung:**
-    -   Nach Stadtteil: stark positive Korrelation\
-    -   Nach Jahr: negative Korrelation\
+    -   Nach Stadtteil: stark positive Korrelation
+    -   Nach Jahr: negative Korrelation
     -   Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
-=======
-### Kinderbetreuung:
-=======
-::: {style="font-size:75%;"}
-### Frauenbeschäftigung
-
--   Regionale Unterschiede zwischen den Stadtteilen\
--   In zentralen Stadtteilen höhere Beschäftigungsanteile und stärkere Zuwächse\
--   Periphere Stadtteile geringere Anteile und langsamere Zuwächse
-
-### Haushalte mit Kindern
-
--   Nach Stadtteil: meistens positive Korrelation\
--   Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt.
-
-### Kinderbetreuung
->>>>>>> Stashed changes
-
--   Nach Stadtteil: stark positive Korrelation\
--   Nach Jahr: negative Korrelation\
--   Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
->>>>>>> Stashed changes
 :::
+
+
+
+
 
 ## Limitation
 
@@ -1558,24 +1526,69 @@ m_effekt_03_plot
     -   Daten über Haushalte mit Kindern ab 2012
 :::
 
-## Ausblick
 
-::: {style="font-size:85%;"}
--   **Feinere Datenebene:**\
-    -   Stadtteile durch Postleitzahlen ersetzen
-    -   Wir berechnen die bedingte Wahrscheinlichkeit
+## Leer
 
-$$
-P(\text{Die Frau lebt in einem Haushalt mit Kindern} 
-  \mid 
-  \text{Die Frau ist erwerbstätig})
-$$
+## Ausblick { .ausblick-1 }
 
--   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**\
-    -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
--   **Moderierter Effekt::**\
-    -   Komplexere Modelle lernen und verwenden
+::: {.ausblick-list style="font-size:85%;"}
+
+- **Feinere Datenebene:**
+    - Stadtteile durch Postleitzahlen ersetzen
+    - Wir berechnen die bedingte Wahrscheinlichkeit  
+      <span style="font-size:70%;">
+      $P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$
+      </span>
+
+- **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
+    - Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
+
+- **Moderierter Effekt:**
+    - Komplexere Modelle lernen und verwenden
+
 :::
+
+## Ausblick { .ausblick-2 }
+
+::: {.ausblick-list style="font-size:85%;"}
+
+- **Feinere Datenebene:**
+    - Stadtteile durch Postleitzahlen ersetzen
+    - Wir berechnen die bedingte Wahrscheinlichkeit  
+      <span style="font-size:70%;">
+      $P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$
+      </span>
+
+- **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
+    - Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
+
+- **Moderierter Effekt:**
+    - Komplexere Modelle lernen und verwenden
+
+:::
+
+## Ausblick { .ausblick-3 }
+
+::: {.ausblick-list style="font-size:85%;"}
+
+- **Feinere Datenebene:**
+    - Stadtteile durch Postleitzahlen ersetzen
+    - Wir berechnen die bedingte Wahrscheinlichkeit  
+      <span style="font-size:70%;">
+      $P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$
+      </span>
+
+- **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
+    - Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
+
+- **Moderierter Effekt:**
+    - Komplexere Modelle lernen und verwenden
+
+:::
+
+
+
+
 
 ## 
 
@@ -1617,6 +1630,185 @@ m_effekt_03
 ```
 :::
 :::::
+
+## Betreuungsbedingte Korrelation 
+
+
+```{r}
+#| context: server
+
+#──────────────────────── 5. Shiny：Betreuungsbedingte Korrelation ────────────────────────
+
+# ---- Play / Pause ----
+playing_scatter5 <- reactiveVal(FALSE)
+
+observeEvent(input$play_pause_scatter5, {
+  if (playing_scatter5()) {
+    playing_scatter5(FALSE)
+    updateActionButton(session, "play_pause_scatter5", label = "▶ Play")
+  } else {
+    playing_scatter5(TRUE)
+    updateActionButton(session, "play_pause_scatter5", label = "⏸ Pause")
+  }
+})
+
+# ---- Year sequence ----
+year_seq5 <- sort(unique(df_merged$Jahr))
+year_min5 <- min(year_seq5, na.rm = TRUE)
+year_max5 <- max(year_seq5, na.rm = TRUE)
+
+observe({
+  invalidateLater(1200, session)
+  req(playing_scatter5())
+  req(!is.null(input$year5))
+
+  current <- isolate(input$year5)
+  idx <- match(current, year_seq5)
+
+  if (is.na(idx) || idx >= length(year_seq5)) {
+    next_year <- year_seq5[1]
+  } else {
+    next_year <- year_seq5[idx + 1L]
+  }
+
+  updateSliderInput(session, "year5", value = next_year)
+})
+
+# ---- Jahresdatensatz ----
+df_year5 <- reactive({
+  req(input$year5)
+
+  df_merged %>%
+    filter(
+      Jahr == input$year5,
+      Raumbezug != "Stadt München"
+    ) %>%
+    inner_join(
+      df_betreut %>%
+        filter(Jahr == input$year5) %>%
+        select(Raumbezug, anteil_betreut),   # ⭐ 保持和原来列名一致
+      by = "Raumbezug"
+    )
+})
+
+# ---- Gruppierung: Hoch / Mittel / Niedrig ----
+df_year_grouped5 <- reactive({
+  d <- df_year5()
+
+  qs <- quantile(
+    d$anteil_betreut,
+    probs = c(0, 1/3, 2/3, 1),
+    na.rm = TRUE
+  )
+
+  d %>%
+    mutate(
+      betreuung_group = cut(            # ⭐ 列名仍叫 betreuung_group，就和原版一样
+        anteil_betreut,
+        breaks = qs,
+        labels = c("Niedrig", "Mittel", "Hoch"),
+        include.lowest = TRUE
+      )
+    )
+})
+
+# ---- 去标准化版本 ----
+
+df_year_scaled5 <- reactive({
+  df_year_grouped5()   # ⭐ 使用原始数据，不再 scale()
+})
+
+# Farben
+farben5 <- c(
+  "Hohe Betreuung"     = "#8C3F00",
+  "Mittel Betreuung"   = "#D97400",
+  "Niedrige Betreuung" = "#FFB84D"
+)
+
+output$plot5 <- renderPlot({
+
+  df <- df_year_scaled5()
+
+df <- df %>%
+  mutate(gruppe = case_when(
+    betreuung_group == "Hoch"    ~ "Hohe Betreuung",
+    betreuung_group == "Mittel"  ~ "Mittel Betreuung",
+    betreuung_group == "Niedrige" ~ "Niedrige Betreuung"
+  )) %>%
+  filter(!is.na(gruppe))   # ⭐ 去掉 NA 分组
+
+  ggplot(df) +
+
+    # ⭐ 使用原始数据，不再用标准化后的 x_std5 / y_std5
+    geom_point(
+      aes(x = households_pct, y = emp_female_pct, color = gruppe),
+      size = 6, alpha = 0.9
+    ) +
+
+    geom_smooth(
+      aes(x = households_pct, y = emp_female_pct, color = gruppe),
+      method = "lm",
+      se = FALSE,
+      linewidth = 5
+    ) +
+
+    scale_color_manual(values = farben5, name = "Linien:") +
+
+    labs(
+      x = "Haushalte mit Kindern (%)",
+      y = "Frauenbeschäftigung (%)"
+    ) +
+
+    annotate(
+      "text",
+      x = Inf, y = Inf,
+      label = paste("Jahr:", input$year5),
+      hjust = 1.1,
+      vjust = 1.5,
+      size = 20
+    ) +
+
+    theme_bw(base_size = 28) +
+    theme(
+      plot.title      = element_text(size = 36, face = "bold"),
+      axis.title      = element_text(size = 50, face = "bold"),
+      axis.text       = element_text(size = 46),
+      legend.title    = element_text(size = 50),
+      legend.text     = element_text(size = 46)
+    )
+
+}, width = 1920, height = 1080)
+```
+
+
+```{r}
+#| panel: sidebar
+
+sliderInput(
+  "year5",
+  "Jahr:",
+  min     = min(df_merged$Jahr),
+  max     = max(df_merged$Jahr),
+  value   = max(df_merged$Jahr),
+  step    = 1,
+  sep     = "",
+  animate = FALSE
+)
+
+actionButton(
+  "play_pause_scatter5",
+  "▶ Play",
+  width = "100%"
+)
+```
+
+```{r}
+#| panel: fill
+#| fill: true
+
+plotOutput("plot5")
+```
+
 
 ## mod
 
@@ -1793,11 +1985,18 @@ output$map_left_4 <- leaflet::renderLeaflet({
 # -------------------------------------------------
 # 右图：Kinderbetreuung Purples 色阶
 # -------------------------------------------------
+# -------------------------------------------------
+# 右图：Kinderbetreuung 红色渐变 + 小号 Legend
+# -------------------------------------------------
 output$map_right_4 <- leaflet::renderLeaflet({
   
   d <- df_year_4()
   
-  pal_4 <- leaflet::colorNumeric("Purples", domain = c(0, 100))
+  # ⭐ 红色渐变：很浅米色 -> 深红棕色
+  pal_4 <- leaflet::colorNumeric(
+    palette = c("#fff5eb", "#7f2704"),
+    domain  = c(0, 100)
+  )
   
   popup_right_4 <- paste0(
     "<b>", d[[MAP_NAME_COLUMN]], "</b><br>",
@@ -1805,7 +2004,9 @@ output$map_right_4 <- leaflet::renderLeaflet({
   )
   
   leaflet::leaflet(d) %>%
-    leaflet::addTiles(urlTemplate = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png") %>%
+    leaflet::addTiles(
+      urlTemplate = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+    ) %>%
     leaflet::addPolygons(
       fillColor   = ~pal_4(anteil_betreuung),
       color       = "white",
@@ -1817,7 +2018,20 @@ output$map_right_4 <- leaflet::renderLeaflet({
       pal      = pal_4,
       values   = c(0, 100),
       title    = "Betreuung 0–2 Jahre (%)",
-      position = "bottomright"
+      position = "bottomright",
+      className = "small-legend"   # ⭐ 给 legend 加一个 CSS class
+    ) %>%
+    htmlwidgets::prependContent(  # ⭐ 用内联 CSS 把 legend 缩小
+      htmltools::tags$style(htmltools::HTML("
+        .small-legend {
+          font-size: 10px !important;
+          line-height: 10px !important;
+          padding: 3px !important;
+        }
+        .small-legend .leaflet-control-legend-scale {
+          height: 6px !important;
+        }
+      "))
     )
 })
 ```

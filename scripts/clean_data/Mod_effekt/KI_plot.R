@@ -77,20 +77,20 @@ m_effekt_03_plot <- ggplot(final_sf) +
           color = "white",
           size = 0.4) +
   
-  # Purples 调色板
-  scale_fill_distiller(
-    palette = "Purples",
-    direction = 1,
+  # ⭐ 改成红色渐变（#fff5eb → #7f2704）
+  scale_fill_gradient(
+    low  = "#fff5eb",
+    high = "#7f2704",
     limits = c(0, 100),
     name = "Kinderbetreuung (%)"
   ) +
   
-  # —— 控制Legend布局：标题在上、颜色条在下、放大 —— 
+  # —— Legend：标题在上、颜色条加长加粗 —— 
   guides(
     fill = guide_colorbar(
-      title.position = "top",   # ⭐ 标题放在颜色条上方
-      barwidth = 25,            # 加长色条
-      barheight = 2             # 加粗色条
+      title.position = "top",
+      barwidth = 25,
+      barheight = 2
     )
   ) +
   
@@ -103,6 +103,7 @@ m_effekt_03_plot <- ggplot(final_sf) +
     legend.text  = element_text(size = 26),
     plot.title = element_text(face = "bold", size = 26, hjust = 0.5)
   )
+
 
 m_effekt_03_plot
 
