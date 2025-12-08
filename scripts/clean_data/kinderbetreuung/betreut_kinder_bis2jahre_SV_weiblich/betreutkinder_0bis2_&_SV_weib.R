@@ -43,8 +43,8 @@ plot_bezirk_map <- function(map_df, value_col, title, subtitle,
       guide = guide_colorbar(              # ⭐ 这里控制色条和标题
         title.position = "top",            # 标题在上面
         title.hjust    = 0.5,              # 标题居中
-        barwidth       = unit(4, "cm"),    # 色条宽度
-        barheight      = unit(0.35, "cm")  # 色条高度
+        barwidth       = unit(8, "cm"),    # 色条宽度
+        barheight      = unit(0.8, "cm")  # 色条高度
       )
     ) +
     labs(
@@ -56,7 +56,9 @@ plot_bezirk_map <- function(map_df, value_col, title, subtitle,
     theme(
       legend.position    = "bottom",   # Legend 在图下方
       legend.title.align = 0.5,        # 标题文字居中
-      plot.title         = element_text(face = "bold")
+      legend.title = element_text(size = 26, face = "bold"),
+      legend.text  = element_text(size = 26),
+      plot.title = element_text(face = "bold", size = 26, hjust = 0.5)
     )
 }
 
@@ -352,7 +354,7 @@ map_sozial_2015 <- munich_map2 %>%
 p_map_sozial <- plot_bezirk_map(
   map_sozial_2015,
   value_col    = "sozial_weiblich_pct",
-  title        = paste0("Frauenbeschäftigung – ", year_map),
+  title        = paste0("Frauenbeschäftigung - ", year_map),
   subtitle     = "",
   legend_title = "Frauenbeschäftigung (%)",
   limits       = c(50, 62),
@@ -461,14 +463,14 @@ korrelations_daten_clean <- korrelations_daten %>%
 
 
 ki_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
-  geom_point(size = 1.3, color = "grey", alpha = 0.7) +
+  geom_point(size = 1.3, color = "grey90", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   labs(
     title = "",
     x = "Kinderbetreuung (%)",
     y = "Frauenbeschäftigung (%)"
   ) +
-  theme_minimal()
+  theme_bw()
 
 ki_korr_gesamt_sw
 
@@ -559,7 +561,15 @@ ki_point_line_color <- ggplot(
   plot_data_final_year,
   aes(x = hmk, y = anteil)
 ) +
-  # 每年的回归线：颜色根据年份连续映射
+  
+  # ⭐ 把散点放到最底层（第一层）
+  geom_point(
+    color = "grey90",
+    size  = 1.1,
+    alpha = 0.5
+  ) +
+  
+  # 年份回归线（在点上面）
   geom_smooth(
     aes(color = Jahr_num, group = Jahr_Label),
     method    = "lm",
@@ -568,14 +578,7 @@ ki_point_line_color <- ggplot(
     alpha     = 0.8
   ) +
   
-  # 散点：灰色
-  geom_point(
-    color = "grey60",
-    size  = 1.1,
-    alpha = 0.5
-  ) +
-  
-  # 总体回归线：黑色
+  # 总体回归线（最上层）
   geom_smooth(
     aes(group = 1),
     method    = "lm",
@@ -584,27 +587,28 @@ ki_point_line_color <- ggplot(
     se        = FALSE
   ) +
   
-  # 连续颜色刻度：深到浅红
+  # 连续色标
   scale_color_gradient(
     name   = "Jahr",
     limits = c(2007, 2024),
-    breaks = c(2007, 2011, 2015, 2020, 2024),          # 只在 2007 和 2024 两个位置打刻度
-    labels = c("2007", "2011", "2015", "2020" , "2024"),      # 刻度文字
-    low    = "#fee5e5",              # 2007 的颜色（浅）
-    high   = "#990000",              # 2024 的颜色（深）
+    breaks = c(2007, 2011, 2015, 2020, 2024),
+    labels = c("2007", "2011", "2015", "2020", "2024"),
+    low    = "#fee5e5",
+    high   = "#990000",
     guide  = guide_colorbar(
       title.position = "top",
       barheight      = unit(6, "cm"),
       barwidth       = unit(0.4, "cm")
     )
   ) +
-  coord_cartesian() +
+  
   labs(
     title = "",
     x     = "Kinderbetreuung (%)",
     y     = "Frauenbeschäftigung (%)"
   ) +
-  theme_minimal()
+  
+  theme_bw()
 
 
 ki_point_line_color
@@ -776,14 +780,14 @@ y_range <- range(korrelations_daten_clean$anteil, na.rm = TRUE)
 
 
 ki_korr_nach_stadtteile_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
-  geom_point(size = 1.3, color = "grey", alpha = 0.7) +
+  geom_point(size = 1.3, color = "grey90", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
   labs(
     title = "",
     x = "Kinderbetreuung (%)",
     y = "Frauenbeschäftigung (%)"
   ) +
-  theme_minimal()
+  theme_bw()
 
 
 ki_korr_nach_stadtteile_sw
@@ -890,41 +894,60 @@ plot_data_highlight <- korrelations_daten_clean %>%
   left_join(r_werte_check, by = "Raumbezug")
 
 ki_simpson_sw <- ggplot(plot_data_highlight, aes(x = hmk, y = anteil)) +
+  # 1) 先画“普通” Stadtteile 的点（灰色）
+  geom_point(
+    data = subset(plot_data_highlight, is_negative == FALSE | is.na(is_negative)),
+    color = "grey90",
+    alpha = 0.6,
+    size  = 1.8
+  ) +
+  # 2) 再画 R<0 的 Stadtteile 的点（用线条的颜色）
+  geom_point(
+    data = subset(plot_data_highlight, is_negative == TRUE),
+    aes(color = Raumbezug_Label),
+    alpha = 0.9,
+    size  = 2.3
+  ) +
+  # 3) 正相关/其他 Stadtteile 的回归线（灰色）
   geom_smooth(
     data = subset(plot_data_highlight, is_negative == FALSE | is.na(is_negative)),
     aes(group = Raumbezug),
-    method = "lm",
-    se     = FALSE,
-    color  = "grey85",
+    method   = "lm",
+    se       = FALSE,
+    color    = "grey70",
     linewidth = 0.8,
-    alpha    = 0.5
+    alpha     = 0.5
   ) +
+  # 4) R<0 的 Stadtteile 回归线（带颜色）
   geom_smooth(
     data = subset(plot_data_highlight, is_negative == TRUE),
     aes(color = Raumbezug_Label, group = Raumbezug),
-    method = "lm",
-    se     = FALSE,
+    method   = "lm",
+    se       = FALSE,
     linewidth = 1.1,
-    alpha    = 1
+    alpha     = 1
   ) +
+  # 5) Gesamt 回归线（黑色）
   geom_smooth(
     aes(group = 1),
-    method = "lm",
-    color  = "black",
+    method   = "lm",
+    color    = "black",
     linewidth = 1.1,
-    se      = FALSE
+    se        = FALSE
   ) +
   scale_color_manual(values = stadtteil_palette) +
   labs(
     title    = "",
     subtitle = "",
-    x        = "Kinderbetreuung [%]",
-    y        = "Frauenbeschäftigung [%]",
+    x        = "Haushalte mit Kindern (%)",
+    y        = "Frauenbeschäftigung (%)",
     color    = "Stadtteile mit R < 0"
   ) +
   coord_cartesian(xlim = x_range, ylim = y_range) +
   theme_minimal() +
-  theme(legend.position = "right")
+  theme(
+    legend.position = "right"
+  )
 
 ki_simpson_sw
 

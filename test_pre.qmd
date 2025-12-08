@@ -56,8 +56,8 @@ ki_trend_sv <- readRDS("results/figures/Kinderbetreuung/trend_sv.rds")
 ki_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_ki_2015.rds")
 sv_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_sv_2015.rds")
 ki_point_korr_gesamt_sw <- readRDS("results/figures/Kinderbetreuung/ki_point_korr_gesamt_sw.rds")
-ki_point_line_color <- readRDS("results/figures/Kinderbetreuung/ki_point_line_color.rds")
-ki_simpson_sw <- readRDS("results/figures/Kinderbetreuung/ki_simpson_sw.rds")
+ki_korr_jahre_point_line_rot <- readRDS("results/figures/Kinderbetreuung/ki_point_line_color.rds")
+ki_korr_stadtteile_point_line_sw <- readRDS("results/figures/Kinderbetreuung/ki_simpson_sw.rds")
 ki_point_line_korr_nach_stadtteile_color <- readRDS("results/figures/Kinderbetreuung/ki_point_line_korr_nach_stadtteile_color.rds")
 
 #__________________________________________________________________________
@@ -66,7 +66,8 @@ m_effekt_02 <- readRDS("results/figures/m_effekt/m_effekt_02_colored.rds")
 m_effekt_2.5 <- readRDS("results/figures/m_effekt/m_effekt_2.5.rds")
 m_effekt_03 <- readRDS("results/figures/m_effekt/m_effekt_03.rds")
 m_effekt_04 <- readRDS("results/figures/m_effekt/m_effekt_04.rds")
-
+m_effekt_04_plot <- readRDS("results/figures/m_effekt/m_effekt_04_plot.rds")
+m_effekt_03_plot <- readRDS("results/figures/m_effekt/m_effekt_03_plot.rds")
 #_____________________________________________________________________________
 geburtenrate_dual_trend <- readRDS("results/figures/Geburtenrate/geburtenrate_dual_trend.rds")
 geburtenrate_trend_nach_stadtteile <- readRDS("results/figures/Geburtenrate/geburtenrate_trend_nach_stadtteile.rds")
@@ -1122,7 +1123,7 @@ ki_point_korr_gesamt_sw
 
 
 
-ki_simpson_sw
+ki_korr_stadtteile_point_line_sw
 ```
 
 ## Korrelation (Jahre)
@@ -1136,7 +1137,7 @@ ki_simpson_sw
 
 
 
-ki_point_line_color
+ki_korr_jahre_point_line_rot
 ```
 
 ## Kinderbetreuung und Frauenbeschäftigung (2007–2024)
@@ -1425,7 +1426,7 @@ m_effekt_2.5
 
 ## Betreuungsbedarf 2024
 
-<br>
+<br><br>
 
 ```{r}
 #| echo: false
@@ -1435,7 +1436,8 @@ m_effekt_2.5
 #| fig-dpi: 300
 #| fig-align: center
 
-
+m_effekt_04_plot
+m_effekt_03_plot
 ```
 
 ## Test
@@ -1599,6 +1601,244 @@ m_effekt_03
 ```
 :::
 :::::
+
+## mod
+
+```{r}
+#| context: server
+
+#──────────────────────── 4. Shiny：HK hoch + Beschäftigung niedrig vs. Kinderbetreuung ────────────────────────
+
+# ---- 一次性准备第 4 个 Shiny 用的数据（full_data_4）----
+if (!exists("full_data_4", inherits = TRUE)) {
+  
+  # Haushalte mit Kindern
+  hh_long_4 <- be_sheet %>%
+    dplyr::filter(
+      Indikator == "Haushalte mit Kindern",
+      Ausprägung == "insgesamt",
+      Raumbezug != "Stadt München"
+    ) %>%
+    dplyr::mutate(
+      bezirksnummer = sprintf("%02d", as.numeric(stringr::str_extract(Raumbezug, "^\\d+"))),
+      anteil_kinder = 100 * `Basiswert 1` / `Basiswert 2`
+    ) %>%
+    dplyr::select(Jahr, bezirksnummer, anteil_kinder)
+  
+  # Frauenbeschäftigung
+  emp_long_4 <- ar_sheet %>%
+    dplyr::filter(
+      Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
+      Ausprägung == "weiblich",
+      Raumbezug != "Stadt München"
+    ) %>%
+    dplyr::mutate(
+      bezirksnummer = sprintf("%02d", as.numeric(stringr::str_extract(Raumbezug, "^\\d+"))),
+      anteil = 100 * `Basiswert 1` / `Basiswert 2`
+    ) %>%
+    dplyr::select(Jahr, bezirksnummer, anteil)
+  
+  # Kinderbetreuung bis 2 Jahre：总儿童数
+  total_long_4 <- be_sheet %>%
+    dplyr::filter(
+      Indikator == "Altersgruppen",
+      Ausprägung == "bis 2 Jahre",
+      Raumbezug != "Stadt München"
+    ) %>%
+    dplyr::mutate(
+      bezirksnummer = sprintf("%02d", as.numeric(stringr::str_extract(Raumbezug, "^\\d+")))
+    ) %>%
+    dplyr::select(Jahr, bezirksnummer, kinder_total = `Basiswert 1`)
+  
+  # Kinderbetreuung bis 2 Jahre：托管儿童数
+  betreut_long_4 <- ki_sheet %>%
+    dplyr::filter(
+      Indikator == "Altersgruppen",
+      Ausprägung == "bis 2 Jahre",
+      Raumbezug != "Stadt München"
+    ) %>%
+    dplyr::mutate(
+      bezirksnummer = sprintf("%02d", as.numeric(stringr::str_extract(Raumbezug, "^\\d+")))
+    ) %>%
+    dplyr::select(Jahr, bezirksnummer, kinder_betreut = `Basiswert 1`)
+  
+  # 计算托管率
+  betreuung_long_4 <- total_long_4 %>%
+    dplyr::left_join(betreuet_long_4 <- betreut_long_4,
+                     by = c("Jahr", "bezirksnummer")) %>%
+    dplyr::mutate(
+      anteil_betreuung = 100 * kinder_betreut / kinder_total
+    ) %>%
+    dplyr::select(Jahr, bezirksnummer, anteil_betreuung)
+  
+  # 合并 + 加 geometry
+  full_data_4 <<- hh_long_4 %>%
+    dplyr::left_join(emp_long_4,       by = c("Jahr", "bezirksnummer")) %>%
+    dplyr::left_join(betreuung_long_4, by = c("Jahr", "bezirksnummer")) %>%
+    dplyr::left_join(munich_map,       by = c("bezirksnummer" = "sb_nummer")) %>%
+    sf::st_as_sf()
+}
+
+# ---- 自动播放状态（第 4 个 Shiny 专用）----
+playing_4 <- reactiveVal(FALSE)
+
+observeEvent(input$play_4, {
+  if (playing_4()) {
+    playing_4(FALSE)
+    updateActionButton(session, "play_4", label = "▶ Play")
+  } else {
+    playing_4(TRUE)
+    updateActionButton(session, "play_4", label = "⏸ Pause")
+  }
+})
+
+# 自动推进年份
+observe({
+  req(playing_4())
+  invalidateLater(1000, session)   # 播放速度：1 秒一步
+  
+  current_year <- isolate(input$year_4)
+  next_year    <- if (current_year >= 2024) 2012 else current_year + 1L
+  
+  updateSliderInput(session, "year_4", value = next_year)
+})
+
+# ---- 计算每年 München 均值（HK & FE）----
+city_means_4 <- reactive({
+  tibble::tibble(
+    mean_HaKi_4 = be_sheet %>%
+      dplyr::filter(
+        Jahr == input$year_4,
+        Raumbezug == "Stadt München",
+        Indikator == "Haushalte mit Kindern",
+        Ausprägung == "insgesamt"
+      ) %>%
+      dplyr::mutate(val = 100 * `Basiswert 1` / `Basiswert 2`) %>%
+      dplyr::pull(val),
+    
+    mean_FE_4 = ar_sheet %>%
+      dplyr::filter(
+        Jahr == input$year_4,
+        Raumbezug == "Stadt München",
+        Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
+        Ausprägung == "weiblich"
+      ) %>%
+      dplyr::mutate(val = 100 * `Basiswert 1` / `Basiswert 2`) %>%
+      dplyr::pull(val)
+  )
+})
+
+# ---- 按年份过滤 full_data_4 ----
+df_year_4 <- reactive({
+  full_data_4 %>%
+    dplyr::filter(Jahr == input$year_4)
+})
+
+# -------------------------------------------------
+# 左图：HK hoch + Beschäftigung niedrig 染粉色
+# -------------------------------------------------
+output$map_left_4 <- leaflet::renderLeaflet({
+  
+  d <- df_year_4()
+  m <- city_means_4()
+  
+  d <- d %>%
+    dplyr::mutate(
+      gruppe_4 = dplyr::case_when(
+        anteil_kinder > m$mean_HaKi_4 & anteil < m$mean_FE_4 ~
+          "HK hoch + Beschäftigung niedrig",
+        TRUE ~ "Andere"
+      ),
+      color_4 = dplyr::if_else(
+        gruppe_4 == "HK hoch + Beschäftigung niedrig",
+        "#e75480", "#d9d9d9"
+      )
+    )
+  
+  # 这里先在 R 里生成 label，避免 leaflet 公式里用 !!
+  popup_left_4 <- paste0(
+    "<b>", d[[MAP_NAME_COLUMN]], "</b><br>",
+    "Haushalte mit Kindern: ", round(d$anteil_kinder, 1), "%<br>",
+    "Frauenbeschäftigung: ",  round(d$anteil, 1), "%<br>",
+    "Kinderbetreuung 0–2: ",  round(d$anteil_betreuung, 1), "%"
+  )
+  
+  leaflet::leaflet(d) %>%
+    leaflet::addTiles(urlTemplate = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png") %>%
+    leaflet::addPolygons(
+      fillColor   = ~color_4,
+      color       = "white",
+      weight      = 1,
+      fillOpacity = 0.8,
+      label       = lapply(popup_left_4, htmltools::HTML)
+    )
+})
+
+# -------------------------------------------------
+# 右图：Kinderbetreuung Purples 色阶
+# -------------------------------------------------
+output$map_right_4 <- leaflet::renderLeaflet({
+  
+  d <- df_year_4()
+  
+  pal_4 <- leaflet::colorNumeric("Purples", domain = c(0, 100))
+  
+  popup_right_4 <- paste0(
+    "<b>", d[[MAP_NAME_COLUMN]], "</b><br>",
+    "Kinderbetreuung 0–2: ", round(d$anteil_betreuung, 1), "%"
+  )
+  
+  leaflet::leaflet(d) %>%
+    leaflet::addTiles(urlTemplate = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png") %>%
+    leaflet::addPolygons(
+      fillColor   = ~pal_4(anteil_betreuung),
+      color       = "white",
+      weight      = 1,
+      fillOpacity = 0.8,
+      label       = lapply(popup_right_4, htmltools::HTML)
+    ) %>%
+    leaflet::addLegend(
+      pal      = pal_4,
+      values   = c(0, 100),
+      title    = "Betreuung 0–2 Jahre (%)",
+      position = "bottomright"
+    )
+})
+```
+
+```{r}
+#| panel: sidebar
+
+sliderInput(
+  "year_4",
+  "Jahr:",
+  min   = 2012,
+  max   = 2024,
+  value = 2024,
+  step  = 1,
+  sep   = ""
+)
+
+actionButton(
+  "play_4",
+  "▶ Play",
+  width = "100%"
+)
+```
+
+```{r}
+#| panel: fill
+
+tagList(
+  h4("Haushalte mit Kindern + Beschäftigung"),
+  leafletOutput("map_left_4", height = "250px"),
+  br(),
+  h4("Kinderbetreuung (0–2 Jahre)"),
+  leafletOutput("map_right_4", height = "250px")
+)
+```
+
+
 
 ## Anhang
 

@@ -77,7 +77,7 @@ m_effekt_03_plot <- ggplot(final_sf) +
           color = "white",
           size = 0.4) +
   
-  # Purples 调色板 + 0–100%
+  # Purples 调色板
   scale_fill_distiller(
     palette = "Purples",
     direction = 1,
@@ -85,20 +85,25 @@ m_effekt_03_plot <- ggplot(final_sf) +
     name = "Kinderbetreuung (%)"
   ) +
   
+  # —— 控制Legend布局：标题在上、颜色条在下、放大 —— 
+  guides(
+    fill = guide_colorbar(
+      title.position = "top",   # ⭐ 标题放在颜色条上方
+      barwidth = 25,            # 加长色条
+      barheight = 2             # 加粗色条
+    )
+  ) +
+  
   # 地图主题
   theme_void(base_size = 14) +
   theme(
-    legend.position = "bottom",     # ← 图例移到底部
-    plot.title = element_blank(),   # ← 移除标题
-    legend.title = element_text(size = 12),
-    legend.text  = element_text(size = 10)
+    legend.position    = "bottom",
+    legend.title.align = 0.5,
+    legend.title = element_text(size = 28, face = "bold"),
+    legend.text  = element_text(size = 26),
+    plot.title = element_text(face = "bold", size = 26, hjust = 0.5)
   )
 
 m_effekt_03_plot
 
-# 保存图片（可选）
-ggsave(
-  "results/figures/m_effekt/m_effekt_03_plot.png",
-  m_effekt_03_plot,
-  width = 8, height = 6, dpi = 300
-)
+saveRDS(m_effekt_03_plot, "results/figures/m_effekt/m_effekt_03_plot.rds")

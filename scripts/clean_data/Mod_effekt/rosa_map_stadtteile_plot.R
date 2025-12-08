@@ -179,3 +179,6 @@ m_effekt_04_plot <- ggplot(data_2024_plot) +
   )
 
 m_effekt_04_plot
+
+saveRDS(m_effekt_04_plot, "results/figures/m_effekt/m_effekt_04_plot.rds")
+
