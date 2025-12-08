@@ -634,6 +634,7 @@ leafletOutput("map_output", height = "550px")
 
 <br> Anteil der Privathaushalte <br> mit mindestens einem Kind bis 17 Jahre <br> (mit mindestens einer Hauptwohnsitzperson) <br> an allen Privathaushalten in Prozent
 
+<<<<<<< Updated upstream
 ## Haushalte mit Kindern
 
 ```{r}
@@ -801,7 +802,13 @@ actionButton(
 leafletOutput("map_output_3", height = "550px")
 ```
 
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
 ## Korrelation (gesamt)
+=======
+## Haushalte mit Kindern (gesamt)
+>>>>>>> Stashed changes
 
 ```{r}
 #| label: hmk_korr_gesamt_point_sw
@@ -1437,6 +1444,7 @@ m_effekt_03_plot
 
 ## Fazit
 
+<<<<<<< Updated upstream
 ::: {style="font-size:80%;"}
 -   **Frauenbeschäftigung:**
     -   Zuwachs in allen Stadtteilen
@@ -1449,6 +1457,11 @@ m_effekt_03_plot
     -   [Nach Jahr: negative Korrelation]{style="color:lightgray;"}
     -   [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
 :::
+=======
+<<<<<<< Updated upstream
+::: {style="font-size:65%;"}
+### Frauenbeschäftigung:
+>>>>>>> Stashed changes
 
 ## Fazit
 
@@ -1467,6 +1480,7 @@ m_effekt_03_plot
 
 ## Fazit
 
+<<<<<<< Updated upstream
 ::: {style="font-size:80%;"}
 -   [**Frauenbeschäftigung:**]{style="color:lightgray;"}
     -   [Zuwachs in allen Stadtteilen]{style="color:lightgray;"}
@@ -1478,6 +1492,28 @@ m_effekt_03_plot
     -   Nach Stadtteil: stark positive Korrelation\
     -   Nach Jahr: negative Korrelation\
     -   Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
+=======
+### Kinderbetreuung:
+=======
+::: {style="font-size:75%;"}
+### Frauenbeschäftigung
+
+-   Regionale Unterschiede zwischen den Stadtteilen\
+-   In zentralen Stadtteilen höhere Beschäftigungsanteile und stärkere Zuwächse\
+-   Periphere Stadtteile geringere Anteile und langsamere Zuwächse
+
+### Haushalte mit Kindern
+
+-   Nach Stadtteil: meistens positive Korrelation\
+-   Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt.
+
+### Kinderbetreuung
+>>>>>>> Stashed changes
+
+-   Nach Stadtteil: stark positive Korrelation\
+-   Nach Jahr: negative Korrelation\
+-   Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
+>>>>>>> Stashed changes
 :::
 
 ## Limitation
