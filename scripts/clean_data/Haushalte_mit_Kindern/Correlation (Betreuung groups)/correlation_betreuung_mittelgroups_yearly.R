@@ -3,7 +3,6 @@ library(readxl)
 library(dplyr)
 library(ggplot2)
 
-#============ ARBEITSMARKT =============
 ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 
 df_emp <- ar_sheet %>%
@@ -78,46 +77,56 @@ corr_df <- map_df(years, function(y) {
       betreuung_group = cut(
         anteil_betreut,
         breaks = qu,
-        labels = c("Niedrig", "Mittel", "Hoch"),  
+        labels = c("Niedrig", "Mittel", "Hoch"),
         include.lowest = TRUE
       )
     )
   
   tibble(
     Jahr = y,
-    Gesamt = cor(df_y$emp_female_pct, df_y$households_pct,
-                 use="complete.obs"),
-    Niedrig = cor(df_y %>% filter(betreuung_group=="Niedrig")  %>% pull(emp_female_pct),
-                  df_y %>% filter(betreuung_group=="Niedrig")  %>% pull(households_pct),
-                  use="complete.obs"),
-    Hoch    = cor(df_y %>% filter(betreuung_group=="Hoch") %>% pull(emp_female_pct),
-                  df_y %>% filter(betreuung_group=="Hoch") %>% pull(households_pct),
-                  use="complete.obs")
+    
+    # ⭐ 用 Mittel 替代 Gesamt
+    Mittel = cor(
+      df_y %>% filter(betreuung_group == "Mittel") %>% pull(emp_female_pct),
+      df_y %>% filter(betreuung_group == "Mittel") %>% pull(households_pct),
+      use = "complete.obs"
+    ),
+    
+    Niedrig = cor(
+      df_y %>% filter(betreuung_group == "Niedrig") %>% pull(emp_female_pct),
+      df_y %>% filter(betreuung_group == "Niedrig") %>% pull(households_pct),
+      use = "complete.obs"
+    ),
+    
+    Hoch = cor(
+      df_y %>% filter(betreuung_group == "Hoch") %>% pull(emp_female_pct),
+      df_y %>% filter(betreuung_group == "Hoch") %>% pull(households_pct),
+      use = "complete.obs"
+    )
   )
 })
 
+# ------- 变成长格式 --------
 corr_long <- corr_df %>%
-  pivot_longer(cols = c("Gesamt", "Niedrig", "Hoch"),  
+  pivot_longer(cols = c("Mittel", "Niedrig", "Hoch"),
                names_to = "Group",
                values_to = "Correlation")
 
-# Plot (全部德语)
-ggplot(corr_long, aes(x = Jahr, y = Correlation, color = Group)) +
+# ------- 绘图（全部德语）--------
+ ggplot(corr_long, aes(x = Jahr, y = Correlation, color = Group)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey70") +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
   scale_color_manual(values = c(
-    "Gesamt" = "grey40",
-    "Niedrig" = "#00bfc4",   
-    "Hoch"    = "#f8766d"   
+    "Mittel"  = "grey40",
+    "Niedrig" = "#00bfc4",
+    "Hoch"    = "#f8766d"
   )) +
   theme_minimal(base_size = 14) +
   labs(
     title = "Jährliche Korrelationen: Frauenbeschäftigung und Haushalte mit Kindern",
-    subtitle = "Vergleich: Gesamt sowie niedrige und hohe Kinderbetreuung (0–2 Jahre)",
+    subtitle = "Vergleich: Mittel-, Niedrig- und Hochbetreuung (0–2 Jahre)",
     x = "Jahr",
     y = "Korrelationskoeffizient",
     color = "Gruppe"
   )
-
-
