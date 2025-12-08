@@ -68,21 +68,22 @@ df_data <- bind_rows(ar_tab, be_tab_household) %>%
   mutate(
     Indikator = ifelse(
       Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
-      "Frauenbeschäftigung",
+      "Frauenbeschäftigung  ",
       Indikator
     ),
     # 手动设定分组顺序：先 Anteil，再 Haushalt
     Indikator = factor(
       Indikator,
-      levels = c("Frauenbeschäftigung", "Haushalte mit Kindern")
+      levels = c("Frauenbeschäftigung  ", "Haushalte mit Kindern")
     )
   ) %>%
   arrange(Indikator, Jahr)   # 先按指标，再按年份升序
 df_data
 # 6. devide into seperate dataframes
 df_employment <- df_data %>%
-  filter(Indikator == "Frauenbeschäftigung") %>%
-  arrange(Jahr)
+  filter(Indikator == "Frauenbeschäftigung  ") %>%
+  arrange(Jahr) %>%
+  mutate(Ausprägung = ifelse(Ausprägung == "weiblich", "weiblich.  ", Ausprägung))
 
 df_household <- df_data %>%
   filter(Indikator == "Haushalte mit Kindern") %>%
