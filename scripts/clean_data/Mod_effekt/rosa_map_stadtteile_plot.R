@@ -172,7 +172,7 @@ m_effekt_04_plot <- ggplot(data_2024_plot) +
   theme_void(base_size = 14) +
   theme(
     legend.position   = "bottom",
-    legend.text       = element_text(size = 12),
+    legend.text       = element_text(size = 27),
     legend.key.size   = unit(1, "cm"),
     legend.background = element_blank(),
     plot.caption      = element_blank()
