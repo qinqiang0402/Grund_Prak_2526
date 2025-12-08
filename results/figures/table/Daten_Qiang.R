@@ -64,14 +64,20 @@ selection <- tribble(
 df_data <- bind_rows(ar_tab, be_tab_household) %>%
   semi_join(selection,
             by = c("Indikator", "Ausprägung", "Jahr", "Raumbezug", "Quelle")) %>%
-  select(-Quelle) %>% 
+  select(-Quelle) %>%
   mutate(
     Indikator = ifelse(
       Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
       "Anteil Frauenbeschäftigung",
       Indikator
+    ),
+    # 手动设定分组顺序：先 Anteil，再 Haushalt
+    Indikator = factor(
+      Indikator,
+      levels = c("Anteil Frauenbeschäftigung", "Haushalte mit Kindern")
     )
-  )
+  ) %>%
+  arrange(Indikator, Jahr)   # 先按指标，再按年份升序
 df_data
 # 6. devide into seperate dataframes
 df_employment <- df_data %>%
@@ -108,4 +114,6 @@ df_data_final <- df_data_final %>%
 df_employment
 df_data
 df_data_final
-saveRDS(df_data_final, "results/figures/table/df_data_qiang.rds")
+saveRDS(df_data_final, "results/figures/table/table_data_03.rds")
+saveRDS(df_employment, "results/figures/table/table_data_01.rds")
+saveRDS(df_data, "results/figures/table/table_data_02.rds")

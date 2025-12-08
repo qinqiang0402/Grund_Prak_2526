@@ -36,8 +36,9 @@ library(leaflet)
 library(htmltools)
 
 # 把所有要用到的图从 RDS 里读进来
-table_datenaufbau <- readRDS("results/figures/table/df_data.rds")
-table_datenaufbau_01 <- readRDS("results/figures/table/df_data_qiang.rds")
+table_data_01 <- readRDS("results/figures/table/table_data_01.rds")
+table_data_02 <- readRDS("results/figures/table/table_data_02.rds")
+table_data_03 <- readRDS("results/figures/table/table_data_03.rds")
 leaflet_sv_durchschnitt <- readRDS("results/figures/SV/leaflet_sv_durchschnitt.rds")
 
 
@@ -339,8 +340,64 @@ df_merged <- df_emp %>%
 #| echo: false
 #| results: asis
 
-knitr::kable(table_datenaufbau_01, format = "html", table.attr = 'class="no-wrap"')
+knitr::kable(table_data_01, format = "html", table.attr = 'class="no-wrap"')
 ```
+
+## Daten {.smaller}
+
+```{=html}
+<style>
+.no-wrap td {
+  white-space: nowrap;
+}
+
+/* 页脚样式 */
+.data-footer {
+  font-size: 0.8em;
+  color: #555;
+  margin-top: 1.5em;
+  text-align: left;
+}
+
+</style>
+```
+
+```{r}
+#| echo: false
+#| results: asis
+
+knitr::kable(table_data_02, format = "html", table.attr = 'class="no-wrap"')
+```
+
+## Daten {.smaller}
+
+```{=html}
+<style>
+.no-wrap td {
+  white-space: nowrap;
+}
+
+/* 页脚样式 */
+.data-footer {
+  font-size: 0.8em;
+  color: #555;
+  margin-top: 1.5em;
+  text-align: left;
+}
+
+</style>
+```
+
+```{r}
+#| echo: false
+#| results: asis
+
+knitr::kable(table_data_03, format = "html", table.attr = 'class="no-wrap"')
+```
+
+
+
+
 
 ```{=html}
 <div class="data-footer">
@@ -462,12 +519,12 @@ observe({
   } else if (var_id == "anteil_betreuung") {
     c_min <- GLOBAL_MIN_BETREUUNG; c_max <- GLOBAL_MAX_BETREUUNG
     unit  <- " %";                 dec   <- 1
-    pal_name <- "Purples"
+    pal_name <- "Reds"
     
   } else {
     c_min <- GLOBAL_MIN_BABY;      c_max <- GLOBAL_MAX_BABY
     unit  <- "";                   dec   <- 4
-    pal_name <- "Reds"
+    pal_name <- "Purples"
   }
   
   pal <- colorNumeric(palette = pal_name, domain = c(c_min, c_max))
@@ -1146,9 +1203,11 @@ hmk_korr_point_line_nach_jahr_color
 
 -   **Gruppenaufteilung:**
 
-    -   **Hohe Betreuung:** obere Drittel der Stadtteile mit der höchsten Kinderbetreuungsquote
+    -   **Hohe Betreuung:** oberes Drittel der Stadtteile mit der höchsten Kinderbetreuung
 
-    -   **Niedrige Betreuung:** untere Drittel der Stadtteile mit der niedrigsten Kinderbetreuungsquote
+    -   **Mittlere Betreuung:** mittleres Drittel der Stadtteile mit durchschnittlicher Kinderbetreuung
+
+    -   **Niedrige Betreuung:** unteres Drittel der Stadtteile mit der niedrigsten Kinderbetreuung
 
 ## Korrelation (gesamt) 2024
 
@@ -1169,9 +1228,7 @@ m_effekt_01
 
 ```{r}
 #| context: server
-#| fig-width: 18
-#| fig-height: 12
-#| fig-align: center
+
 
 
 # ---- Play / Pause ----
@@ -1303,19 +1360,20 @@ output$plot <- renderPlot({
 
     annotate(
       "text",
-      x = -Inf, y = Inf,
+      x = Inf, y = Inf,
       label = paste("Jahr:", input$year),
-      hjust = -0.15, vjust = 1.5,
-      size = 10
+      hjust = 1.1, 
+      vjust = 1.5,
+      size = 20
     ) +
 
    theme_bw(base_size = 28) +
     theme(
       plot.title      = element_text(size = 36, face = "bold"),
-      axis.title      = element_text(size = 32, face = "bold"),
-      axis.text       = element_text(size = 28),
-      legend.title    = element_text(size = 30),
-      legend.text     = element_text(size = 26)
+      axis.title      = element_text(size = 50, face = "bold"),
+      axis.text       = element_text(size = 46),
+      legend.title    = element_text(size = 50),
+      legend.text     = element_text(size = 46)
     )
 
 }, width = 1920, height = 1080)  
@@ -1489,8 +1547,11 @@ m_effekt_2.5
     -   Stadtteile durch Postleitzahlen ersetzen
     -   Wir berechnen die bedingte Wahrscheinlichkeit
 
-\[ P(\text{Frau lebt in einem Haushalt mit Kindern} \mid \text{Frau ist erwerbstätig}) = \frac{P(\text{Frau lebt in einem Haushalt mit Kindern} 
-           \cap \text{Frau ist erwerbstätig})} {P(\text{Frau ist erwerbstätig})}. \]
+$$
+P(\text{Die Frau lebt in einem Haushalt mit Kindern} 
+  \mid 
+  \text{Die Frau ist erwerbstätig})
+$$
 
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**\
     -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
