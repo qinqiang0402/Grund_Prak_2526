@@ -113,7 +113,7 @@ corr_long <- corr_df %>%
                values_to = "Correlation")
 
 # ------- 绘图（全部德语）--------
- ggplot(corr_long, aes(x = Jahr, y = Correlation, color = Group)) +
+ kor_group <- ggplot(corr_long, aes(x = Jahr, y = Correlation, color = Group)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey70") +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
@@ -130,3 +130,5 @@ corr_long <- corr_df %>%
     y = "Korrelationskoeffizient",
     color = "Gruppe"
   )
+
+saveRDS(kor_group, "results/figures/m_effekt/m_effekt_kor_group.rds")

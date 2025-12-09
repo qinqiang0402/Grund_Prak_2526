@@ -278,8 +278,6 @@ df_merged <- df_emp %>%
 
 ```
 
-
-
 ## 
 
 ![](images/clipboard-2869406759.png)
@@ -1064,6 +1062,7 @@ ki_dual_trend
 ## Korrelation (gesamt)
 
 <br>
+
 ```{r}
 
 #| echo: false
@@ -1080,6 +1079,7 @@ ki_point_korr_gesamt_sw
 ## Korrelation (Stadtteile)
 
 <br>
+
 ```{r}
 
 #| echo: false
@@ -1388,7 +1388,6 @@ m_effekt_04_plot
 m_effekt_03_plot
 ```
 
-
 ## Agenda {.agenda-slide}
 
 1.  [Datenüberblick]{.dim-past}
@@ -1485,7 +1484,6 @@ m_effekt_03_plot
     -   Daten über Kinderbetreuung ab 2007
     -   Daten über Haushalte mit Kindern ab 2012
 :::
-
 
 ## Ausblick {.ausblick-1}
 
@@ -1668,7 +1666,7 @@ df <- df %>%
   mutate(gruppe = case_when(
     betreuung_group == "Hoch"    ~ "Hohe Betreuung",
     betreuung_group == "Mittel"  ~ "Mittel Betreuung",
-    betreuung_group == "Niedrige" ~ "Niedrige Betreuung"
+    betreuung_group == "Niedrig" ~ "Niedrige Betreuung"
   )) %>%
   filter(!is.na(gruppe))   # ⭐ 去掉 NA 分组
 
@@ -1743,7 +1741,7 @@ actionButton(
 plotOutput("plot5")
 ```
 
-## mod
+## Betreuungsbedarf
 
 ```{r}
 #| context: server
