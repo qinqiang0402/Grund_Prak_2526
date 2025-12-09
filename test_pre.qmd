@@ -1493,7 +1493,7 @@ m_effekt_03_plot
 -   **Feinere Datenebene:**
     -   Stadtteile durch Postleitzahlen ersetzen
     -   Wir berechnen die bedingte Wahrscheinlichkeit\
-        [$P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$]{style="font-size:70%;"}
+        [$P(\text{Die Frau ist erwerbstätig} \mid \text{Die Frau lebt in einem Haushalt mit Kindern})$]{style="font-size:70%;"}
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
     -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
 -   **Moderierter Effekt:**
@@ -1506,7 +1506,7 @@ m_effekt_03_plot
 -   **Feinere Datenebene:**
     -   Stadtteile durch Postleitzahlen ersetzen
     -   Wir berechnen die bedingte Wahrscheinlichkeit\
-        [$P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$]{style="font-size:70%;"}
+        [$P(\text{Die Frau ist erwerbstätig} \mid \text{Die Frau lebt in einem Haushalt mit Kindern})$]{style="font-size:70%;"}
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
     -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
 -   **Moderierter Effekt:**
@@ -1519,7 +1519,7 @@ m_effekt_03_plot
 -   **Feinere Datenebene:**
     -   Stadtteile durch Postleitzahlen ersetzen
     -   Wir berechnen die bedingte Wahrscheinlichkeit\
-        [$P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$]{style="font-size:70%;"}
+        [$P(\text{Die Frau ist erwerbstätig} \mid \text{Die Frau lebt in einem Haushalt mit Kindern})$]{style="font-size:70%;"}
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
     -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
 -   **Moderierter Effekt:**
