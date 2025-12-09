@@ -233,7 +233,7 @@ ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
   ) +
   
   labs(x = "Jahr", title = "", subtitle = "") +
-  ttheme_bw(base_size = 13) +
+  theme_bw(base_size = 13) +
   axis_theme_common
 
 ki_dual_trend

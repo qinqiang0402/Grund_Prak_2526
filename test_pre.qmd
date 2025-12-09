@@ -44,13 +44,13 @@ hmk_korr_point_nach_jahr_color <-  readRDS("results/figures/Haushalt_mit_Kindern
 hmk_korr_point_line_nach_jahr_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_jahr_color.rds")
 
 #______________________________________________________________________________
-ki_dual_trend <- readRDS("results/figures/Kinderbetreuung/ki_dual_trend.rds")
-ki_trend_sv <- readRDS("results/figures/Kinderbetreuung/trend_sv.rds")
-ki_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_ki_2015.rds")
-sv_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_sv_2015.rds")
-ki_point_korr_gesamt_sw <- readRDS("results/figures/Kinderbetreuung/ki_point_korr_gesamt_sw.rds")
-ki_korr_jahre_point_line_rot <- readRDS("results/figures/Kinderbetreuung/ki_point_line_color.rds")
-ki_korr_stadtteile_point_line_sw <- readRDS("results/figures/Kinderbetreuung/ki_simpson_sw.rds")
+ki_dual_trend <- readRDS("results/figures/NEW_Kinderbetreuung/ki_dual_trend.rds")
+ki_trend_sv <- readRDS("results/figures/NEW_Kinderbetreuung/trend_sv.rds")
+ki_map_2015 <- readRDS("results/figures/NEW_Kinderbetreuung/map_ki_2015.rds")
+sv_map_2015 <- readRDS("results/figures/NEW_Kinderbetreuung/map_sv_2015.rds")
+ki_point_korr_gesamt_sw <- readRDS("results/figures/NEW_Kinderbetreuung/ki_point_korr_gesamt_sw.rds")
+ki_korr_jahre_point_line_rot <- readRDS("results/figures/NEW_Kinderbetreuung//ki_point_line_rot.rds")
+ki_korr_stadtteile_point_line_sw <- readRDS("results/figures/NEW_Kinderbetreuung/ki_korr_stadtteile_point_line_sw.rds")
 ki_point_line_korr_nach_stadtteile_color <- readRDS("results/figures/Kinderbetreuung/ki_point_line_korr_nach_stadtteile_color.rds")
 
 #__________________________________________________________________________
@@ -278,37 +278,37 @@ df_merged <- df_emp %>%
 
 ```
 
+
+
 ## 
 
-![](images/clipboard-2285594112.png)
+![](images/clipboard-2869406759.png)
 
 ## 
 
 ![](images/clipboard-3386569485.png)
 
-## Agenda { .agenda-slide }
+## Agenda {.agenda-slide}
 
-1. Datenüberblick
-2. Datenanalyse
-    - Frauenbeschäftigung
-    - Zusammenhang
-        - Haushalte mit Kindern
-        - Kinderbetreuung
-3. Fazit - Limitation - Ausblick
+1.  Datenüberblick
+2.  Datenanalyse
+    -   Frauenbeschäftigung
+    -   Zusammenhang
+        -   Haushalte mit Kindern
+        -   Kinderbetreuung
+3.  Fazit - Limitation - Ausblick
 
----
+------------------------------------------------------------------------
 
-## Agenda { .agenda-slide }
+## Agenda {.agenda-slide}
 
-1. Datenüberblick
-2. [Datenanalyse]{.dim-past}
-    - [Frauenbeschäftigung]{.dim-past}
-    - [Zusammenhang]{.dim-past}
-        - [Haushalte mit Kindern]{.dim-past}
-        - [Kinderbetreuung]{.dim-past}
-3. [Fazit - Limitation - Ausblick]{.dim-future}
-
-
+1.  Datenüberblick
+2.  [Datenanalyse]{.dim-past}
+    -   [Frauenbeschäftigung]{.dim-past}
+    -   [Zusammenhang]{.dim-past}
+        -   [Haushalte mit Kindern]{.dim-past}
+        -   [Kinderbetreuung]{.dim-past}
+3.  [Fazit - Limitation - Ausblick]{.dim-future}
 
 ## Daten {.smaller}
 
@@ -394,15 +394,15 @@ knitr::kable(table_data_03, format = "html", table.attr = 'class="no-wrap"')
 </div>
 ```
 
-## Agenda { .agenda-slide }
+## Agenda {.agenda-slide}
 
-1. [Datenüberblick]{.dim-past}
-2. Datenanalyse
-    - Frauenbeschäftigung
-    - [Zusammenhang]{.dim-past}
-        - [Haushalte mit Kindern]{.dim-past}
-        - [Kinderbetreuung]{.dim-past}
-3. [Fazit - Limitation - Ausblick]{.dim-future}
+1.  [Datenüberblick]{.dim-past}
+2.  Datenanalyse
+    -   Frauenbeschäftigung
+    -   [Zusammenhang]{.dim-past}
+        -   [Haushalte mit Kindern]{.dim-past}
+        -   [Kinderbetreuung]{.dim-past}
+3.  [Fazit - Limitation - Ausblick]{.dim-future}
 
 ------------------------------------------------------------------------
 
@@ -602,16 +602,15 @@ leafletOutput("map_output", height = "550px")
 
 ------------------------------------------------------------------------
 
-## Agenda { .agenda-slide }
+## Agenda {.agenda-slide}
 
-1. [Datenüberblick]{.dim-past}
-2. Datenanalyse
-    - [Frauenbeschäftigung]{.dim-past}
-    - Zusammenhang
-        - Haushalte mit Kindern
-        - [Kinderbetreuung]{.dim-past}
-3. [Fazit - Limitation - Ausblick]{.dim-future}
-
+1.  [Datenüberblick]{.dim-past}
+2.  Datenanalyse
+    -   [Frauenbeschäftigung]{.dim-past}
+    -   Zusammenhang
+        -   Haushalte mit Kindern
+        -   [Kinderbetreuung]{.dim-past}
+3.  [Fazit - Limitation - Ausblick]{.dim-future}
 
 ## Haushalte mit Kindern
 
@@ -786,9 +785,7 @@ actionButton(
 leafletOutput("map_output_3", height = "550px")
 ```
 
-
 ## Korrelation (gesamt)
-
 
 ```{r}
 #| label: hmk_korr_gesamt_point_sw
@@ -840,15 +837,15 @@ hmk_korr_point_line_nach_jahr_color
 
 ```
 
-## Agenda { .agenda-slide }
+## Agenda {.agenda-slide}
 
-1. [Datenüberblick]{.dim-past}
-2. Datenanalyse
-    - [Frauenbeschäftigung]{.dim-past}
-    - Zusammenhang
-        - [Haushalte mit Kindern]{.dim-past}
-        - Kinderbetreuung
-3. [Fazit - Limitation - Ausblick]{.dim-future}
+1.  [Datenüberblick]{.dim-past}
+2.  Datenanalyse
+    -   [Frauenbeschäftigung]{.dim-past}
+    -   Zusammenhang
+        -   [Haushalte mit Kindern]{.dim-past}
+        -   Kinderbetreuung
+3.  [Fazit - Limitation - Ausblick]{.dim-future}
 
 ## Kinderbetreuung
 
@@ -1053,7 +1050,6 @@ ki_trend_sv
 ## Kinderbetreuung und Frauenbeschäftigung (2007–2024)
 
 ```{r}
-#| label: ki-dual_trend
 #| echo: false
 #| fig-align: center
 #| fig-width: 9
@@ -1061,16 +1057,13 @@ ki_trend_sv
 #| fig-dpi: 300
 ##| out.extra: 'style="margin-left:-60px;"'
 
-range_left  <- range(ki_dual_trend$data$share_enrolled, na.rm = TRUE)
-range_right <- range(ki_dual_trend$data$emp_women,       na.rm = TRUE)
-
-scale_factor <- (range_left[2] - range_left[1]) / (range_right[2] - range_right[1])
 
 ki_dual_trend
 ```
 
 ## Korrelation (gesamt)
 
+<br>
 ```{r}
 
 #| echo: false
@@ -1086,6 +1079,7 @@ ki_point_korr_gesamt_sw
 
 ## Korrelation (Stadtteile)
 
+<br>
 ```{r}
 
 #| echo: false
@@ -1141,15 +1135,15 @@ sv_map_2015
 ki_map_2015
 ```
 
-## Agenda { .agenda-slide }
+## Agenda {.agenda-slide}
 
-1. [Datenüberblick]{.dim-past}
-2. Datenanalyse
-    - [Frauenbeschäftigung]{.dim-past}
-    - Zusammenhang
-        - [Haushalte mit Kindern]{.dim-past}
-        - [Kinderbetreuung]{.dim-past}
-3. [Fazit - Limitation - Ausblick]{.dim-future}
+1.  [Datenüberblick]{.dim-past}
+2.  Datenanalyse
+    -   [Frauenbeschäftigung]{.dim-past}
+    -   Zusammenhang
+        -   [Haushalte mit Kindern]{.dim-past}
+        -   [Kinderbetreuung]{.dim-past}
+3.  [Fazit - Limitation - Ausblick]{.dim-future}
 
 ## Korrelation (Jahre)
 
@@ -1176,7 +1170,6 @@ hmk_korr_point_line_nach_jahr_color
     -   **Mittlere Betreuung:** mittleres Drittel der Stadtteile mit durchschnittlicher Kinderbetreuung
 
     -   **Niedrige Betreuung:** unteres Drittel der Stadtteile mit der niedrigsten Kinderbetreuung
-
 
 ## Betreuungsbedingte Korrelation
 
@@ -1395,17 +1388,16 @@ m_effekt_04_plot
 m_effekt_03_plot
 ```
 
-## Test
 
-## Agenda { .agenda-slide }
+## Agenda {.agenda-slide}
 
-1. [Datenüberblick]{.dim-past}
-2. [Datenanalyse]{.dim-future}
-    - [Frauenbeschäftigung]{.dim-past}
-    - [Zusammenhang]{.dim-future}
-        - [Haushalte mit Kindern]{.dim-past}
-        - [Kinderbetreuung]{.dim-past}
-3. Fazit - Limitation - Ausblick
+1.  [Datenüberblick]{.dim-past}
+2.  [Datenanalyse]{.dim-future}
+    -   [Frauenbeschäftigung]{.dim-past}
+    -   [Zusammenhang]{.dim-future}
+        -   [Haushalte mit Kindern]{.dim-past}
+        -   [Kinderbetreuung]{.dim-past}
+3.  Fazit - Limitation - Ausblick
 
 ## Fazit
 
@@ -1422,7 +1414,6 @@ m_effekt_03_plot
     -   [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
 :::
 
-
 ## Fazit
 
 ::: {style="font-size:80%;"}
@@ -1438,14 +1429,13 @@ m_effekt_03_plot
     -   [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
 :::
 
-
 ## Fazit
 
 ::: {style="font-size:80%;"}
 -   [**Frauenbeschäftigung:**]{style="color:lightgray;"}
     -   [Zuwachs in allen Stadtteilen]{style="color:lightgray;"}
     -   [Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil]{style="color:lightgray;"}
--   **[Haushalte mit Kindern:]{style="color:lightgray;"}**
+-   [**Haushalte mit Kindern:**]{style="color:lightgray;"}
     -   [Nach Stadtteil: meistens positive Korrelation]{style="color:lightgray;"}
     -   [Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt]{style="color:lightgray;"}
 -   **Kinderbetreuung:**
@@ -1453,10 +1443,6 @@ m_effekt_03_plot
     -   Nach Jahr: negative Korrelation
     -   Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
 :::
-
-
-
-
 
 ## Limitation
 
@@ -1501,68 +1487,44 @@ m_effekt_03_plot
 :::
 
 
-## Leer
-
-## Ausblick { .ausblick-1 }
+## Ausblick {.ausblick-1}
 
 ::: {.ausblick-list style="font-size:85%;"}
-
-- **Feinere Datenebene:**
-    - Stadtteile durch Postleitzahlen ersetzen
-    - Wir berechnen die bedingte Wahrscheinlichkeit  
-      <span style="font-size:70%;">
-      $P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$
-      </span>
-
-- **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
-    - Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
-
-- **Moderierter Effekt:**
-    - Komplexere Modelle lernen und verwenden
-
+-   **Feinere Datenebene:**
+    -   Stadtteile durch Postleitzahlen ersetzen
+    -   Wir berechnen die bedingte Wahrscheinlichkeit\
+        [$P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$]{style="font-size:70%;"}
+-   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
+    -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
+-   **Moderierter Effekt:**
+    -   Komplexere Modelle lernen und verwenden
 :::
 
-## Ausblick { .ausblick-2 }
+## Ausblick {.ausblick-2}
 
 ::: {.ausblick-list style="font-size:85%;"}
-
-- **Feinere Datenebene:**
-    - Stadtteile durch Postleitzahlen ersetzen
-    - Wir berechnen die bedingte Wahrscheinlichkeit  
-      <span style="font-size:70%;">
-      $P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$
-      </span>
-
-- **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
-    - Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
-
-- **Moderierter Effekt:**
-    - Komplexere Modelle lernen und verwenden
-
+-   **Feinere Datenebene:**
+    -   Stadtteile durch Postleitzahlen ersetzen
+    -   Wir berechnen die bedingte Wahrscheinlichkeit\
+        [$P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$]{style="font-size:70%;"}
+-   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
+    -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
+-   **Moderierter Effekt:**
+    -   Komplexere Modelle lernen und verwenden
 :::
 
-## Ausblick { .ausblick-3 }
+## Ausblick {.ausblick-3}
 
 ::: {.ausblick-list style="font-size:85%;"}
-
-- **Feinere Datenebene:**
-    - Stadtteile durch Postleitzahlen ersetzen
-    - Wir berechnen die bedingte Wahrscheinlichkeit  
-      <span style="font-size:70%;">
-      $P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$
-      </span>
-
-- **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
-    - Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
-
-- **Moderierter Effekt:**
-    - Komplexere Modelle lernen und verwenden
-
+-   **Feinere Datenebene:**
+    -   Stadtteile durch Postleitzahlen ersetzen
+    -   Wir berechnen die bedingte Wahrscheinlichkeit\
+        [$P(\text{Die Frau lebt in einem Haushalt mit Kindern} \mid \text{Die Frau ist erwerbstätig})$]{style="font-size:70%;"}
+-   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
+    -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
+-   **Moderierter Effekt:**
+    -   Komplexere Modelle lernen und verwenden
 :::
-
-
-
-
 
 ## 
 
@@ -1605,8 +1567,7 @@ m_effekt_03
 :::
 :::::
 
-## Betreuungsbedingte Korrelation 
-
+## Betreuungsbedingte Korrelation
 
 ```{r}
 #| context: server
@@ -1754,7 +1715,6 @@ df <- df %>%
 }, width = 1920, height = 1080)
 ```
 
-
 ```{r}
 #| panel: sidebar
 
@@ -1782,7 +1742,6 @@ actionButton(
 
 plotOutput("plot5")
 ```
-
 
 ## mod
 
