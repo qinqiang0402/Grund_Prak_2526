@@ -864,18 +864,6 @@ $$
 $$
 :::
 
-## Zeitliche Entwicklung der Frauenbeschäftigung (2007–2024)
-
-```{r}
-#| echo: false
-#| fig-align: center
-#| fig-width: 9
-#| fig-height: 5
-#| fig-dpi: 300
-
-ki_trend_sv
-
-```
 
 ------------------------------------------------------------------------
 
@@ -926,6 +914,8 @@ ki_point_korr_gesamt_sw
 
 ki_korr_stadtteile_point_line_sw
 ```
+
+
 
 ## Korrelation (Jahre)
 
@@ -1395,8 +1385,9 @@ year_min5 <- min(year_seq5, na.rm = TRUE)
 year_max5 <- max(year_seq5, na.rm = TRUE)
 
 observe({
-  invalidateLater(1200, session)
   req(playing_scatter5())
+  invalidateLater(1000, session)
+ 
   req(!is.null(input$year5))
 
   current <- isolate(input$year5)
