@@ -75,16 +75,17 @@ hmk_point_line_nach_jahr_color <- ggplot(korrelations_daten_clean, aes(x = hmk, 
     y = "Frauenbeschäftigung (%)",
     color = "Jahr"
   ) +
-  theme_bw() + 
+  
+  theme_bw(base_size = 13) +
   theme(
-    axis.title = element_text(size = 28, face = "bold"), 
-    axis.text = element_text(size = 20, color = "black"), 
-    panel.grid.major = element_line(color = "grey90"),
-    panel.grid.minor = element_blank(),
-    legend.title = element_text(size = 14, face = "bold"),
-    legend.text = element_text(size = 12)
+    axis.title.x = element_text(size = 18, face = "bold"),
+    axis.title.y = element_text(size = 18, face = "bold"),
+    axis.text.x  = element_text(size = 16),
+    axis.text.y  = element_text(size = 16),
+    legend.text   = element_text(size = 16),
+    legend.title  = element_text(size = 16)
   ) +
-  guides(color = guide_colorbar(barwidth = 1, barheight = 10))
+  guides(color = guide_colorbar(barwidth = 0.8, barheight = 8))
 
 hmk_point_line_nach_jahr_color
 

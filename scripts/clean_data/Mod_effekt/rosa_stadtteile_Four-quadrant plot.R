@@ -212,10 +212,15 @@ m_effekt_2.5 <- ggplot(data_2024_plot,
     color = ""
   ) +
   
-  theme_minimal(base_size = 14) +
+  theme_bw(base_size = 13) +
   theme(
+    axis.title.x = element_text(size = 20, face = "bold"),
+    axis.title.y = element_text(size = 20, face = "bold"),
+    axis.text.x  = element_text(size = 16),
+    axis.text.y  = element_text(size = 16),
     legend.position = "bottom",
-    legend.text = element_text(size = 12)
+    legend.text   = element_text(size = 18),
+    legend.title  = element_text(size = 18)
   )
 
 m_effekt_2.5
