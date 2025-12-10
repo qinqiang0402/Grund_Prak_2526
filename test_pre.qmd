@@ -933,17 +933,6 @@ ki_korr_stadtteile_point_line_sw
 ki_korr_jahre_point_line_rot
 ```
 
-## Kinderbetreuung und Frauenbeschäftigung (2007–2024)
-
-```{r}
-#| echo: false
-#| fig-align: center
-#| fig-width: 9
-#| fig-height: 5
-#| fig-dpi: 300
-
-ki_dual_trend
-```
 
 ## Zusammenhang 2015
 
@@ -1316,8 +1305,6 @@ m_effekt_03_plot
 ::: {.ausblick-list style="font-size:85%;"}
 -   **Feinere Datenebene:**
     -   Stadtteile durch Postleitzahlen ersetzen
-    -   Wir berechnen die bedingte Wahrscheinlichkeit\
-        [$P(\text{Die Frau ist erwerbstätig} \mid \text{Die Frau lebt in einem Haushalt mit Kindern})$]{style="font-size:70%;"}
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
     -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
 -   **Moderierter Effekt:**
@@ -1329,8 +1316,6 @@ m_effekt_03_plot
 ::: {.ausblick-list style="font-size:85%;"}
 -   **Feinere Datenebene:**
     -   Stadtteile durch Postleitzahlen ersetzen
-    -   Wir berechnen die bedingte Wahrscheinlichkeit\
-        [$P(\text{Die Frau ist erwerbstätig} \mid \text{Die Frau lebt in einem Haushalt mit Kindern})$]{style="font-size:70%;"}
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
     -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
 -   **Moderierter Effekt:**
@@ -1342,8 +1327,6 @@ m_effekt_03_plot
 ::: {.ausblick-list style="font-size:85%;"}
 -   **Feinere Datenebene:**
     -   Stadtteile durch Postleitzahlen ersetzen
-    -   Wir berechnen die bedingte Wahrscheinlichkeit\
-        [$P(\text{Die Frau ist erwerbstätig} \mid \text{Die Frau lebt in einem Haushalt mit Kindern})$]{style="font-size:70%;"}
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
     -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
 -   **Moderierter Effekt:**
