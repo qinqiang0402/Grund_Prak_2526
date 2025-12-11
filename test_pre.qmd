@@ -428,6 +428,12 @@ leaflet_sv_durchschnitt
 
 ```
 
+<div style="text-align:left; font-size:2.0rem; margin-top:12px;">
+Der gesamtstädtische Durchschnitt liegt bei 62,6 %.
+</div>
+
+
+
 ```{r}
 #| context: server
 
@@ -1306,9 +1312,9 @@ m_effekt_03_plot
 -   **Feinere Datenebene:**
     -   Stadtteile durch Postleitzahlen ersetzen
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
-    -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
+    -   Politische und zeitliche Effekte berücksichtigen (Kita-Ausbau, Mini-Job)
 -   **Moderierter Effekt:**
-    -   Komplexere Modelle lernen und verwenden
+    -   Moderierte Effekte mit komplexeren Modellen lernen und anwenden
 :::
 
 ## Ausblick {.ausblick-2}
@@ -1317,9 +1323,9 @@ m_effekt_03_plot
 -   **Feinere Datenebene:**
     -   Stadtteile durch Postleitzahlen ersetzen
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
-    -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
+    -   Politische und zeitliche Effekte berücksichtigen (Kita-Ausbau, Mini-Job)
 -   **Moderierter Effekt:**
-    -   Komplexere Modelle lernen und verwenden
+    -   Moderierte Effekte mit komplexeren Modellen lernen und anwenden
 :::
 
 ## Ausblick {.ausblick-3}
@@ -1328,9 +1334,9 @@ m_effekt_03_plot
 -   **Feinere Datenebene:**
     -   Stadtteile durch Postleitzahlen ersetzen
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
-    -   Politische und zeitliche Effekte berücksichtigen (Mini-Job, Kita-Ausbau)
+    -   Politische und zeitliche Effekte berücksichtigen (Kita-Ausbau, Mini-Job)
 -   **Moderierter Effekt:**
-    -   Komplexere Modelle lernen und verwenden
+    -   Moderierte Effekte mit komplexeren Modellen lernen und anwenden
 :::
 
 ## 

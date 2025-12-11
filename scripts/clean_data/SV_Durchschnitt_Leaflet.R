@@ -101,7 +101,7 @@ leaflet_sv_durchschnitt <- leaflet(data_2024, options = leafletOptions(minZoom =
     pal = pal_div,
     values = c(-max_abs, max_abs),
     opacity = 0.7,
-    title = HTML("Abweichung von der<br>Frauenbeschäftigung 2024"),
+    title = HTML("Abweichung der<br>Frauenbeschäftigung<br>vom Durchschnitt (2024)"),
     labFormat = labelFormat(suffix = " % ", digits = 1),
     position = "bottomright"
   )
