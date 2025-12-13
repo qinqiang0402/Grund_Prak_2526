@@ -122,28 +122,3 @@
   font-size: 60%;
 }
 
-
-/* Ausblick-Slides – andere Punkte ausgrauen */
-
-/* Ausblick：先把最外层三个大点都设为黑色，子项跟随 */
-.ausblick-list > ul > li {
-  color: #000000;
-}
-
-/* 第 1 页：灰掉第 2、3 个大点（连同它们的子 bullet & 公式） */
-.ausblick-1 .ausblick-list > ul > li:nth-of-type(2),
-.ausblick-1 .ausblick-list > ul > li:nth-of-type(3) {
-  color: #999999;
-}
-
-/* 第 2 页：灰掉第 1、3 个大点 → 第 2 个整块高亮 */
-.ausblick-2 .ausblick-list > ul > li:nth-of-type(1),
-.ausblick-2 .ausblick-list > ul > li:nth-of-type(3) {
-  color: #999999;
-}
-
-/* 第 3 页：灰掉第 1、2 个大点 → 第 3 个整块高亮 */
-.ausblick-3 .ausblick-list > ul > li:nth-of-type(1),
-.ausblick-3 .ausblick-list > ul > li:nth-of-type(2) {
-  color: #999999;
-}

@@ -1020,21 +1020,28 @@ year_min <- min(year_seq, na.rm = TRUE)
 year_max <- max(year_seq, na.rm = TRUE)
 
 observe({
-  invalidateLater(1200, session)
+  # 1) 只有在播放时才继续（目的：暂停时不跑、不注册定时器）
   req(playing_scatter())
-  req(!is.null(input$year))
 
+  # 2) 定时器放在 req 后面（目的：避免暂停时也在后台 tick）
+  invalidateLater(1000, session)
+
+  # 3) 用 isolate 读取 year，并且也在 isolate 里做非空检查
+  #    （目的：不建立对 input$year 的依赖，避免 updateSliderInput 立刻触发本 observe）
   current <- isolate(input$year)
+  req(!is.null(current))
+
   idx <- match(current, year_seq)
 
-  if (is.na(idx) || idx >= length(year_seq)) {
-    next_year <- year_seq[1]
+  next_year <- if (is.na(idx) || idx >= length(year_seq)) {
+    year_seq[1]
   } else {
-    next_year <- year_seq[idx + 1L]
+    year_seq[idx + 1L]
   }
 
   updateSliderInput(session, "year", value = next_year)
 })
+
 
 # ---- Jahresdatensatz ----
 df_year <- reactive({
@@ -1243,26 +1250,13 @@ m_effekt_03_plot
 -   **Haushalte mit Kindern:**
     -   Nach Stadtteil: meistens positive Korrelation
     -   Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt
--   [**Kinderbetreuung:**]{style="color:lightgray;"}
-    -   [Nach Stadtteil: stark positive Korrelation]{style="color:lightgray;"}
-    -   [Nach Jahr: negative Korrelation]{style="color:lightgray;"}
-    -   [Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern]{style="color:lightgray;"}
-:::
-
-## Fazit
-
-::: {style="font-size:80%;"}
--   [**Frauenbeschäftigung:**]{style="color:lightgray;"}
-    -   [Zuwachs in allen Stadtteilen]{style="color:lightgray;"}
-    -   [Zentrale Stadtteile höhere Anteil, periphere Stadtteile niedrigere Anteil]{style="color:lightgray;"}
--   [**Haushalte mit Kindern:**]{style="color:lightgray;"}
-    -   [Nach Stadtteil: meistens positive Korrelation]{style="color:lightgray;"}
-    -   [Nach Jahr: negative Korrelation, die sich über die Zeit verstärkt]{style="color:lightgray;"}
 -   **Kinderbetreuung:**
     -   Nach Stadtteil: stark positive Korrelation
     -   Nach Jahr: negative Korrelation
     -   Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
 :::
+
+
 
 ## Limitation
 
@@ -1306,38 +1300,41 @@ m_effekt_03_plot
     -   Daten über Haushalte mit Kindern ab 2012
 :::
 
-## Ausblick {.ausblick-1}
+## Ausblick 
 
-::: {.ausblick-list style="font-size:85%;"}
+::: {style="font-size:85%;"}
 -   **Feinere Datenebene:**
     -   Stadtteile durch Postleitzahlen ersetzen
+-   [**Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**]{style="color:lightgray;"}
+    -   [Politische und zeitliche Effekte berücksichtigen (Kita-Ausbau, Mini-Job)]{style="color:lightgray;"}
+-   [**moderieren:**]{style="color:lightgray;"}
+    -   [Moderierte Effekte mit komplexeren Modellen lernen und anwenden]{style="color:lightgray;"}
+:::
+
+
+## Ausblick 
+
+::: {style="font-size:85%;"}
+-   [**Feinere Datenebene:**]{style="color:lightgray;"}
+    -   [Stadtteile durch Postleitzahlen ersetzen]{style="color:lightgray;"}
 -   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
     -   Politische und zeitliche Effekte berücksichtigen (Kita-Ausbau, Mini-Job)
--   **Moderierter Effekt:**
+-   [**moderieren:**]{style="color:lightgray;"}
+    -   [Moderierte Effekte mit komplexeren Modellen lernen und anwenden]{style="color:lightgray;"}
+:::
+
+
+## Ausblick 
+
+::: {style="font-size:85%;"}
+-   [**Feinere Datenebene:**]{style="color:lightgray;"}
+    -   [Stadtteile durch Postleitzahlen ersetzen]{style="color:lightgray;"}
+-   [**Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**]{style="color:lightgray;"}
+    -   [Politische und zeitliche Effekte berücksichtigen (Kita-Ausbau, Mini-Job)]{style="color:lightgray;"}
+-   **moderieren:**
     -   Moderierte Effekte mit komplexeren Modellen lernen und anwenden
 :::
 
-## Ausblick {.ausblick-2}
-
-::: {.ausblick-list style="font-size:85%;"}
--   **Feinere Datenebene:**
-    -   Stadtteile durch Postleitzahlen ersetzen
--   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
-    -   Politische und zeitliche Effekte berücksichtigen (Kita-Ausbau, Mini-Job)
--   **Moderierter Effekt:**
-    -   Moderierte Effekte mit komplexeren Modellen lernen und anwenden
-:::
-
-## Ausblick {.ausblick-3}
-
-::: {.ausblick-list style="font-size:85%;"}
--   **Feinere Datenebene:**
-    -   Stadtteile durch Postleitzahlen ersetzen
--   **Kinderbetreuung und Frauenbeschäftigung weiter untersuchen:**
-    -   Politische und zeitliche Effekte berücksichtigen (Kita-Ausbau, Mini-Job)
--   **Moderierter Effekt:**
-    -   Moderierte Effekte mit komplexeren Modellen lernen und anwenden
-:::
 
 ## 
 
@@ -1373,23 +1370,37 @@ year_seq5 <- sort(unique(df_merged$Jahr))
 year_min5 <- min(year_seq5, na.rm = TRUE)
 year_max5 <- max(year_seq5, na.rm = TRUE)
 
-observe({
-  req(playing_scatter5())
-  invalidateLater(1000, session)
- 
-  req(!is.null(input$year5))
+# ---- Auto-Play (5) ----
+AUTO_MS5 <- 1000  # ✅ 播放速度（毫秒）
 
+observe({
+  # ① 只有在播放时才执行
+  # 目的：暂停时不跑，也不注册定时器
+  req(playing_scatter5())
+
+  # ② 定时器放在 req 后面
+  # 目的：只有 playing 时才按固定间隔 tick
+  invalidateLater(AUTO_MS5, session)
+
+  # ③ 用 isolate 读取 year5，并在 isolate 内做非空检查
+  # 目的：不建立对 input$year5 的反应式依赖，避免 updateSliderInput 造成“瞬间连跳”
   current <- isolate(input$year5)
+  req(!is.null(current))
+
+  # ④ 计算 next_year
+  # 目的：严格按 year_seq5 推进，末尾回到开头
   idx <- match(current, year_seq5)
 
-  if (is.na(idx) || idx >= length(year_seq5)) {
-    next_year <- year_seq5[1]
+  next_year <- if (is.na(idx) || idx >= length(year_seq5)) {
+    year_seq5[1]
   } else {
-    next_year <- year_seq5[idx + 1L]
+    year_seq5[idx + 1L]
   }
 
+  # ⑤ 更新 slider year5（注意 id）
   updateSliderInput(session, "year5", value = next_year)
 })
+
 
 # ---- Jahresdatensatz ----
 df_year5 <- reactive({
