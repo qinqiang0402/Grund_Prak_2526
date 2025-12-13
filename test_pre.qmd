@@ -308,6 +308,41 @@ df_merged <- df_emp %>%
         -   [Kinderbetreuung]{.dim-past}
 3.  [Fazit - Limitation - Ausblick]{.dim-future}
 
+```{r}
+
+#| label: setup
+#| include: false
+
+library(readr)
+library(knitr)
+library(kableExtra)
+
+# 2) 定义固定列宽的输出函数（让不同页列间距一致）
+make_daten_table <- function(df) {
+  df %>%
+    knitr::kable(
+      format = "html",
+      escape = TRUE,
+      align = c("l","l","c","l","c"),
+      col.names = c("Indikator", "Ausprägung", "Jahr", "Raumbezug", "Indikatorwert")
+    ) %>%
+    kable_styling(full_width = TRUE) %>%
+    column_spec(1, width = "32%") %>%
+    column_spec(2, width = "16%") %>%
+    column_spec(3, width = "10%") %>%
+    column_spec(4, width = "28%") %>%
+    column_spec(5, width = "14%")
+}
+```
+
+
+
+
+
+
+
+
+
 ## Daten {.smaller}
 
 ```{=html}
@@ -331,7 +366,7 @@ df_merged <- df_emp %>%
 #| echo: false
 #| results: asis
 
-knitr::kable(table_data_01, format = "html", table.attr = 'class="no-wrap"')
+make_daten_table(table_data_01)
 ```
 
 ## Daten {.smaller}
@@ -357,7 +392,7 @@ knitr::kable(table_data_01, format = "html", table.attr = 'class="no-wrap"')
 #| echo: false
 #| results: asis
 
-knitr::kable(table_data_02, format = "html", table.attr = 'class="no-wrap"')
+make_daten_table(table_data_02)
 ```
 
 ## Daten {.smaller}
@@ -383,7 +418,7 @@ knitr::kable(table_data_02, format = "html", table.attr = 'class="no-wrap"')
 #| echo: false
 #| results: asis
 
-knitr::kable(table_data_03, format = "html", table.attr = 'class="no-wrap"')
+make_daten_table(table_data_03)
 ```
 
 ```{=html}
@@ -739,6 +774,109 @@ leafletOutput("map_output", height = "550px")
 ```{r}
 #| context: server
 
+
+##########
+addLegend_decreasing <- function (map, position = c("topright", "bottomright", "bottomleft","topleft"),
+                                  pal, values, na.label = "NA", bins = 7, colors, 
+                                  opacity = 0.5, labels = NULL, labFormat = labelFormat(), 
+                                  title = NULL, className = "info legend", layerId = NULL, 
+                                  group = NULL, data = getMapData(map), decreasing = FALSE) {
+  
+        position <- match.arg(position)
+        type <- "unknown"
+        na.color <- NULL
+        extra <- NULL
+        if (!missing(pal)) {
+            if (!missing(colors)) 
+                stop("You must provide either 'pal' or 'colors' (not both)")
+            if (missing(title) && inherits(values, "formula")) 
+                title <- deparse(values[[2]])
+            values <- evalFormula(values, data)
+            type <- attr(pal, "colorType", exact = TRUE)
+            args <- attr(pal, "colorArgs", exact = TRUE)
+            na.color <- args$na.color
+            if (!is.null(na.color) && col2rgb(na.color, alpha = TRUE)[[4]] == 
+                    0) {
+                na.color <- NULL
+            }
+            if (type != "numeric" && !missing(bins)) 
+                warning("'bins' is ignored because the palette type is not numeric")
+            if (type == "numeric") {
+                cuts <- if (length(bins) == 1) 
+                    pretty(values, bins)
+                else bins   
+                if (length(bins) > 2) 
+                    if (!all(abs(diff(bins, differences = 2)) <= 
+                                     sqrt(.Machine$double.eps))) 
+                        stop("The vector of breaks 'bins' must be equally spaced")
+                n <- length(cuts)
+                r <- range(values, na.rm = TRUE)
+                cuts <- cuts[cuts >= r[1] & cuts <= r[2]]
+                n <- length(cuts)
+                p <- (cuts - r[1])/(r[2] - r[1])
+                extra <- list(p_1 = p[1], p_n = p[n])
+                p <- c("", paste0(100 * p, "%"), "")
+                if (decreasing == TRUE){
+                    colors <- pal(rev(c(r[1], cuts, r[2])))
+                    labels <- rev(labFormat(type = "numeric", cuts))
+                }else{
+                    colors <- pal(c(r[1], cuts, r[2]))
+                    labels <- rev(labFormat(type = "numeric", cuts))
+                }
+                colors <- paste(colors, p, sep = " ", collapse = ", ")
+            }
+            else if (type == "bin") {
+                cuts <- args$bins
+                n <- length(cuts)
+                mids <- (cuts[-1] + cuts[-n])/2
+                if (decreasing == TRUE){
+                    colors <- pal(rev(mids))
+                    labels <- rev(labFormat(type = "bin", cuts))
+                }else{
+                    colors <- pal(mids)
+                    labels <- labFormat(type = "bin", cuts)
+                }
+            }
+            else if (type == "quantile") {
+                p <- args$probs
+                n <- length(p)
+                cuts <- quantile(values, probs = p, na.rm = TRUE)
+                mids <- quantile(values, probs = (p[-1] + p[-n])/2, na.rm = TRUE)
+                if (decreasing == TRUE){
+                    colors <- pal(rev(mids))
+                    labels <- rev(labFormat(type = "quantile", cuts, p))
+                }else{
+                    colors <- pal(mids)
+                    labels <- labFormat(type = "quantile", cuts, p)
+                }
+            }
+            else if (type == "factor") {
+                v <- sort(unique(na.omit(values)))
+                colors <- pal(v)
+                labels <- labFormat(type = "factor", v)
+                if (decreasing == TRUE){
+                    colors <- pal(rev(v))
+                    labels <- rev(labFormat(type = "factor", v))
+                }else{
+                    colors <- pal(v)
+                    labels <- labFormat(type = "factor", v)
+                }
+            }
+            else stop("Palette function not supported")
+            if (!any(is.na(values))) 
+                na.color <- NULL
+        }
+        else {
+            if (length(colors) != length(labels)) 
+                stop("'colors' and 'labels' must be of the same length")
+        }
+        legend <- list(colors = I(unname(colors)), labels = I(unname(labels)), 
+                                     na_color = na.color, na_label = na.label, opacity = opacity, 
+                                     position = position, type = type, title = title, extra = extra, 
+                                     layerId = layerId, className = className, group = group)
+        invokeMethod(map, data, "addLegend", legend)
+        }
+
 # ---- Play / Pause 状态（第三套）----
 playing_3 <- reactiveVal(FALSE)
 
@@ -841,13 +979,14 @@ observe({
         bringToFront = TRUE
       )
     ) %>%
-    addLegend(
+    addLegend_decreasing(
       pal      = pal,
       values   = c(c_min, c_max),
       opacity  = 0.7,
       title    = var_label,
       labFormat= labelFormat(suffix = unit, digits = dec),
-      position = "bottomright"
+      position = "bottomright",
+      decreasing = TRUE
     ) %>%
     # 右上角年份（第三套用 time_slider_3）
     addControl(
@@ -1126,6 +1265,26 @@ observeEvent(input$play_pause_scatter, {
   }
 })
 
+###################
+# ---- 固定标准化坐标轴范围（全局一次性计算）----
+axis_limits <- df_merged %>%
+  filter(Raumbezug != "Stadt München") %>%
+  group_by(Jahr) %>%
+  mutate(
+    x_std = as.numeric(scale(households_pct)),
+    y_std = as.numeric(scale(emp_female_pct))
+  ) %>%
+  ungroup() %>%
+  summarise(
+    xmin = min(x_std, na.rm = TRUE),
+    xmax = max(x_std, na.rm = TRUE),
+    ymin = min(y_std, na.rm = TRUE),
+    ymax = max(y_std, na.rm = TRUE)
+  )
+
+x_lim <- c(axis_limits$xmin, axis_limits$xmax)
+y_lim <- c(axis_limits$ymin, axis_limits$ymax)
+
 # ---- Year sequence ----
 year_seq <- sort(unique(df_merged$Jahr))
 year_min <- min(year_seq, na.rm = TRUE)
@@ -1254,7 +1413,11 @@ output$plot <- renderPlot({
       hjust = 1.1, 
       vjust = 1.5,
       size = 20
-    ) +
+    ) + 
+    coord_cartesian(
+  xlim = x_lim,
+  ylim = y_lim
+) +
 
    theme_bw(base_size = 28) +
     theme(
@@ -1464,6 +1627,23 @@ m_effekt_03_plot
 
 #──────────────────────── 5. Shiny：Betreuungsbedingte Korrelation ────────────────────────
 
+#──────────────────────── 固定坐标轴范围（全局一次性） ────────────────────────
+
+axis_limits5 <- df_merged %>%
+  filter(Raumbezug != "Stadt München") %>%
+  summarise(
+    x_min = min(households_pct, na.rm = TRUE),
+    x_max = max(households_pct, na.rm = TRUE),
+    y_min = min(emp_female_pct, na.rm = TRUE),
+    y_max = max(emp_female_pct, na.rm = TRUE)
+  )
+
+x_lim5 <- c(axis_limits5$x_min, axis_limits5$x_max)
+y_lim5 <- c(axis_limits5$y_min, axis_limits5$y_max)
+
+
+
+
 # ---- Play / Pause ----
 playing_scatter5 <- reactiveVal(FALSE)
 
@@ -1607,6 +1787,10 @@ df <- df %>%
       vjust = 1.5,
       size = 20
     ) +
+    coord_cartesian(
+  xlim = x_lim5,
+  ylim = y_lim5
+) +
 
     theme_bw(base_size = 28) +
     theme(
