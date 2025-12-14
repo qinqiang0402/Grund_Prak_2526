@@ -335,14 +335,6 @@ make_daten_table <- function(df) {
 }
 ```
 
-
-
-
-
-
-
-
-
 ## Daten {.smaller}
 
 ```{=html}
@@ -463,11 +455,9 @@ leaflet_sv_durchschnitt
 
 ```
 
-<div style="text-align:left; font-size:2.0rem; margin-top:12px;">
+::: {style="text-align:left; font-size:2.0rem; margin-top:12px;"}
 Der gesamtstädtische Durchschnitt liegt bei 62,6 %.
-</div>
-
-
+:::
 
 ```{r}
 #| context: server
@@ -1121,7 +1111,6 @@ $$
 $$
 :::
 
-
 ------------------------------------------------------------------------
 
 ## Kinderbetreuung und Frauenbeschäftigung (2007–2024)
@@ -1172,8 +1161,6 @@ ki_point_korr_gesamt_sw
 ki_korr_stadtteile_point_line_sw
 ```
 
-
-
 ## Korrelation (Jahre)
 
 <br>
@@ -1189,7 +1176,6 @@ ki_korr_stadtteile_point_line_sw
 
 ki_korr_jahre_point_line_rot
 ```
-
 
 ## Zusammenhang 2015
 
@@ -1531,8 +1517,6 @@ m_effekt_03_plot
     -   Höhere Kinderbetreuung schwächt die negative Korrelation zwischen Frauenbeschäftigung und Haushalten mit Kindern
 :::
 
-
-
 ## Limitation
 
 ::: {style="font-size:85%;"}
@@ -1575,7 +1559,7 @@ m_effekt_03_plot
     -   Daten über Haushalte mit Kindern ab 2012
 :::
 
-## Ausblick 
+## Ausblick
 
 ::: {style="font-size:85%;"}
 -   **Feinere Datenebene:**
@@ -1586,8 +1570,7 @@ m_effekt_03_plot
     -   [Moderierte Effekte mit komplexeren Modellen lernen und anwenden]{style="color:lightgray;"}
 :::
 
-
-## Ausblick 
+## Ausblick
 
 ::: {style="font-size:85%;"}
 -   [**Feinere Datenebene:**]{style="color:lightgray;"}
@@ -1598,8 +1581,7 @@ m_effekt_03_plot
     -   [Moderierte Effekte mit komplexeren Modellen lernen und anwenden]{style="color:lightgray;"}
 :::
 
-
-## Ausblick 
+## Ausblick
 
 ::: {style="font-size:85%;"}
 -   [**Feinere Datenebene:**]{style="color:lightgray;"}
@@ -1610,15 +1592,13 @@ m_effekt_03_plot
     -   Moderierte Effekte mit komplexeren Modellen lernen und anwenden
 :::
 
-
 ## 
 
 ![](images/clipboard-3386569485.png)
 
 ## Anhang
 
-![](images/clipboard-742413736.png)
-
+![](images/clipboard-742413736.png){width="90%"}z
 
 ## Betreuungsbedingte Korrelation
 
@@ -2264,3 +2244,19 @@ mea_korr_jahr_point
 mea_korr_jahr_point_line
 
 ```
+
+## Anhang
+
+![](images/clipboard-2548173776.png)
+
+## Anhang
+
+![](images/clipboard-1826208890.png)
+
+## Anhang
+
+![](images/clipboard-2856450415.png)
+
+## Anhang
+
+![](images/clipboard-3397125107.png)

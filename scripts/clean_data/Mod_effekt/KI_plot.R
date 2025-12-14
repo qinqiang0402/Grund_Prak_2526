@@ -80,7 +80,7 @@ m_effekt_03_plot <- ggplot(final_sf) +
   # ⭐ 改成红色渐变（#fff5eb → #7f2704）
   scale_fill_gradient(
     low  = "#fff5eb",
-    high = "#f1948a",
+    high = "#cd6155",
     limits = c(0, 100),
     name = "Kinderbetreuung (%)"
   ) +
