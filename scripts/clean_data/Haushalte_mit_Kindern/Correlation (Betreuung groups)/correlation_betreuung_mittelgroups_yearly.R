@@ -61,7 +61,11 @@ df_betreut <- left_join(
 # Join together
 df_all <- df_emp %>%
   inner_join(df_households, by = c("Jahr", "Raumbezug")) %>%
-  inner_join(df_betreut,    by = c("Jahr", "Raumbezug"))
+  inner_join(df_betreut,    by = c("Jahr", "Raumbezug"))%>%
+
+  filter(
+    !Raumbezug == "Stadt München"     # 排除所有含"Gesamt"的汇总行（如Gesamt München）
+  )
 
 # Yearly correlation
 years <- sort(unique(df_all$Jahr))
