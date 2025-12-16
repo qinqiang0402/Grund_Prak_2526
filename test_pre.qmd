@@ -466,10 +466,6 @@ Der gesamtstädtische Durchschnitt liegt bei 62,6 %.
 #| context: server
 
 
-#________________________
-# Source - https://stackoverflow.com/a
-# Posted by Matias Poullain, modified by community. See post 'Timeline' for change history
-# Retrieved 2025-12-13, License - CC BY-SA 4.0
 
     addLegend_decreasing <- function (map, position = c("topright", "bottomright", "bottomleft","topleft"),
                                   pal, values, na.label = "NA", bins = 7, colors, 
@@ -767,7 +763,6 @@ leafletOutput("map_output", height = "550px")
 #| context: server
 
 
-##########
 addLegend_decreasing <- function (map, position = c("topright", "bottomright", "bottomleft","topleft"),
                                   pal, values, na.label = "NA", bins = 7, colors, 
                                   opacity = 0.5, labels = NULL, labFormat = labelFormat(), 
