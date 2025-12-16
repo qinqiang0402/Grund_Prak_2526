@@ -6,13 +6,32 @@ library(forcats)
 library(ggpubr)
 library(grid)
 
+# ------------------------------------------------------------
+# Helper: create a 2-digit district code (sb) from a text column (default: "Raumbezug")
+# Purpose: unify Bezirk identifiers for joins and filtering
+# ------------------------------------------------------------
+add_sb <- function(x, var = "Raumbezug", new = "sb") {
+  x %>%
+    mutate(
+      !!new := str_pad(
+        str_extract(.data[[var]], "^[0-9]+"),
+        width = 2,
+        pad   = "0"
+      )
+    )
+}
 
-
+# ------------------------------------------------------------
+# 0. Read raw input tables (Arbeitsmarkt / Bevölkerung / Kinderbetreuung)
+# ------------------------------------------------------------
 ar <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 be <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 ki <- read_excel("data/raw/export_ki.xlsx", sheet = "KINDERBETREUUNG")
 
-# 女性 sozialversicherungspflichtig Beschäftigte Anteil
+# ------------------------------------------------------------
+# 1. Female employment share (sozialversicherungspflichtig Beschäftigte - Anteil, weiblich)
+#    Output: sozial_weiblich in [0, 1]
+# ------------------------------------------------------------
 sozial_anteil_weiblich <- ar %>%
   filter(
     Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
@@ -21,7 +40,12 @@ sozial_anteil_weiblich <- ar %>%
   mutate(sozial_weiblich = `Basiswert 1` / `Basiswert 2`) %>%
   select(Jahr, Raumbezug, sozial_weiblich)
 
-# 0–2 岁儿童总数 & 被托管数
+# ------------------------------------------------------------
+# 2. Childcare (0–2 years): total children & supervised children
+#    - kinder_total: total number of children aged 0–2
+#    - kinder_betreut: number of children aged 0–2 in institutional childcare
+#    - anteil_betreut / anteil_unbetreut: percentages
+# ------------------------------------------------------------
 df_betreut <- be %>%
   filter(
     Indikator == "Altersgruppen",
@@ -43,42 +67,47 @@ df_betreut <- be %>%
     anteil_unbetreut = 100 - anteil_betreut
   )
 
-# Stadtbezirk编号、只保留有编号的 Bezirk
+# ------------------------------------------------------------
+# 3. Add district code (sb) and keep only rows with a valid code
+# ------------------------------------------------------------
 df_betreut_bezirk <- df_betreut %>%
   add_sb() %>%
   filter(!is.na(sb))
 
-# 地图
+# Quick sanity check: if this is empty, joins will fail later
+stopifnot(nrow(df_betreut_bezirk) > 0)
 
-munich_map2 <- st_read("results/geo/bezirk_map.json", quiet = TRUE)  %>% add_sb("sb_nummer", "sb_nummer")
+# ------------------------------------------------------------
+# 4. Read Munich district geometry (for mapping / joining later)
+#    IMPORTANT: use named arguments for var/new
+# ------------------------------------------------------------
+munich_map2 <- st_read("results/geo/bezirk_map.json", quiet = TRUE) %>%
+  add_sb(var = "sb_nummer", new = "sb_nummer")
 
-# 合并“儿童托管 + 女性 Beschäftigung”到 Bezirk×Jahr
+# ------------------------------------------------------------
+# 5. Merge childcare + female employment on Bezirk × Jahr
+# ------------------------------------------------------------
 df_merge <- df_betreut_bezirk %>%
-  filter(Jahr >= 2007, Jahr <= 2024) %>%       # ★★ 加入年份过滤 ★★
+  filter(Jahr >= 2007, Jahr <= 2024) %>%
   select(Jahr, sb, Raumbezug, anteil_betreut) %>%
   left_join(
     sozial_anteil_weiblich %>%
       add_sb() %>%
-      filter(Jahr >= 2007, Jahr <= 2024) %>%   # 最好这里也加一下
+      filter(Jahr >= 2007, Jahr <= 2024) %>%
       select(Jahr, sb, sozial_weiblich),
     by = c("Jahr", "sb")
   ) %>%
   arrange(sb, Jahr)
 
+stopifnot(nrow(df_merge) > 0)
 
-
-#----------------------------------------------------------
-# 1. 构造相关性数据：Kinderbetreuung (%) vs. Frauenbeschäftigung (%)
-#----------------------------------------------------------
-
-#----------------------------------------------------------
-# 1. 构造相关性数据：Kinderbetreuung (%) vs. Frauenbeschäftigung (%)
-#----------------------------------------------------------
-
+# ------------------------------------------------------------
+# 6. Build correlation dataset: Kinderbetreuung (%) vs Frauenbeschäftigung (%)
+# ------------------------------------------------------------
 korrelations_daten_clean <- df_merge %>%
   mutate(
-    hmk    = anteil_betreut,       # x 轴：Kinderbetreuung 0–2 Jahre (%)
-    anteil = 100 * sozial_weiblich # y 轴：Frauenbeschäftigung (%)
+    hmk    = anteil_betreut,        # x-axis: childcare coverage (%)
+    anteil = 100 * sozial_weiblich  # y-axis: female employment (%)
   ) %>%
   filter(
     Raumbezug != "Stadt München",
@@ -87,18 +116,17 @@ korrelations_daten_clean <- df_merge %>%
   ) %>%
   select(Jahr, Raumbezug, hmk, anteil)
 
-#----------------------------------------------------------
-# 2. 统一的坐标轴范围和刻度
-#----------------------------------------------------------
+stopifnot(nrow(korrelations_daten_clean) > 0)
 
-# 用全部数据算一次范围和 pretty 刻度，然后两个图都用这组
+# ------------------------------------------------------------
+# 7. Define shared axis ranges/breaks and a shared theme
+# ------------------------------------------------------------
 x_breaks <- pretty(korrelations_daten_clean$hmk,    n = 5)
 y_breaks <- pretty(korrelations_daten_clean$anteil, n = 5)
 
 x_limits <- range(x_breaks)
 y_limits <- range(y_breaks)
 
-# 统一的 theme
 base_theme_corr <- theme_bw(base_size = 13) +
   theme(
     axis.title.x = element_text(size = 20, face = "bold"),
@@ -107,15 +135,12 @@ base_theme_corr <- theme_bw(base_size = 13) +
     axis.text.y  = element_text(size = 16)
   )
 
-#----------------------------------------------------------
-# 3. Korrelation (gesamt) —— 只有散点 + 一条黑线
-#----------------------------------------------------------
-
-ki_korr_gesamt_sw <- ggplot(korrelations_daten_clean,
-                            aes(x = hmk, y = anteil)) +
+# ------------------------------------------------------------
+# 8. Overall correlation (Gesamt): scatter + one global regression line
+# ------------------------------------------------------------
+ki_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_point(size = 1.3, color = "grey85", alpha = 0.7) +
-  geom_smooth(method = "lm", color = "black",
-              se = FALSE, linewidth = 1.2) +
+  geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1.2) +
   scale_x_continuous(
     name   = "Kinderbetreuung (%)",
     limits = x_limits,
@@ -128,25 +153,21 @@ ki_korr_gesamt_sw <- ggplot(korrelations_daten_clean,
   ) +
   base_theme_corr
 
-ki_korr_gesamt_sw
-saveRDS(ki_korr_gesamt_sw,
-        "results/figures/NEW_Kinderbetreuung/ki_point_korr_gesamt_sw.rds")
+saveRDS(
+  ki_korr_gesamt_sw,
+  "results/figures/NEW_Kinderbetreuung/ki_point_korr_gesamt_sw.rds"
+)
 
-#----------------------------------------------------------
-# 4. Korrelation (Stadtteile) —— 在上面基础上 + 每个 Bezirk 的灰线
-#----------------------------------------------------------
-
+# ------------------------------------------------------------
+# 9. By-district correlation (Stadtteile): district lines + global line
+# ------------------------------------------------------------
 korr_stadtteile_data <- korrelations_daten_clean %>%
   group_by(Raumbezug) %>%
   filter(n() >= 2) %>%
   ungroup()
 
-ki_korr_stadtteile_sw <- ggplot(korr_stadtteile_data,
-                                aes(x = hmk, y = anteil)) +
-  # 底层散点（和 Gesamt 图完全一样）
+ki_korr_stadtteile_sw <- ggplot(korr_stadtteile_data, aes(x = hmk, y = anteil)) +
   geom_point(color = "grey90", size = 1.3, alpha = 0.7) +
-  
-  # 每个 Stadtbezirk 的回归线（灰色）
   geom_smooth(
     aes(group = Raumbezug),
     method    = "lm",
@@ -155,8 +176,6 @@ ki_korr_stadtteile_sw <- ggplot(korr_stadtteile_data,
     linewidth = 0.9,
     alpha     = 0.9
   ) +
-  
-  # Gesamt 回归线（黑色，和上一张一样）
   geom_smooth(
     aes(group = 1),
     method    = "lm",
@@ -176,6 +195,11 @@ ki_korr_stadtteile_sw <- ggplot(korr_stadtteile_data,
   ) +
   base_theme_corr
 
+saveRDS(
+  ki_korr_stadtteile_sw,
+  "results/figures/NEW_Kinderbetreuung/ki_korr_stadtteile_point_line_sw.rds"
+)
+
+# Optional: preview plots
+ki_korr_gesamt_sw
 ki_korr_stadtteile_sw
-saveRDS(ki_korr_stadtteile_sw,
-        "results/figures/NEW_Kinderbetreuung/ki_korr_stadtteile_point_line_sw.rds")

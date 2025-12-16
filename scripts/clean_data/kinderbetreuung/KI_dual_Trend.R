@@ -1,7 +1,7 @@
 # ============================================================
-# 构建 Kinderbetreuung & Frauenbeschäftigung 双轴趋势图
-# 保存为：results/figures/NEW_Kinderbetreuung/ki_dual_trend.rds
-# 之后在 Quarto 里只需要 readRDS() + 打印即可
+# Build dual-axis trend plot for Kinderbetreuung & Frauenbeschäftigung
+# Save as: results/figures/NEW_Kinderbetreuung/ki_dual_trend.rds
+# In Quarto, you only need readRDS() + print()
 # ============================================================
 
 library(tidyverse)
@@ -9,7 +9,7 @@ library(readxl)
 library(stringr)
 library(grid)
 
-# 小工具：从 "Raumbezug" 里提取两位数 Bezirk 编号
+# Small helper: extract a two-digit Bezirk (district) code from "Raumbezug"
 add_sb <- function(x, var = "Raumbezug", new = "sb") {
   x %>%
     mutate(
@@ -22,13 +22,13 @@ add_sb <- function(x, var = "Raumbezug", new = "sb") {
 }
 
 #----------------------------------------------------------
-# 1. 读原始数据
+# 1. Read raw data
 #----------------------------------------------------------
 ar <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 be <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 ki <- read_excel("data/raw/export_ki.xlsx", sheet = "KINDERBETREUUNG")
 
-# Frauenbeschäftigung (Anteil weiblich，0~1)
+# Frauenbeschäftigung (female share, 0~1)
 sozial_anteil_weiblich <- ar %>%
   filter(
     Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
@@ -37,7 +37,7 @@ sozial_anteil_weiblich <- ar %>%
   mutate(sozial_weiblich = `Basiswert 1` / `Basiswert 2`) %>%
   select(Jahr, Raumbezug, sozial_weiblich)
 
-# Kinderbetreuung 0–2 Jahre（百分比）
+# Kinderbetreuung age 0–2 (percentage)
 df_betreut <- be %>%
   filter(
     Indikator == "Altersgruppen",
@@ -57,12 +57,12 @@ df_betreut <- be %>%
     anteil_betreut = 100 * kinder_betreut / kinder_total
   )
 
-# 只保留有 Bezirk 编号的行
+# Keep only rows that have a valid Bezirk code
 df_betreut_bezirk <- df_betreut %>%
   add_sb() %>%
   filter(!is.na(sb))
 
-# 合并 Kinderbetreuung + Frauenbeschäftigung 到 Bezirk × Jahr
+# Merge Kinderbetreuung + Frauenbeschäftigung at Bezirk × Jahr level
 df_merge <- df_betreut_bezirk %>%
   filter(Jahr >= 2007, Jahr <= 2024) %>%
   select(Jahr, sb, Raumbezug, anteil_betreut) %>%
@@ -76,18 +76,18 @@ df_merge <- df_betreut_bezirk %>%
   arrange(sb, Jahr)
 
 #----------------------------------------------------------
-# 2. 按年份取 25 个 Bezirk 的平均值 → 时间序列
+# 2. Aggregate across 25 Bezirke by year → time series
 #----------------------------------------------------------
 ts_dual <- df_merge %>%
   group_by(Jahr) %>%
   summarise(
-    frauen_mean = mean(sozial_weiblich * 100, na.rm = TRUE),  # 左轴：Frauenbeschäftigung (%)
-    kinder_mean = mean(anteil_betreut,       na.rm = TRUE),  # 右轴：Kinderbetreuung (%)
+    frauen_mean = mean(sozial_weiblich * 100, na.rm = TRUE), # left axis: female employment (%)
+    kinder_mean = mean(anteil_betreut,       na.rm = TRUE), # right axis: childcare coverage (%)
     .groups = "drop"
   )
 
 #----------------------------------------------------------
-# 3. 计算双轴缩放参数（注意：全部变成“字面常数”）
+# 3. Compute dual-axis scaling parameters (as literal constants)
 #----------------------------------------------------------
 left_min  <- min(ts_dual$frauen_mean, na.rm = TRUE)
 left_max  <- max(ts_dual$frauen_mean, na.rm = TRUE)
@@ -96,36 +96,36 @@ right_max <- max(ts_dual$kinder_mean, na.rm = TRUE)
 
 scale_factor <- (left_max - left_min) / (right_max - right_min)
 
-# 把 Kinderbetreuung 映射到左轴坐标系（只用于画图）
+# Map Kinderbetreuung onto the left-axis coordinate system (plotting only)
 ts_dual <- ts_dual %>%
   mutate(
     kinder_scaled = (kinder_mean - right_min) * scale_factor + left_min
   )
 
-# 左轴刻度（自动）
-breaks_left  <- pretty(c(left_min, left_max), n = 5)
+# Left-axis breaks (automatic)
+breaks_left <- pretty(c(left_min, left_max), n = 5)
 
-# 右轴刻度：按你之前的要求
+# Right-axis breaks (fixed as requested)
 breaks_right <- c(20, 25, 30, 35, 40)
 
-# ⭐⭐ 关键：构造一个“完全不依赖外部变量名”的公式
+# Key: build a formula that does not depend on external variable names
 sec_trans <- eval(substitute(
   ~ (. - L) / S + R,
   list(L = left_min, S = scale_factor, R = right_min)
 ))
-# 此时 formula 变成类似：~ (. - 27.3) / 1.5 + 20.1
-# 里面只有数字，没有 left_min / scale_factor / right_min 这些符号
+# The formula becomes something like: ~ (. - 27.3) / 1.5 + 20.1
+# It contains only numeric literals (no left_min / scale_factor / right_min symbols)
 
 #----------------------------------------------------------
-# 4. 画双轨图（不再引用 left_min 这些名字）
+# 4. Build the dual-axis plot (no longer referencing left_min etc. by name)
 #----------------------------------------------------------
 ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
   
-  # 左轴：Frauenbeschäftigung（蓝色）
+  # Left axis: Frauenbeschäftigung (blue)
   geom_line(aes(y = frauen_mean, color = "Frauenbeschäftigung"), size = 1.2) +
   geom_point(aes(y = frauen_mean, color = "Frauenbeschäftigung"), size = 2) +
   
-  # 右轴：Kinderbetreuung（橙色，已缩放到左轴）
+  # Right axis: Kinderbetreuung (orange, scaled onto left axis)
   geom_line(aes(y = kinder_scaled, color = "Kinderbetreuung"), size = 1.2) +
   geom_point(aes(y = kinder_scaled, color = "Kinderbetreuung"), size = 2) +
   
@@ -134,7 +134,7 @@ ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
     limits = c(left_min, left_max),
     breaks = breaks_left,
     sec.axis = sec_axis(
-      trans  = sec_trans,           # ✅ 这里的公式里只有字面量数字
+      trans  = sec_trans,      # formula contains only numeric literals
       name   = "Kinderbetreuung (%)",
       breaks = breaks_right
     )
@@ -143,8 +143,8 @@ ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
   scale_color_manual(
     name   = NULL,
     values = c(
-      "Frauenbeschäftigung" = "#0072B2",  # 蓝
-      "Kinderbetreuung"     = "#D55E00"   # 橙
+      "Frauenbeschäftigung" = "#0072B2", # blue
+      "Kinderbetreuung"     = "#D55E00"  # orange
     )
   ) +
   
@@ -169,13 +169,10 @@ ki_dual_trend <- ggplot(ts_dual, aes(x = Jahr)) +
     legend.key.size    = unit(1.2, "cm")
   )
 
-
-
 #----------------------------------------------------------
-# 5. 保存为 RDS（Quarto 里直接 readRDS() 使用）
+# 5. Save as RDS (directly usable via readRDS() in Quarto)
 #----------------------------------------------------------
 saveRDS(ki_dual_trend, "results/figures/NEW_Kinderbetreuung/ki_dual_trend.rds")
 
-# 可选：在脚本里直接查看
+# Optional: preview in this script
 ki_dual_trend
-

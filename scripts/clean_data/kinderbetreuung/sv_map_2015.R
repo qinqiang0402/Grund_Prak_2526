@@ -1,5 +1,5 @@
 # 02_emp_map_2015.R
-# 一张图：某一年(这里是 2015 年) Frauenbeschäftigung (Anteil weiblich) 的 Bezirk 地图
+# Single figure: Bezirke map of Frauenbeschäftigung (female employment share) for one year (here: 2015)
 
 library(tidyverse)
 library(readxl)
@@ -7,10 +7,10 @@ library(sf)
 library(stringr)
 library(grid)
 
-#---------------- 0. 参数：要画哪一年 ----------------
+# ---------------- 0. Parameter: which year to plot ----------------
 target_year <- 2015
 
-#---------------- 1. 帮助函数：从 Raumbezug 提取 Bezirk 编号 ----------------
+# ---------------- 1. Helper: extract a 2-digit Bezirk code from "Raumbezug" ----------------
 add_sb <- function(x, var = "Raumbezug", new = "sb") {
   x %>%
     mutate(
@@ -22,52 +22,54 @@ add_sb <- function(x, var = "Raumbezug", new = "sb") {
     )
 }
 
-#---------------- 2. 读 Excel，算 Frauenbeschäftigung (Anteil weiblich) ----------------
-
+# ---------------- 2. Read Excel and compute Frauenbeschäftigung (female share) ----------------
 ar <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 
-# 女性 sozialversicherungspflichtig Beschäftigte Anteil
+# Female share of sozialversicherungspflichtig Beschäftigte (as percent)
 sozial_anteil_weiblich <- ar %>%
   filter(
     Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
     Ausprägung == "weiblich"
   ) %>%
   mutate(
-    sozial_weiblich = 100 * `Basiswert 1` / `Basiswert 2`   # 转成百分比
+    sozial_weiblich = 100 * `Basiswert 1` / `Basiswert 2` # convert to percent
   ) %>%
   select(Jahr, Raumbezug, sozial_weiblich) %>%
   add_sb() %>%
-  filter(!is.na(sb),
-         Jahr == target_year)
+  filter(
+    !is.na(sb),
+    Jahr == target_year
+  )
 
-#---------------- 3. 读 München 地图 + 加 Bezirk 编号 ----------------
-
+# ---------------- 3. Read Munich district geometry + create Bezirk code ----------------
+# IMPORTANT: If your GeoJSON column is not 'sb_nummer', adjust it below.
 munich_map <- st_read("results/geo/bezirk_map.json", quiet = TRUE) %>%
   mutate(
     sb = str_pad(as.character(sb_nummer), 2, pad = "0")
   )
 
-#---------------- 4. 把 target_year 年的数据合并到地图 ----------------
-
+# ---------------- 4. Join target-year data to the map ----------------
 map_emp_year <- munich_map %>%
   left_join(
     sozial_anteil_weiblich %>% select(sb, sozial_weiblich),
     by = "sb"
   )
 
-#---------------- 5. 画图：风格跟 Kinderbetreuung 图完全一致，只改颜色 ----------------
-
+# ---------------- 5. Plot: same style as the Kinderbetreuung map, different color scale ----------------
 emp_map_year <- ggplot(map_emp_year) +
-  geom_sf(aes(fill = sozial_weiblich),
-          color = "white", size = 0.2) +
+  geom_sf(
+    aes(fill = sozial_weiblich),
+    color = "white",
+    size  = 0.2
+  ) +
   scale_fill_gradient(
     name   = "Frauenbeschäftigung (%)",
-    low    = "#f7fbff",   # 你指定的低值颜色
-    high   = "#08306b",   # 你指定的高值颜色
-    # limits 可以按需要设，比如 c(40, 80)，也可以先不设
+    low    = "#f7fbff", # low values
+    high   = "#08306b", # high values
+    # You can adjust limits/breaks as needed; keep them consistent across years if possible.
     limits = c(50, 62),
     breaks = c(50, 56, 62),
-    guide = guide_colorbar(
+    guide  = guide_colorbar(
       title.position = "top",
       title.hjust    = 0.5,
       barwidth       = unit(8, "cm"),
@@ -87,8 +89,7 @@ emp_map_year <- ggplot(map_emp_year) +
     plot.title         = element_text(face = "bold", size = 26, hjust = 0.5)
   )
 
-
 emp_map_year
 
-
+# ---------------- 6. Save RDS ----------------
 saveRDS(emp_map_year, "results/figures/NEW_Kinderbetreuung/map_sv_2015.rds")

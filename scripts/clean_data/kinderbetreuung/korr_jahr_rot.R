@@ -6,13 +6,33 @@ library(forcats)
 library(ggpubr)
 library(grid)
 
+# ------------------------------------------------------------
+# Helper: extract a 2-digit Bezirk code from a text/ID column
+# - var: input column name that contains a leading district number (e.g., "01 ...")
+# - new: output column name for the standardized 2-digit code (e.g., "sb")
+# ------------------------------------------------------------
+add_sb <- function(x, var = "Raumbezug", new = "sb") {
+  x %>%
+    mutate(
+      !!new := str_pad(
+        str_extract(as.character(.data[[var]]), "^[0-9]+"),
+        width = 2,
+        pad   = "0"
+      )
+    )
+}
 
-
+# ------------------------------------------------------------
+# 0. Read raw input tables (Arbeitsmarkt / Bevölkerung / Kinderbetreuung)
+# ------------------------------------------------------------
 ar <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 be <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 ki <- read_excel("data/raw/export_ki.xlsx", sheet = "KINDERBETREUUNG")
 
-# 女性 sozialversicherungspflichtig Beschäftigte Anteil
+# ------------------------------------------------------------
+# 1. Female employment share (sozialversicherungspflichtig Beschäftigte - Anteil, weiblich)
+#    Output: sozial_weiblich in [0, 1]
+# ------------------------------------------------------------
 sozial_anteil_weiblich <- ar %>%
   filter(
     Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
@@ -21,7 +41,9 @@ sozial_anteil_weiblich <- ar %>%
   mutate(sozial_weiblich = `Basiswert 1` / `Basiswert 2`) %>%
   select(Jahr, Raumbezug, sozial_weiblich)
 
-# 0–2 岁儿童总数 & 被托管数
+# ------------------------------------------------------------
+# 2. Childcare (0–2 years): total children & supervised children
+# ------------------------------------------------------------
 df_betreut <- be %>%
   filter(
     Indikator == "Altersgruppen",
@@ -43,41 +65,44 @@ df_betreut <- be %>%
     anteil_unbetreut = 100 - anteil_betreut
   )
 
-# Stadtbezirk编号、只保留有编号的 Bezirk
+# ------------------------------------------------------------
+# 3. Add district code (sb) and keep only rows with a valid code
+# ------------------------------------------------------------
 df_betreut_bezirk <- df_betreut %>%
-  add_sb() %>%
+  add_sb(var = "Raumbezug", new = "sb") %>%
   filter(!is.na(sb))
 
-# 地图
+# ------------------------------------------------------------
+# 4. Read Munich district geometry
+#    IMPORTANT:
+#    - For joining, we want the map to also have a standardized column named "sb"
+#    - If your geojson column is not "sb_nummer", change var=... accordingly
+# ------------------------------------------------------------
+munich_map2 <- st_read("results/geo/bezirk_map.json", quiet = TRUE) %>%
+  add_sb(var = "sb_nummer", new = "sb")
 
-munich_map2 <- st_read("results/geo/bezirk_map.json", quiet = TRUE)  %>% add_sb("sb_nummer", "sb_nummer")
-
-# 合并“儿童托管 + 女性 Beschäftigung”到 Bezirk×Jahr
+# ------------------------------------------------------------
+# 5. Merge childcare + female employment on Bezirk × Jahr
+# ------------------------------------------------------------
 df_merge <- df_betreut_bezirk %>%
-  filter(Jahr >= 2007, Jahr <= 2024) %>%       # ★★ 加入年份过滤 ★★
+  filter(Jahr >= 2007, Jahr <= 2024) %>%
   select(Jahr, sb, Raumbezug, anteil_betreut) %>%
   left_join(
     sozial_anteil_weiblich %>%
-      add_sb() %>%
-      filter(Jahr >= 2007, Jahr <= 2024) %>%   # 最好这里也加一下
+      add_sb(var = "Raumbezug", new = "sb") %>%
+      filter(Jahr >= 2007, Jahr <= 2024) %>%
       select(Jahr, sb, sozial_weiblich),
     by = c("Jahr", "sb")
   ) %>%
   arrange(sb, Jahr)
 
-
-library(tidyverse)
-library(RColorBrewer)
-library(grid)
-
-#----------------------------------------------------------
-# 1. 先用同一套数据构造 korrelations_daten_clean
-#    （和前面两张相关图保持一致）
-#----------------------------------------------------------
+# ------------------------------------------------------------
+# 6. Build correlation dataset (same construction as your other correlation plots)
+# ------------------------------------------------------------
 korrelations_daten_clean <- df_merge %>%
   mutate(
-    hmk    = anteil_betreut,        # x: Kinderbetreuung (%)
-    anteil = 100 * sozial_weiblich  # y: Frauenbeschäftigung (%)
+    hmk    = anteil_betreut,        # x: childcare coverage (%)
+    anteil = 100 * sozial_weiblich  # y: female employment (%)
   ) %>%
   filter(
     Raumbezug != "Stadt München",
@@ -86,9 +111,9 @@ korrelations_daten_clean <- df_merge %>%
   ) %>%
   select(Jahr, Raumbezug, hmk, anteil)
 
-#----------------------------------------------------------
-# 2. 统一的坐标轴范围和刻度（和前面两张保持一模一样）
-#----------------------------------------------------------
+# ------------------------------------------------------------
+# 7. Shared axis ranges/breaks and a shared theme (identical across plots)
+# ------------------------------------------------------------
 x_breaks <- pretty(korrelations_daten_clean$hmk,    n = 5)
 y_breaks <- pretty(korrelations_daten_clean$anteil, n = 5)
 
@@ -103,9 +128,9 @@ base_theme_corr <- theme_bw(base_size = 13) +
     axis.text.y  = element_text(size = 14)
   )
 
-#----------------------------------------------------------
-# 3. 构造“按年份”的画图数据
-#----------------------------------------------------------
+# ------------------------------------------------------------
+# 8. Prepare data for "one regression line per year"
+# ------------------------------------------------------------
 plot_data_final_year <- korrelations_daten_clean %>%
   mutate(
     Jahr       = as.integer(Jahr),
@@ -114,20 +139,11 @@ plot_data_final_year <- korrelations_daten_clean %>%
   ) %>%
   arrange(Jahr)
 
-#----------------------------------------------------------
-# 4. 画图：每一年一条彩色回归线 + 黑色总体线
-#----------------------------------------------------------
-ki_korr_jahr_multiline <- ggplot(
-  plot_data_final_year,
-  aes(x = hmk, y = anteil)
-) +
-  # 灰色散点（底层）
-  geom_point(
-    color = "grey90",
-    size  = 1.2,
-    alpha = 0.5
-  ) +
-  # 每一年一条彩色回归线
+# ------------------------------------------------------------
+# 9. Plot: one colored regression line per year + one global black line
+# ------------------------------------------------------------
+ki_korr_jahr_multiline <- ggplot(plot_data_final_year, aes(x = hmk, y = anteil)) +
+  geom_point(color = "grey90", size = 1.2, alpha = 0.5) +
   geom_smooth(
     aes(color = Jahr_num, group = Jahr_Label),
     method    = "lm",
@@ -135,7 +151,6 @@ ki_korr_jahr_multiline <- ggplot(
     linewidth = 1.1,
     alpha     = 0.85
   ) +
-  # 总体回归线（黑色）
   geom_smooth(
     aes(group = 1),
     method    = "lm",
@@ -143,7 +158,6 @@ ki_korr_jahr_multiline <- ggplot(
     linewidth = 1.2,
     color     = "black"
   ) +
-  # 统一 x / y 轴（和另外两张图完全一样）
   scale_x_continuous(
     name   = "Kinderbetreuung (%)",
     limits = x_limits,
@@ -154,11 +168,9 @@ ki_korr_jahr_multiline <- ggplot(
     limits = y_limits,
     breaks = y_breaks
   ) +
-  # 年份颜色渐变
   scale_color_gradient(
     name   = "Jahr",
-    limits = c(min(plot_data_final_year$Jahr),
-               max(plot_data_final_year$Jahr)),
+    limits = c(min(plot_data_final_year$Jahr), max(plot_data_final_year$Jahr)),
     breaks = c(2007, 2011, 2015, 2019, 2024),
     labels = c("2007", "2011", "2015", "2019", "2024"),
     low    = "#fee5e5",
@@ -177,4 +189,10 @@ ki_korr_jahr_multiline <- ggplot(
 
 ki_korr_jahr_multiline
 
-saveRDS(ki_korr_jahr_multiline, "results/figures/NEW_Kinderbetreuung/ki_point_line_rot.rds")
+# ------------------------------------------------------------
+# 10. Save as RDS
+# ------------------------------------------------------------
+saveRDS(
+  ki_korr_jahr_multiline,
+  "results/figures/NEW_Kinderbetreuung/ki_point_line_rot.rds"
+)

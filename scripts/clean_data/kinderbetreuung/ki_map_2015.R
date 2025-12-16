@@ -1,16 +1,18 @@
 # 01_ki_map_2015.R
-# 一张图：某一年(这里是 2015 年) Kinderbetreuung 0–2 Jahre 的 Bezirk 地图
-# 运行后会在 results/figures/kinderbetreuung/ 下面生成 ki_map_2015.rds
+# Single figure: Bezirke map of Kinderbetreuung (0–2 years) for one year (here: 2015)
+# After running, an RDS file will be created under:
+# results/figures/NEW_Kinderbetreuung/map_ki_2015.rds
 
 library(tidyverse)
 library(readxl)
 library(sf)
 library(stringr)
+library(grid)
 
-#---------------- 0. 参数：要画哪一年 ----------------
+# ---------------- 0. Parameter: which year to plot ----------------
 target_year <- 2015
 
-#---------------- 1. 帮助函数：从 Raumbezug 提取 Bezirk 编号 ----------------
+# ---------------- 1. Helper: extract a 2-digit Bezirk code from "Raumbezug" ----------------
 add_sb <- function(x, var = "Raumbezug", new = "sb") {
   x %>%
     mutate(
@@ -22,7 +24,8 @@ add_sb <- function(x, var = "Raumbezug", new = "sb") {
     )
 }
 
-#---------------- 2. 读 Excel、算 Kinderbetreuung ----------------
+# ---------------- 2. Read Excel + compute Kinderbetreuung ----------------
+# Note: 'ar' is loaded for consistency with your pipeline, but is not used in this script.
 ar <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 be <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 ki <- read_excel("data/raw/export_ki.xlsx", sheet = "KINDERBETREUUNG")
@@ -50,14 +53,14 @@ df_betreut <- be %>%
   add_sb() %>%
   filter(!is.na(sb))
 
-#---------------- 3. 读 München 地图 + 加 Bezirk 编号 ----------------
+# ---------------- 3. Read Munich district geometry + create Bezirk code ----------------
+# IMPORTANT: If your GeoJSON column name is not 'sb_nummer', adjust it below.
 munich_map <- st_read("results/geo/bezirk_map.json", quiet = TRUE) %>%
-  # 你的 json 里列名如果不是 sb_nummer，改这里
   mutate(
     sb = str_pad(as.character(sb_nummer), 2, pad = "0")
   )
 
-#---------------- 4. 把 2015 年数据合并到地图 ----------------
+# ---------------- 4. Join 2015 data to the map ----------------
 ki_year <- df_betreut %>%
   filter(Jahr == target_year)
 
@@ -67,18 +70,19 @@ map_year <- munich_map %>%
     by = "sb"
   )
 
-#---------------- 5. 画图 ----------------
-library(grid)
-
+# ---------------- 5. Plot ----------------
 ki_map_year <- ggplot(map_year) +
-  geom_sf(aes(fill = anteil_betreut),
-          color = "white", size = 0.2) +
+  geom_sf(
+    aes(fill = anteil_betreut),
+    color = "white",
+    size  = 0.2
+  ) +
   scale_fill_gradient(
     name   = "Kinderbetreuung (%)",
     low    = "#fff5eb",
     high   = "#7f2704",
     limits = c(10, 55),
-    guide = guide_colorbar(
+    guide  = guide_colorbar(
       title.position = "top",
       title.hjust    = 0.5,
       barwidth       = unit(8, "cm"),
@@ -98,10 +102,6 @@ ki_map_year <- ggplot(map_year) +
     plot.title         = element_text(face = "bold", size = 26, hjust = 0.5)
   )
 
-#---------------- 6. 保存 RDS ----------------
-
+# ---------------- 6. Save RDS ----------------
 ki_map_year
-
-saveRDS(ki_map_year, "results/figures/NEW_Kinderbetreuung/map_ki_2015.rds")
-
-        
+saveRDS(ki_map_year, "results/figures/NEW_Kinderbetreuung/map_ki_2015.rds")       
