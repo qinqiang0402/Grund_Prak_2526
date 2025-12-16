@@ -16,7 +16,7 @@ server: shiny
 
 #source("env_setup.R")
 
-# 加载你需要的包
+# Load packages
 library(shiny)
 library(tidyverse)
 library(readxl)
@@ -28,7 +28,7 @@ library(leaflet)
 library(htmltools)
 library(htmlwidgets)
 
-# 把所有要用到的图从 RDS 里读进来
+# Load precomputed RDS objects
 table_data_01 <- readRDS("results/figures/table/table_data_01.rds")
 table_data_02 <- readRDS("results/figures/table/table_data_02.rds")
 table_data_03 <- readRDS("results/figures/table/table_data_03.rds")
@@ -36,20 +36,22 @@ leaflet_sv_durchschnitt <- readRDS("results/figures/SV/leaflet_sv_durchschnitt.r
 
 
 #_________________________________________________________________________________________________________
+# Haushalt mit Kindern (HMK) figures
+
 hmk_korr_ponit_nach_stadtteile_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_ponit_nach_stadtteile_color.rds")
 hmk_korr_point_line_nach_stadtteile_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_stadtteile_color.rds")
 hmk_simpson_stadtteile_kleiner_0 <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_simpson_stadtteile_kleiner_0.rds")
 hmk_korr_gesamt_point_sw <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_gesamt_point_sw.rds")
 hmk_korr_point_nach_jahr_color <-  readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_nach_jahr_color.rds")
 hmk_korr_point_line_nach_jahr_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_jahr_color.rds")
-
+# Kinderbetreuung (KI) figures
 #______________________________________________________________________________
 ki_dual_trend <- readRDS("results/figures/NEW_Kinderbetreuung/ki_dual_trend.rds")
 ki_trend_sv <- readRDS("results/figures/NEW_Kinderbetreuung/trend_sv.rds")
 ki_map_2015 <- readRDS("results/figures/NEW_Kinderbetreuung/map_ki_2015.rds")
 sv_map_2015 <- readRDS("results/figures/NEW_Kinderbetreuung/map_sv_2015.rds")
 ki_point_korr_gesamt_sw <- readRDS("results/figures/NEW_Kinderbetreuung/ki_point_korr_gesamt_sw.rds")
-ki_korr_jahre_point_line_rot <- readRDS("results/figures/NEW_Kinderbetreuung//ki_point_line_rot.rds")
+ki_korr_jahre_point_line_rot <- readRDS("results/figures/NEW_Kinderbetreuung/ki_point_line_rot.rds")
 ki_korr_stadtteile_point_line_sw <- readRDS("results/figures/NEW_Kinderbetreuung/ki_korr_stadtteile_point_line_sw.rds")
 ki_point_line_korr_nach_stadtteile_color <- readRDS("results/figures/Kinderbetreuung/ki_point_line_korr_nach_stadtteile_color.rds")
 
@@ -81,19 +83,18 @@ mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_lin
 #_______________________________________________________________________________
 
 # =================================================================
-# Shiny 地图用的数据准备（von Shiny Skript übernommen）
+#  Data preparation for the Shiny map (ported from Shiny script)
 # =================================================================
 
 # 1. Geometrie der Münchner Stadtbezirke laden
 munich_map <- st_read("results/geo/bezirk_map.json", quiet = TRUE) |> st_transform(4326)
 
 # 2. Excel-Daten laden
-# 注意：这里相对路径用项目根目录的写法，而不是 ../../
 be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 ki_sheet <- read_excel("data/raw/export_ki.xlsx", sheet = "KINDERBETREUUNG") 
 
-# 3. 各个指标（Variable）长表格式（long-format）
+# 3. Build long-format tables for each indicator (Variable)
 
 # 3.1 Durchschnittsalter Mütter erstgebärend
 be_data_long <- be_sheet %>%
@@ -317,7 +318,9 @@ library(readr)
 library(knitr)
 library(kableExtra)
 
-# 2) 定义固定列宽的输出函数（让不同页列间距一致）
+# 2) Define a table output function with fixed column widths
+#    Purpose: ensure consistent column spacing across different pages
+
 make_daten_table <- function(df) {
   df %>%
     knitr::kable(
@@ -573,10 +576,10 @@ Der gesamtstädtische Durchschnitt liegt bei 62,6 %.
 #__________________________
 
 
-# ---- Play / Pause 状态 ----
+# ---- Play / Pause state ----
 playing <- reactiveVal(FALSE)
 
-# 点击按钮切换播放状态 + 修改按钮文字
+# Toggle play state when the button is clicked + update the button label accordingly
 observeEvent(input$play_pause, {
   if (playing()) {
     playing(FALSE)
@@ -587,10 +590,10 @@ observeEvent(input$play_pause, {
   }
 })
 
-# 自动推进年份（只有在 playing() == TRUE 时才会动）
+# Auto-advance the year (only runs while playing() == TRUE)
 observe({
-  req(playing())                  # 如果没在播放，下面不执行
-  invalidateLater(1000, session)   # 播放速度：800ms 一步
+  req(playing())                  
+  invalidateLater(1000, session)  
 
   current   <- isolate(input$time_slider)
   next_year <- if (current >= MAX_YEAR) MIN_YEAR else current + 1L
@@ -613,7 +616,7 @@ filtered_sf_data <- reactive({
 # 2. Grundkarte (wird einmal initialisiert)
 output$map_output <- renderLeaflet({
   leaflet(options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
-    addProviderTiles(providers$CartoDB.Positron) %>%   # 黑白底图
+    addProviderTiles(providers$CartoDB.Positron) %>%   
     setView(lng = 11.5761, lat = 48.1372, zoom = 10)
 })
 
@@ -684,7 +687,6 @@ observe({
       labFormat= labelFormat(suffix = unit, digits = 1),
       position = "bottomright"
     ) %>%
-    # ✅ 右上角年份
     addControl(
       html = sprintf(
         "<div style='font-size:26px;
@@ -709,12 +711,12 @@ observe({
 
 ```{r}
 #| panel: sidebar
-# 这里是 Shiny 的 UI 控件（侧边栏）
+#| 
 selectInput(
   "variable_select",
   "",
   choices  = variable_choices,
-  selected = "anteil"    # 默认先看 Frauenbeschäftigung
+  selected = "anteil"   
 )
 
 sliderInput(
@@ -737,7 +739,7 @@ actionButton(
 
 ```{r}
 #| panel: fill
-# 主区域放地图
+
 leafletOutput("map_output", height = "550px")
 ```
 
@@ -867,10 +869,10 @@ addLegend_decreasing <- function (map, position = c("topright", "bottomright", "
         invokeMethod(map, data, "addLegend", legend)
         }
 
-# ---- Play / Pause 状态（第三套）----
+# ---- Play / Pause state）----
 playing_3 <- reactiveVal(FALSE)
 
-# 点击按钮切换播放状态 + 修改按钮文字
+# Toggle play state when the button is clicked + update the button label accordingly
 observeEvent(input$play_pause_3, {
   if (playing_3()) {
     playing_3(FALSE)
@@ -881,7 +883,7 @@ observeEvent(input$play_pause_3, {
   }
 })
 
-# 自动推进年份（只有在 playing_3() == TRUE 时才会动）
+# Auto-advance the year (only runs while playing() == TRUE)
 observe({
   req(playing_3())
   invalidateLater(1000, session)
@@ -907,7 +909,7 @@ filtered_sf_data_3 <- reactive({
 # 2. Grundkarte (wird einmal initialisiert)
 output$map_output_3 <- renderLeaflet({
   leaflet(options = leafletOptions(minZoom = 10, maxZoom = 14)) %>%
-    addProviderTiles(providers$CartoDB.Positron) %>%   # 黑白底图
+    addProviderTiles(providers$CartoDB.Positron) %>%  
     setView(lng = 11.5761, lat = 48.1372, zoom = 10)
 })
 
@@ -978,7 +980,7 @@ observe({
       position = "bottomright",
       decreasing = TRUE
     ) %>%
-    # 右上角年份（第三套用 time_slider_3）
+   
     addControl(
       html = sprintf(
         "<div style='font-size:26px;
@@ -998,12 +1000,12 @@ observe({
 
 ```{r}
 #| panel: sidebar
-# 这里是 Shiny 的 UI 控件（侧边栏）
+
 selectInput(
   "variable_select_3",
   "",
   choices  = variable_choices,
-  selected = "anteil_kinder"    # 默认先看 Haushalte mit Kidern
+  selected = "anteil_kinder"    
 )
 
 sliderInput(
@@ -1026,7 +1028,7 @@ actionButton(
 
 ```{r}
 #| panel: fill
-# 主区域放地图
+
 leafletOutput("map_output_3", height = "550px")
 ```
 
@@ -1252,7 +1254,7 @@ observeEvent(input$play_pause_scatter, {
 })
 
 ###################
-# ---- 固定标准化坐标轴范围（全局一次性计算）----
+# ---- Compute fixed standardized axis limits (one-time global calculation)）----
 axis_limits <- df_merged %>%
   filter(Raumbezug != "Stadt München") %>%
   group_by(Jahr) %>%
@@ -1277,14 +1279,8 @@ year_min <- min(year_seq, na.rm = TRUE)
 year_max <- max(year_seq, na.rm = TRUE)
 
 observe({
-  # 1) 只有在播放时才继续（目的：暂停时不跑、不注册定时器）
   req(playing_scatter())
-
-  # 2) 定时器放在 req 后面（目的：避免暂停时也在后台 tick）
   invalidateLater(1000, session)
-
-  # 3) 用 isolate 读取 year，并且也在 isolate 里做非空检查
-  #    （目的：不建立对 input$year 的依赖，避免 updateSliderInput 立刻触发本 observe）
   current <- isolate(input$year)
   req(!is.null(current))
 
@@ -1338,7 +1334,7 @@ df_year_grouped <- reactive({
     )
 })
 
-# ---- ⭐标准化（z-score），确保斜率符合相关性强弱 ----
+# ---- ⭐ Standardization (z-score) to ensure slopes reflect correlation strength ----
 df_year_scaled <- reactive({
   df_year_grouped() %>%
     group_by(betreuung_group) %>%
@@ -1443,7 +1439,7 @@ actionButton(
 #| panel: fill
 #| fill: true
 
-plotOutput("plot")  # 用视窗高度，图会占满大部分幻灯片
+plotOutput("plot") 
 ```
 
 ## Betreuungsbedarf 2024
@@ -1605,9 +1601,9 @@ m_effekt_03_plot
 ```{r}
 #| context: server
 
-#──────────────────────── 5. Shiny：Betreuungsbedingte Korrelation ────────────────────────
+#─────── 5. Shiny：Betreuungsbedingte Korrelation ────────────
 
-#──────────────────────── 固定坐标轴范围（全局一次性） ────────────────────────
+#─── Compute fixed standardized axis limits (one-time global calculation)） ────────
 
 axis_limits5 <- df_merged %>%
   filter(Raumbezug != "Stadt München") %>%
@@ -1643,24 +1639,13 @@ year_min5 <- min(year_seq5, na.rm = TRUE)
 year_max5 <- max(year_seq5, na.rm = TRUE)
 
 # ---- Auto-Play (5) ----
-AUTO_MS5 <- 1000  # ✅ 播放速度（毫秒）
+AUTO_MS5 <- 1000  
 
 observe({
-  # ① 只有在播放时才执行
-  # 目的：暂停时不跑，也不注册定时器
   req(playing_scatter5())
-
-  # ② 定时器放在 req 后面
-  # 目的：只有 playing 时才按固定间隔 tick
   invalidateLater(AUTO_MS5, session)
-
-  # ③ 用 isolate 读取 year5，并在 isolate 内做非空检查
-  # 目的：不建立对 input$year5 的反应式依赖，避免 updateSliderInput 造成“瞬间连跳”
   current <- isolate(input$year5)
   req(!is.null(current))
-
-  # ④ 计算 next_year
-  # 目的：严格按 year_seq5 推进，末尾回到开头
   idx <- match(current, year_seq5)
 
   next_year <- if (is.na(idx) || idx >= length(year_seq5)) {
@@ -1669,7 +1654,6 @@ observe({
     year_seq5[idx + 1L]
   }
 
-  # ⑤ 更新 slider year5（注意 id）
   updateSliderInput(session, "year5", value = next_year)
 })
 
@@ -1686,7 +1670,7 @@ df_year5 <- reactive({
     inner_join(
       df_betreut %>%
         filter(Jahr == input$year5) %>%
-        select(Raumbezug, anteil_betreut),   # ⭐ 保持和原来列名一致
+        select(Raumbezug, anteil_betreut),  
       by = "Raumbezug"
     )
 })
@@ -1703,7 +1687,7 @@ df_year_grouped5 <- reactive({
 
   d %>%
     mutate(
-      betreuung_group = cut(            # ⭐ 列名仍叫 betreuung_group，就和原版一样
+      betreuung_group = cut(           
         anteil_betreut,
         breaks = qs,
         labels = c("Niedrig", "Mittel", "Hoch"),
@@ -1712,10 +1696,10 @@ df_year_grouped5 <- reactive({
     )
 })
 
-# ---- 去标准化版本 ----
+# ---- De-standardized version (no scaling applied) ----
 
 df_year_scaled5 <- reactive({
-  df_year_grouped5()   # ⭐ 使用原始数据，不再 scale()
+  df_year_grouped5()   
 })
 
 # Farben
@@ -1735,11 +1719,10 @@ df <- df %>%
     betreuung_group == "Mittel"  ~ "Mittel Betreuung",
     betreuung_group == "Niedrig" ~ "Niedrige Betreuung"
   )) %>%
-  filter(!is.na(gruppe))   # ⭐ 去掉 NA 分组
+  filter(!is.na(gruppe))  
 
   ggplot(df) +
 
-    # ⭐ 使用原始数据，不再用标准化后的 x_std5 / y_std5
     geom_point(
       aes(x = households_pct, y = emp_female_pct, color = gruppe),
       size = 6, alpha = 0.9
@@ -1819,7 +1802,7 @@ plotOutput("plot5")
 
 #──────────────────────── 4. Shiny：HK hoch + Beschäftigung niedrig vs. Kinderbetreuung ────────────────────────
 
-# ---- 一次性准备第 4 个 Shiny 用的数据（full_data_4）----
+
 if (!exists("full_data_4", inherits = TRUE)) {
   
   # Haushalte mit Kindern
@@ -1848,7 +1831,7 @@ if (!exists("full_data_4", inherits = TRUE)) {
     ) %>%
     dplyr::select(Jahr, bezirksnummer, anteil)
   
-  # Kinderbetreuung bis 2 Jahre：总儿童数
+  # Kinderbetreuung bis 2 Jahre：gesamt Anzahl
   total_long_4 <- be_sheet %>%
     dplyr::filter(
       Indikator == "Altersgruppen",
@@ -1860,7 +1843,7 @@ if (!exists("full_data_4", inherits = TRUE)) {
     ) %>%
     dplyr::select(Jahr, bezirksnummer, kinder_total = `Basiswert 1`)
   
-  # Kinderbetreuung bis 2 Jahre：托管儿童数
+  # Kinderbetreuung bis 2 Jahre：Anzahl von betreut Kinder
   betreut_long_4 <- ki_sheet %>%
     dplyr::filter(
       Indikator == "Altersgruppen",
@@ -1872,7 +1855,7 @@ if (!exists("full_data_4", inherits = TRUE)) {
     ) %>%
     dplyr::select(Jahr, bezirksnummer, kinder_betreut = `Basiswert 1`)
   
-  # 计算托管率
+  # Anteil der betreut Kinder
   betreuung_long_4 <- total_long_4 %>%
     dplyr::left_join(betreuet_long_4 <- betreut_long_4,
                      by = c("Jahr", "bezirksnummer")) %>%
@@ -1881,7 +1864,7 @@ if (!exists("full_data_4", inherits = TRUE)) {
     ) %>%
     dplyr::select(Jahr, bezirksnummer, anteil_betreuung)
   
-  # 合并 + 加 geometry
+  # geometry
   full_data_4 <<- hh_long_4 %>%
     dplyr::left_join(emp_long_4,       by = c("Jahr", "bezirksnummer")) %>%
     dplyr::left_join(betreuung_long_4, by = c("Jahr", "bezirksnummer")) %>%
@@ -1889,7 +1872,7 @@ if (!exists("full_data_4", inherits = TRUE)) {
     sf::st_as_sf()
 }
 
-# ---- 自动播放状态（第 4 个 Shiny 专用）----
+# ---- Play/ Pause ----
 playing_4 <- reactiveVal(FALSE)
 
 observeEvent(input$play_4, {
@@ -1902,10 +1885,10 @@ observeEvent(input$play_4, {
   }
 })
 
-# 自动推进年份
+
 observe({
   req(playing_4())
-  invalidateLater(1000, session)   # 播放速度：1 秒一步
+  invalidateLater(1000, session)  
   
   current_year <- isolate(input$year_4)
   next_year    <- if (current_year >= 2024) 2012 else current_year + 1L
@@ -1913,7 +1896,8 @@ observe({
   updateSliderInput(session, "year_4", value = next_year)
 })
 
-# ---- 计算每年 München 均值（HK & FE）----
+# ---- Compute yearly Munich means (Households with Children & Female Employment) 
+
 city_means_4 <- reactive({
   tibble::tibble(
     mean_HaKi_4 = be_sheet %>%
@@ -1938,14 +1922,13 @@ city_means_4 <- reactive({
   )
 })
 
-# ---- 按年份过滤 full_data_4 ----
+
 df_year_4 <- reactive({
   full_data_4 %>%
     dplyr::filter(Jahr == input$year_4)
 })
 
 # -------------------------------------------------
-# 左图：HK hoch + Beschäftigung niedrig 染粉色
 # -------------------------------------------------
 output$map_left_4 <- leaflet::renderLeaflet({
   
@@ -1965,7 +1948,7 @@ output$map_left_4 <- leaflet::renderLeaflet({
       )
     )
   
-  # 这里先在 R 里生成 label，避免 leaflet 公式里用 !!
+
   popup_left_4 <- paste0(
     "<b>", d[[MAP_NAME_COLUMN]], "</b><br>",
     "Haushalte mit Kindern: ", round(d$anteil_kinder, 1), "%<br>",
@@ -1985,16 +1968,12 @@ output$map_left_4 <- leaflet::renderLeaflet({
 })
 
 # -------------------------------------------------
-# 右图：Kinderbetreuung Purples 色阶
-# -------------------------------------------------
-# -------------------------------------------------
-# 右图：Kinderbetreuung 红色渐变 + 小号 Legend
 # -------------------------------------------------
 output$map_right_4 <- leaflet::renderLeaflet({
   
   d <- df_year_4()
   
-  # ⭐ 红色渐变：很浅米色 -> 深红棕色
+
   pal_4 <- leaflet::colorNumeric(
     palette = c("#fff5eb", "#7f2704"),
     domain  = c(0, 100)
@@ -2021,9 +2000,9 @@ output$map_right_4 <- leaflet::renderLeaflet({
       values   = c(0, 100),
       title    = "Betreuung 0–2 Jahre (%)",
       position = "bottomright",
-      className = "small-legend"   # ⭐ 给 legend 加一个 CSS class
+      className = "small-legend"   
     ) %>%
-    htmlwidgets::prependContent(  # ⭐ 用内联 CSS 把 legend 缩小
+    htmlwidgets::prependContent(  
       htmltools::tags$style(htmltools::HTML("
         .small-legend {
           font-size: 10px !important;
