@@ -4,6 +4,8 @@ library(ggpubr)
 library(ggplot2)
 library(scales)
 
+
+# Einlesen der Rohdaten aus den Excel-Dateien
 export_be <- read_excel("data/raw/export_be.xlsx")
 be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 
@@ -11,6 +13,8 @@ export_ar <- read_excel("data/raw/export_ar.xlsx")
 ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 
 
+# Datensatz 1: Haushalte mit Kindern (hmk)
+# Wir filtern "Haushalte mit Kindern" und berechnen den Anteil in %
 all_districts_and_city <- be_sheet %>%
   filter(
     Indikator == "Haushalte mit Kindern",
@@ -20,6 +24,9 @@ all_districts_and_city <- be_sheet %>%
     hmk = 100 * `Basiswert 1` / `Basiswert 2`
   )
 
+
+# Datensatz 2: Frauenbeschäftigung
+# Wir filtern die weibliche sozialversicherungspflichtig Beschäftigten (Frauenbeschäftigung) und berechnen den Anteil in %
 Sozialversicherungspflichtig_Beschäftigte_anteil_frau <- ar_sheet %>%
   filter(
     Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
@@ -29,15 +36,22 @@ Sozialversicherungspflichtig_Beschäftigte_anteil_frau <- ar_sheet %>%
     anteil = 100 * `Basiswert 1` / `Basiswert 2`
   )
 
+
+# Zusammenfügen der beiden Datensätze über Stadtteil und Jahr
 korrelations_daten <- inner_join(
   all_districts_and_city, 
   Sozialversicherungspflichtig_Beschäftigte_anteil_frau, 
   by = c("Raumbezug", "Jahr")
 )
 
+
+# Entfernen des Aggregats "Stadt München", um nur einzelne Stadtteile zu analysieren
 korrelations_daten_clean <- korrelations_daten %>%
   filter(Raumbezug != "Stadt München")
 
+
+# Plot 1: gesamter Zusammenhang(25 Stadtteile und 13 Jahre)
+# Einfacher Scatterplot mit einer einzigen Regressionsgeraden für alle Daten
 hmk_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_point(size = 1.4, color = "grey70", alpha = 0.7) + 
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1.2) +
@@ -54,11 +68,14 @@ hmk_korr_gesamt_sw <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil))
     panel.grid.minor = element_blank()
   )
 
+
+# Plot anzeigen und speichern
 hmk_korr_gesamt_sw
 saveRDS(hmk_korr_gesamt_sw, "results/figures/Haushalt_mit_Kindern/hmk_korr_gesamt_sw.rds")
 
 
-# -----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Plot 2: Korrelation nach Jahren(hellgrün für 2012, dunkelgrün für 2024)
 hmk_point_line_nach_jahr_color <- ggplot(korrelations_daten_clean, aes(x = hmk, y = anteil)) +
   geom_smooth(aes(color = Jahr, group = Jahr),
               method = "lm", se = FALSE, linewidth = 1.2, alpha = 0.7) +
@@ -87,8 +104,10 @@ hmk_point_line_nach_jahr_color <- ggplot(korrelations_daten_clean, aes(x = hmk, 
   ) +
   guides(color = guide_colorbar(barwidth = 0.8, barheight = 8))
 
-hmk_point_line_nach_jahr_color
 
+
+# Plot anzeigen und speichern
+hmk_point_line_nach_jahr_color
 saveRDS(hmk_point_line_nach_jahr_color, "results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_jahr_color.rds")
 
 
