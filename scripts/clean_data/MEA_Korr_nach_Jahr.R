@@ -4,13 +4,14 @@ library(ggpubr)
 library(ggplot2)
 
 
+# Einlesen der Rohdaten aus den Excel-Dateien
 export_be <- read_excel("data/raw/export_be.xlsx")
 be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 
 export_ar <- read_excel("data/raw/export_ar.xlsx")
 ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 
-# Berechnung des Durchschnittsalters der Mütter (mean_age)
+# Datensatz 1: Durchschnittsalter Mütter erstgebärend
 all_districts_and_city <- be_sheet %>%
   filter(
     Indikator == "Durchschnittsalter Mütter erstgebärend",
@@ -20,6 +21,8 @@ all_districts_and_city <- be_sheet %>%
     mean_age = `Basiswert 1` / `Basiswert 2` 
   )
 
+
+# Datensatz 2: Frauenbeschäftigung
 Sozialversicherungspflichtig_Beschäftigte_anteil_frau <- ar_sheet %>%
   filter(
     Indikator == "Sozialversicherungspflichtig Beschäftigte - Anteil",
@@ -30,16 +33,21 @@ Sozialversicherungspflichtig_Beschäftigte_anteil_frau <- ar_sheet %>%
   )
 
 
+# Zusammenfügen der beiden Datensätze über Stadtteil und Jahr
 korrelations_daten <- inner_join(
   all_districts_and_city, 
   Sozialversicherungspflichtig_Beschäftigte_anteil_frau, 
   by = c("Raumbezug", "Jahr")
 )
 
+
+# Filtern: "Stadt München" entfernen
 korrelations_daten_clean <- korrelations_daten %>%
   filter(Raumbezug != "Stadt München")
 
 
+# Plot 1: gesamter Zusammenhang(25 Stadtteile und 10 Jahre)
+# Einfacher Scatterplot mit einer einzigen Regressionsgeraden für alle Daten
 ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   geom_point(size = 1.3, color = "grey", alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE, linewidth = 1) +
@@ -51,7 +59,8 @@ ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   ) +
   theme_minimal()
 
-
+#-----------------------------------------------------------------------------------------------
+#Plot 2: Färbung nach Jahren
 mea_korr_jahr <- ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil)) +
   geom_point(aes(color = factor(Jahr)), 
              size = 1.3,     
@@ -73,10 +82,12 @@ mea_korr_jahr <- ggplot(korrelations_daten_clean, aes(x = mean_age, y = anteil))
   guides(color = guide_legend(ncol = 1)) + 
   theme_minimal()
 
+# Plot anzeigen und speichern
 mea_korr_jahr
 saveRDS(mea_korr_jahr, "results/figures/MEA/mea_korr_jahr_point.rds")
 
 # -----------------------------------------------------------------------
+# Plot 3:Korrelation nach Jahren
 plot_data_final_year <- korrelations_daten_clean %>%
   group_by(Jahr) %>% 
   mutate(
@@ -112,91 +123,7 @@ mea_korr_jahr_point_line <- ggplot(plot_data_final_year, aes(x = mean_age, y = a
   ) +
   guides(color = guide_legend(ncol = 1))
 
+
+# Plot anzeigen und speichern
 mea_korr_jahr_point_line
 saveRDS(mea_korr_jahr_point_line, "results/figures/MEA/mea_korr_jahr_point_line.rds")
-# ----------------------------------------------------------------------------
-r_werte_check_year <- korrelations_daten_clean %>%
-  group_by(Jahr) %>% 
-  summarise(
-    r_wert = cor(mean_age, anteil)
-  ) %>%
-  mutate(
-    is_negative = r_wert < 0,
-    Jahr_Label = paste0(Jahr, " (R=", round(r_wert, 2), ")")
-  )
-
-plot_data_highlight_year <- korrelations_daten_clean %>%
-  left_join(r_werte_check_year, by = "Jahr") # <--- Join über Jahr
-
-ggplot(plot_data_highlight_year, aes(x = mean_age, y = anteil)) +
-  geom_smooth(
-    data = subset(plot_data_highlight_year, is_negative == FALSE),
-    aes(group = Jahr),
-    method = "lm", 
-    se = FALSE, 
-    color = "grey85", 
-    linewidth = 0.8,
-    alpha = 0.5
-  ) +
-  geom_smooth(
-    data = subset(plot_data_highlight_year, is_negative == TRUE),
-    aes(color = Jahr_Label, group = Jahr), 
-    method = "lm", 
-    se = FALSE, 
-    linewidth = 1.1, 
-    alpha = 1
-  ) +
-  geom_smooth(
-    aes(group = 1), 
-    method = "lm", 
-    color = "black", 
-    linewidth = 1.1, 
-    se = FALSE
-  ) +
-  scale_color_manual(values = jahr_palette) +
-  labs(
-    title = "non Simpson's Paradox",
-    subtitle = "Grau = Positiver Zusammenhang (R ≥ 0), Bunt = Negativer Zusammenhang (R < 0)",
-    x = "Durchschnittsalter Mütter erstgebärend",
-    y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)",
-    color = "Jahr mit R < 0" 
-  ) +
-  coord_cartesian(xlim = c(29, 34), ylim = c(48, 68)) +
-  theme_minimal() +
-  theme(legend.position = "right")
-
-# ------------------------------------------------------------------------------
-plot_data_colored_year <- korrelations_daten_clean %>%
-  group_by(Jahr) %>% 
-  mutate(
-    r_wert = cor(mean_age, anteil),
-    trend_richtung = ifelse(r_wert >= 0, "positiv", "negativ")
-  ) %>%
-  ungroup() 
-
-ggplot(plot_data_colored_year, aes(x = mean_age, y = anteil)) +
-  geom_smooth(
-    aes(
-      color = trend_richtung,  
-      group = Jahr           
-    ), 
-    method = "lm", 
-    se = FALSE, 
-    linewidth = 1.1,    
-    alpha = 0.6          
-  ) +
-  geom_smooth(aes(group = 1), method = "lm", color = "black", linewidth = 1.1, se = FALSE) +
-  scale_color_manual(values = c(
-    "positiv" = "red", 
-    "negativ" = "blue"  
-  )) +
-  labs(
-    title = "non Simpson's Paradox",
-    subtitle = "Rot = Positiver Zusammenhang (R ≥ 0), Blau = Negativer Zusammenhang (R < 0)",
-    x = "Durchschnittsalter Mütter erstgebärend",
-    y = "Anteil Sozialversicherungspflichtigbeschäftigte Frauen (%)"
-  ) +
-  coord_cartesian(xlim = c(29, 34)) +
-  theme_minimal() +
-  theme(legend.position = "none")
-
