@@ -27,7 +27,7 @@ message("Project root: ", root)
 # Purpose: Ensure the instructor gets the same package versions (higher reproducibility).
 # Keep this OFF by default if you want to avoid long first-time installs.
 
-AUTO_RESTORE_RENV <- FALSE
+AUTO_RESTORE_RENV <- TRUE
 
 if (AUTO_RESTORE_RENV && file.exists("renv.lock")) {
   if (!requireNamespace("renv", quietly = TRUE)) {
