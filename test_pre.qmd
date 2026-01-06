@@ -38,11 +38,9 @@ leaflet_sv_durchschnitt <- readRDS("results/figures/SV/leaflet_sv_durchschnitt.r
 #_________________________________________________________________________________________________________
 # Haushalt mit Kindern (HMK) figures
 
-hmk_korr_ponit_nach_stadtteile_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_ponit_nach_stadtteile_color.rds")
+
 hmk_korr_point_line_nach_stadtteile_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_stadtteile_color.rds")
-hmk_simpson_stadtteile_kleiner_0 <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_simpson_stadtteile_kleiner_0.rds")
 hmk_korr_gesamt_point_sw <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_gesamt_point_sw.rds")
-hmk_korr_point_nach_jahr_color <-  readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_nach_jahr_color.rds")
 hmk_korr_point_line_nach_jahr_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_jahr_color.rds")
 # Kinderbetreuung (KI) figures
 #______________________________________________________________________________
