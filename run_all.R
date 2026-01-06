@@ -3,7 +3,7 @@
 
 # ========== 0) 参数区 ==========
 REBUILD_RDS <- FALSE   # TRUE = 从脚本重建 rds；FALSE = 直接用仓库已有 rds
-QMD_FILE    <- "test_pre.qmd"  # 你的 Quarto 入口文件
+QMD_FILE    <- "presentation.qmd"  # 你的 Quarto 入口文件
 # OUTPUT_DIR <- "docs"         # 可选：把输出放到 docs/（做 GitHub Pages 用）
 OUTPUT_DIR  <- NULL            # NULL = 输出在 qmd 同目录（最稳，不容易炸路径）
 RUN_MODE <- "preview"  # "preview"（用于 Shiny） 或 "render"（只生成静态文件）

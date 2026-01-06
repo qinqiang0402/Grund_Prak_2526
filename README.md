@@ -24,7 +24,7 @@ Please keep the R session running while using the web page.
 ### Option B: Run via Quarto CLI
 From the project root directory:
 ```bash
-quarto preview test_pre.qmd
+quarto preview presentation.qmd
 
 ```
 
@@ -35,7 +35,7 @@ quarto preview test_pre.qmd
 Grund_Prak_2526/
 ├─ README.md
 ├─ run_all.R              # one-click entry point (R)
-├─ test_pre.qmd           # Quarto entry file (runtime: shiny)
+├─ presentation.qmd           # Quarto entry file (runtime: shiny)
 ├─ env_setup.R            # loads packages / sets paths (optional)
 ├─ customstyle.css
 ├─ images/
