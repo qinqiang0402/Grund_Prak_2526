@@ -1,33 +1,50 @@
-## Demographie & Arbeitsmarkt
+# Grundlegendes Praxisprojekt (WiSe 2025/26) – Frauen-Kinder und Arbeit
 
-## Author: ** Qiang Qin, Yuqin Huang, Yuechen Wang, Shihan Hu
+**Authors:** Shihan Hu, Yuechen Wang, Qiang Qin, Yuqin Huang
 
-##  Project Description
-This project analyzes the relationship between population and the labor market in Munich.  
-The goal is to explore trends in employment, unemployment, and demographic changes using publicly available statistical data.
+## Project Description
+This project analyzes the relationship between demography and the labor market in Munich.
+We focus on district-level patterns and time trends using publicly available data from the City of Munich.
 
 ---
 
+## Quick Start (Reproduzierbarkeit)
+This repository is designed so that the instructor can run the project with **one click**.
+
+### Option A (recommended): Run via R
+1. Open `Grund_Prak_2526.Rproj` in RStudio.
+2. Open `run_all.R`.
+3. Click **Source** (or run `source("run_all.R")` in the console).
+
+A browser window will open and start the interactive Quarto document
+
+**Note:** Because this is an interactive **Shiny** document, it runs via a local R session (**R-Session**).  
+Please keep the R session running while using the web page.
+
+### Option B: Run via Quarto CLI
+From the project root directory:
+```bash
+quarto preview test_pre.qmd
+
+```
+
+
 ## ️ Repository Structure
 ```
-population_labor_market/
-├── README.md
-│
-├── data/
-│   ├── raw/                 # Raw data (never modified)
-│   └── processed/           # Cleaned and processed data
-├── scripts/                 # R scripts and functions
-│   ├── utils.R              # custom R functions that are used more than once in the project
-│   └── clean_data.R         # data preprocessing script (/raw -> /processed)
-├── analysis/
-│   ├── report.qmd           # Quarto report
-│   ├── presentation.qmd     # Quarto presentation
-│   └── outliers.R           # some analysis that did not end up in the final report
-├── results/                 # rendered outputs from analysis scripts
-│   ├── figures/
-│   └── tables/
-├── report.pdf
-└── presentation.html
+
+Grund_Prak_2526/
+├─ README.md
+├─ run_all.R              # one-click entry point (R)
+├─ test_pre.qmd           # Quarto entry file (runtime: shiny)
+├─ env_setup.R            # loads packages / sets paths (optional)
+├─ customstyle.css
+├─ images/
+├─ data/
+│  └─ raw/                # raw data (never modified)
+├─ scripts/               # R scripts to generate .rds (pipeline)
+└─ results/
+   ├─ figures/            # cached objects/plots as .rds used by Quarto
+   └─ geo/                # spatial data / shapefiles etc.
 
 ```
 
