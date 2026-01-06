@@ -1,17 +1,17 @@
-### env_setup.R – 一键搭建项目环境（自动安装缺失包） ###
+### env_setup.R – One-click project environment setup (auto-install missing packages) ###
 
-## 0. 如果在 RStudio 里，就把工作目录设成这个文件所在目录
+## 0. If running in RStudio, set the working directory to the directory of this file
 if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable()) {
   setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 }
 
-## 1. 设置 CRAN 镜像（解决 trying to use CRAN without setting a mirror）
+## 1. Set a CRAN mirror (fixes: "trying to use CRAN without setting a mirror")
 repos <- getOption("repos")
 if (is.null(repos) || is.na(repos["CRAN"]) || repos["CRAN"] == "@CRAN@" || repos["CRAN"] == "") {
   options(repos = c(CRAN = "https://cloud.r-project.org"))
 }
 
-## 2. BiocManager + Icens（Icens 是 Bioconductor 的包）
+## 2. BiocManager + Icens (Icens is a Bioconductor package)
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
 }
@@ -19,7 +19,7 @@ if (!requireNamespace("Icens", quietly = TRUE)) {
   BiocManager::install("Icens", ask = FALSE, update = FALSE)
 }
 
-## 3. 需要用到的包列表（CRAN 上的）
+## 3. Required packages (from CRAN)
 pkgs <- c(
   "tidyr",
   "dplyr",
@@ -56,18 +56,18 @@ pkgs <- c(
   "htmltools"
 )
 
-## 4. 自动安装 + 加载
+## 4. Auto-install + load packages
 for (pkg in pkgs) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     message(">> Installing package: ", pkg)
-    install.packages(pkg)  # 会用上面设置好的 CRAN 镜像
+    install.packages(pkg)  # Uses the CRAN mirror set above
   }
   suppressPackageStartupMessages(
     library(pkg, character.only = TRUE)
   )
 }
 
-## 5. 如果变量名里带 "/"（Mac 某些情况下会出现），重命名一下
+## 5. If any object names contain "/" (can happen on some systems), rename them
 for (var in ls()) {
   if (stringr::str_detect(var, "/")) {
     new_var <- gsub("/", "", var)
@@ -76,6 +76,5 @@ for (var in ls()) {
   }
 }
 
-## 6. 清理临时变量
+## 6. Clean up temporary variables
 rm(pkgs, repos)
-
