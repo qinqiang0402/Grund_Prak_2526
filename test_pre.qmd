@@ -46,14 +46,12 @@ hmk_korr_point_nach_jahr_color <-  readRDS("results/figures/Haushalt_mit_Kindern
 hmk_korr_point_line_nach_jahr_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_jahr_color.rds")
 # Kinderbetreuung (KI) figures
 #______________________________________________________________________________
-ki_dual_trend <- readRDS("results/figures/NEW_Kinderbetreuung/ki_dual_trend.rds")
-ki_trend_sv <- readRDS("results/figures/NEW_Kinderbetreuung/trend_sv.rds")
-ki_map_2015 <- readRDS("results/figures/NEW_Kinderbetreuung/map_ki_2015.rds")
-sv_map_2015 <- readRDS("results/figures/NEW_Kinderbetreuung/map_sv_2015.rds")
-ki_point_korr_gesamt_sw <- readRDS("results/figures/NEW_Kinderbetreuung/ki_point_korr_gesamt_sw.rds")
-ki_korr_jahre_point_line_rot <- readRDS("results/figures/NEW_Kinderbetreuung/ki_point_line_rot.rds")
-ki_korr_stadtteile_point_line_sw <- readRDS("results/figures/NEW_Kinderbetreuung/ki_korr_stadtteile_point_line_sw.rds")
-ki_point_line_korr_nach_stadtteile_color <- readRDS("results/figures/Kinderbetreuung/ki_point_line_korr_nach_stadtteile_color.rds")
+ki_dual_trend <- readRDS("results/figures/Kinderbetreuung/ki_dual_trend.rds")
+ki_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_ki_2015.rds")
+sv_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_sv_2015.rds")
+ki_point_korr_gesamt_sw <- readRDS("results/figures/Kinderbetreuung/ki_point_korr_gesamt_sw.rds")
+ki_korr_jahre_point_line_rot <- readRDS("results/figures/Kinderbetreuung/ki_point_line_rot.rds")
+ki_korr_stadtteile_point_line_sw <- readRDS("results/figures/Kinderbetreuung/ki_korr_stadtteile_point_line_sw.rds")
 
 #__________________________________________________________________________
 m_effekt_01 <- readRDS("results/figures/m_effekt/m_effekt_01_singleline.rds")
