@@ -35,13 +35,13 @@ quarto preview presentation.qmd
 Grund_Prak_2526/
 ├─ README.md
 ├─ run_all.R              # one-click entry point (R)
-├─ presentation.qmd           # Quarto entry file (runtime: shiny)
+├─ presentation.qmd       # Quarto entry file (runtime: shiny)
 ├─ env_setup.R            # loads packages / sets paths (optional)
 ├─ customstyle.css
 ├─ images/
 ├─ data/
-│  └─ raw/                # raw data (never modified)
-├─ scripts/               # R scripts to generate .rds (pipeline)
+│  └─ raw/                # raw data
+├─ scripts/               # R scripts to generate .rds 
 └─ results/
    ├─ figures/            # cached objects/plots as .rds used by Quarto
    └─ geo/                # spatial data / shapefiles etc.
