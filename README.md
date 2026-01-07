@@ -35,7 +35,7 @@ quarto preview presentation.qmd
 Grund_Prak_2526/
 ├─ README.md
 ├─ run_all.R              # one-click entry point (R)
-├─ presentation.qmd       # Quarto entry file (runtime: shiny)
+├─ presentation.qmd       # Quarto entry file
 ├─ env_setup.R            # loads packages / sets paths (optional)
 ├─ customstyle.css
 ├─ images/
