@@ -4,7 +4,7 @@
 required_packages <- c(
   "quarto", "shiny", "tidyverse", "readxl", 
   "sf", "stringr", "forcats", "ggpubr", 
-  "leaflet", "htmltools", "htmlwidgets"
+  "leaflet", "htmltools", "htmlwidgets","kableExtra"
 )
 
 # 2. Check and install missing packages
