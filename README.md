@@ -13,54 +13,51 @@
 
 This project analyzes the relationship between **demography and the labor market** in Munich. We focus on district-level patterns and time trends using publicly available data from the *City of Munich*.
 
-**Key Objectives:**
-- Analyze spatial distribution of employment.
-- Investigate correlations between family structure and labor participation.
-- Visualize trends over time.
-
 ---
 
-## 🚀 Quick Start (Reproducibility)
+## 🚀 Quick Start (One-Click Execution)
 
-This repository is designed for **one-click reproducibility**.
+This repository is designed for **one-click reproducibility** across different operating systems.
 
-### Option A: Run via R (Recommended) ⭐
+### 1. Prerequisites
+Before running, please ensure you have the following installed:
+* **R**: [Download from CRAN](https://cran.r-project.org/)
+* **Quarto CLI**: [Download from Quarto.org](https://quarto.org/docs/get-started/) *(Required for rendering the report)*
 
-1.  Open `Grund_Prak_2526.Rproj` in RStudio.
-2.  Open the file `run_all.R`.
-3.  Click the **Source** button (or run `source("run_all.R")` in the console).
+### 2. How to Run
+Depending on your operating system, follow the steps below:
+
+#### **🍎 For Mac Users**
+1.  Locate `run_me.command` in the project root.
+2.  **Right-click** and select **Open** (or double-click).
+3.  The terminal will automatically install dependencies and launch the browser.
+
+#### **🪟 For Windows Users**
+1.  Locate `run_me_windows.bat` in the project root.
+2.  **Double-click** the file to execute.
 
 > **⚠️ Important Note:**
 > A browser window will open displaying the interactive **Shiny** document.
-> Please **keep the R session running** in the background while interacting with the web page.
+> Please **KEEP the Terminal window running** in the background. Closing the terminal will terminate the Shiny server.
 
-### Option B: Run via Quarto CLI
-From the project root directory:
-```bash
-quarto preview presentation.qmd
-
-```
-
+---
 
 ## 📂 Repository Structure
-```
-
+```text
 Grund_Prak_2526/
 ├─ README.md
-├─ run_all.R              # one-click entry point (R)
-├─ presentation.qmd       # Quarto entry file
-├─ env_setup.R            # loads packages / sets paths (optional)
-├─ customstyle.css
-├─ images/
-├─ data/
-│  └─ raw/                # raw data
-├─ scripts/               # R scripts to generate .rds 
+├─ run_me.command         # One-click entry point (Mac)
+├─ run_me_windows.bat     # One-click entry point (Windows)
+├─ main.R                 # Main logic: checks packages & launches Quarto
+├─ presentation.qmd       # Quarto entry file (Interactive Shiny)
+├─ customstyle.css        # Custom styling for the report
+├─ images/                # Static images used in the report
+├─ data/                  # Raw and processed data
+├─ scripts/               # R scripts used for data generation
 └─ results/
-   ├─ figures/            # cached objects/plots as .rds used by Quarto
-   └─ geo/                # spatial data / shapefiles etc.
-
+   ├─ figures/            # Cached .rds objects used by Quarto
+   └─ geo/                # Spatial data / Shapefiles
 ```
-
 ---
 
 ## ✍️Literate Programming System
