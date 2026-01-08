@@ -76,7 +76,6 @@ mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_lin
 
 
 
-#_______________________________________________________________________________
 
 # =================================================================
 #  Data preparation for the Shiny map (ported from Shiny script)
@@ -307,7 +306,7 @@ df_merged <- df_emp %>%
 
 ```{r}
 
-#| label: setup
+#| label: table_setup
 #| include: false
 
 library(readr)
