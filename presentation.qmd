@@ -1222,7 +1222,7 @@ hmk_korr_point_line_nach_jahr_color
     -   **Niedrige Betreuung:** unteres Drittel der Stadtteile mit der niedrigsten Kinderbetreuung
     
 
-## Moderierender Effekt
+## Betreuungsbedingte Korrelation
 
 
 
