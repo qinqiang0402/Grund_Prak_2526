@@ -70,7 +70,7 @@ Grund_Prak_2526/
 ├─ scripts/               # R scripts used for data generation
 └─ results/
    ├─ figures/            # Cached .rds objects used by Quarto
-   └─ geo/                # Munich city map for Shinny
+   └─ geo/                # Munich city map for Shiny
 ```
 ---
 
