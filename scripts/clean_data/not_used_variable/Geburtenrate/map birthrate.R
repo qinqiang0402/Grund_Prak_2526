@@ -1,4 +1,3 @@
-install.packages("sf")
 library(tidyverse)
 library(sf)
 library(ggplot2)
