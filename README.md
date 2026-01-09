@@ -66,7 +66,7 @@ Grund_Prak_2526/
 ├─ presentation.qmd       # Quarto entry file (Interactive Shiny)
 ├─ customstyle.css        # Custom styling for the report
 ├─ images/                # Static images used in the report
-├─ data/                  # Raw and processed data
+├─ data/                  # Raw data
 ├─ scripts/               # R scripts used for data generation
 └─ results/
    ├─ figures/            # Cached .rds objects used by Quarto
@@ -90,15 +90,6 @@ Rendering: The main report (presentation.qmd) does not regenerate plots from scr
 ## ✍️Literate Programming System
 We use **Quarto** (`.qmd`) as our literate programming system.  
 Quarto allows us to combine code, text, and visualizations in one document and to render it into HTML or PDF reports.
-
----
-
-##  📏Naming Conventions
-| Category | Rule | Example |
-|-----------|------|----------|
-| Folders | lowercase + underscores | `data_raw`, `data_processed` |
-| Files | descriptive English + German names | `clean_data.R`, `analyze_employment.R` |
-| Reports | clear English names | `final_report.qmd` |
 
 ---
 
