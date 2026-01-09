@@ -32,20 +32,22 @@ Depending on your operating system, follow the steps below:
 2.  **Right-click** and select **Open** (or double-click).
 3.  The terminal will automatically install dependencies and launch the browser.
 
+#### **🪟 For Windows Users**
+1.  Locate `run_me_windows.bat` in the project root.
+2.  **Double-click** the file to execute.
+
 #### **Manual Run via RStudio (Fallback)**
 
 If the scripts above fail due to environment path issues, follow these steps:
 
-1. Open `Grund_Prak_2526.Rproj` in RStudio. 
-
+1. Open `Grund_Prak_2526.Rproj` in RStudio.
 2. Open `main.R` and run all lines (this installs missing packages).
-
 3. In the R Console, type the following command and press Enter:
 
 ```
-   quarto::quarto_serve("presentation.qmd")
-```
-
+quarto::quarto_serve("presentation.qmd")
+```    
+    
 4.  An interactive browser window will open automatically.
 
 > **⚠️ Important Note:**
