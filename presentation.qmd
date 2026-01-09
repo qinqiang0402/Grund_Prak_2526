@@ -52,8 +52,8 @@ ki_korr_jahre_point_line_rot <- readRDS("results/figures/Kinderbetreuung/ki_poin
 ki_korr_stadtteile_point_line_sw <- readRDS("results/figures/Kinderbetreuung/ki_korr_stadtteile_point_line_sw.rds")
 
 #__________________________________________________________________________
-#m_effekt_01 <- readRDS("results/figures/moderierender_Effekt/m_effekt_01_singleline.rds")
-#m_effekt_02 <- readRDS("results/figures/moderierender_Effekt/m_effekt_02_colored.rds")
+
+m_effekt_kor_group <- readRDS("results/figures/moderierender_Effekt/m_effekt_kor_group.rds")
 m_effekt_2.5 <- readRDS("results/figures/moderierender_Effekt/m_effekt_2.5.rds")
 m_effekt_03 <- readRDS("results/figures/moderierender_Effekt/m_effekt_03.rds")
 m_effekt_04 <- readRDS("results/figures/moderierender_Effekt/m_effekt_04.rds")
@@ -1220,6 +1220,24 @@ hmk_korr_point_line_nach_jahr_color
     -   **Mittlere Betreuung:** mittleres Drittel der Stadtteile mit durchschnittlicher Kinderbetreuung
 
     -   **Niedrige Betreuung:** unteres Drittel der Stadtteile mit der niedrigsten Kinderbetreuung
+    
+
+## Moderierender Effekt
+
+
+
+```{r}
+
+#| echo: false
+#| out-width: 100%
+#| out-height: 600px
+#| fig-align: center
+
+m_effekt_kor_group
+
+```
+
+
 
 ## Betreuungsbedingte Korrelation
 
