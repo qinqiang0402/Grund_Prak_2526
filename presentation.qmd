@@ -341,7 +341,7 @@ make_daten_table <- function(df) {
   white-space: nowrap;
 }
 
-/* 页脚样式 */
+/*  */
 .data-footer {
   font-size: 0.8em;
   color: #555;
@@ -367,7 +367,7 @@ make_daten_table(table_data_01)
   white-space: nowrap;
 }
 
-/* 页脚样式 */
+/*  */
 .data-footer {
   font-size: 0.8em;
   color: #555;
@@ -393,7 +393,7 @@ make_daten_table(table_data_02)
   white-space: nowrap;
 }
 
-/* 页脚样式 */
+/*  */
 .data-footer {
   font-size: 0.8em;
   color: #555;
