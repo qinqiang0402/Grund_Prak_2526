@@ -1,11 +1,7 @@
 # 📊 Grundlegendes Praxisprojekt (WiSe 2025/26)
 ## **Frauen, Kinder und Arbeit**  -      **Frauenbeschäftigung in München**
 
-![Project Status](https://img.shields.io/badge/Status-Active-brightgreen)
-![R Version](https://img.shields.io/badge/R-%3E%3D4.2-blue)
-![Tool](https://img.shields.io/badge/Render-Quarto-blueviolet)
-
-> **Authors:** Shihan Hu, Yuechen Wang, Qiang Qin, Yuqin Huang
+## **Authors:** Shihan Hu, Yuechen Wang, Qiang Qin, Yuqin Huang
 
 ---
 
