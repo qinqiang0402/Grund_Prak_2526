@@ -1,5 +1,6 @@
 # 📊 Grundlegendes Praxisprojekt (WiSe 2025/26)
-## Frauen - Kinder und Arbeit           Frauenbeschäftigung in München
+## Frauen - Kinder und Arbeit           
+## Frauenbeschäftigung in München
 
 ![Project Status](https://img.shields.io/badge/Status-Active-brightgreen)
 ![R Version](https://img.shields.io/badge/R-%3E%3D4.2-blue)
