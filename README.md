@@ -74,6 +74,19 @@ Grund_Prak_2526/
 ```
 ---
 
+## 💡 Data & Plot Generation Note
+To ensure high performance and clean code, this project follows a modular structure:
+
+Logic: The original R code used to process data and create visualizations is located in the scripts/ folder.
+
+Storage: These scripts save the finalized plot objects as .rds files into results/figures/.
+
+Rendering: The main report (presentation.qmd) does not regenerate plots from scratch; instead, it imports the pre-rendered .rds objects for a faster and more stable user experience.
+
+
+
+---
+
 ## ✍️Literate Programming System
 We use **Quarto** (`.qmd`) as our literate programming system.  
 Quarto allows us to combine code, text, and visualizations in one document and to render it into HTML or PDF reports.
