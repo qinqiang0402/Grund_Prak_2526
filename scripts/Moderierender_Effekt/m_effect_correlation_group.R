@@ -127,18 +127,16 @@ kor_group <- ggplot(corr_long, aes(x = Jahr, y = Correlation, color = Group)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
   scale_color_manual(values = c(
-    "Mittel"  = "grey40",
-    "Niedrig" = "#00bfc4",
-    "Hoch"    = "#f8766d"
+    "Mittel"  = "#D97400",
+    "Niedrig" = "#FFB84D",
+    "Hoch"    = "#8C3F00"
   )) +
   theme_minimal(base_size = 14) +
   labs(
-    title = "Jährliche Korrelationen: Frauenbeschäftigung und Haushalte mit Kindern",
-    subtitle = "Vergleich: Mittel-, Niedrig- und Hochbetreuung (0–2 Jahre)",
     x = "Jahr",
     y = "Korrelationskoeffizient",
     color = "Gruppe"
   )
 
 kor_group
-saveRDS(kor_group, "results/figures/m_effekt/m_effekt_kor_group.rds")
+saveRDS(kor_group, "results/figures/moderierender_Effekt/m_effekt_kor_group.rds")
