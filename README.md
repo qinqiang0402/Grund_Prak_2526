@@ -84,7 +84,7 @@ Quarto allows us to combine code, text, and visualizations in one document and t
 | Category | Rule | Example |
 |-----------|------|----------|
 | Folders | lowercase + underscores | `data_raw`, `data_processed` |
-| Files | descriptive English names | `clean_data.R`, `analyze_employment.R` |
+| Files | descriptive English + German names | `clean_data.R`, `analyze_employment.R` |
 | Reports | clear English names | `final_report.qmd` |
 
 ---
