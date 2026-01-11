@@ -9,6 +9,8 @@
 
 This project analyzes the relationship between **demography and the labor market** in Munich. We focus on district-level patterns and time trends using publicly available data from the *City of Munich*.
 
+[![Summary PDF](https://img.shields.io/badge/Dokumentation-Executive--Summary-blue?style=flat-square&logo=adobeacrobatreader&logoColor=white)](./Executive Summary - Frauen, Kinder und Arbeit.pdf)
+
 ---
 
 ## 🚀 Quick Start (One-Click Execution)
