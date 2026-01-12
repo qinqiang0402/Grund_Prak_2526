@@ -9,10 +9,10 @@
 
 This project analyzes the relationship between **demography and the labor market** in Munich. We focus on district-level patterns and time trends using publicly available data from the *City of Munich*.
 
-[![Summary PDF](https://img.shields.io/badge/Dokumentation-Executive--Summary-blue?style=flat-square&logo=adobeacrobatreader&logoColor=white)](./Executive_Summary_Frauen_Kinder_und_Arbeit.pdf)
+[![Summary PDF](https://img.shields.io/badge/Dokumentation-Executive--Summary-blue?style=flat-square&logo=adobeacrobatreader&logoColor=white)](./Executive_Summary.pdf)
 
 
-[![KI-Dokumentation](https://img.shields.io/badge/Dokumentation-KI--Dokumentation-green?style=flat-square&logo=openai&logoColor=white)](./KI_Dokumentation_Frauen_Kinder_Arbeit.pdf)
+[![KI-Dokumentation](https://img.shields.io/badge/Dokumentation-KI--Dokumentation-green?style=flat-square&logo=openai&logoColor=white)](./KI_Dokumentation.pdf)
 
 
 ---
@@ -62,8 +62,8 @@ quarto::quarto_serve("presentation.qmd")
 ```text
 Grund_Prak_2526/
 ├─ README.md                           
-├─ Executive_Summary_Frauen_Kinder_und_Arbeit.pdf  # Scientific summary (1 DIN A4) 
-├─ KI_Dokumentation_Frauen_Kinder_Arbeit.pdf        # AI usage disclosure
+├─ Executive_Summary.pdf               # Scientific summary (1 DIN A4) 
+├─ KI_Dokumentation.pdf                # AI usage disclosure
 ├─ run_me.command                      # One-click entry point (Mac)
 ├─ run_me_windows.bat                  # One-click entry point (Windows)
 ├─ main.R                              # Main logic: checks packages & launches Quarto
