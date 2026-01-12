@@ -96,5 +96,7 @@ Quarto allows us to combine code, text, and visualizations in one document and t
 - R, RStudio  
 - Quarto  
 - Git & GitHub
+- KI: KI-Dokumentation: Eine detaillierte Offenlegung der verwendeten KI-Hilfsmittel findet sich hier. 
+[KI-Dokumentation](./KI_Dokumentation_Frauen_Kinder_Arbeit.pdf)
 
 ---
