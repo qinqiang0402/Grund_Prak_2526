@@ -63,7 +63,7 @@ quarto::quarto_serve("presentation.qmd")
 Grund_Prak_2526/
 ├─ README.md                           
 ├─ Executive_Summary_Frauen_Kinder_und_Arbeit.pdf  # Scientific summary (1 DIN A4) 
-├─ KI_Dokumentation_Frauen_Kinder_Arbeit.pdf        # AI usage disclosure (LMU compliant) 
+├─ KI_Dokumentation_Frauen_Kinder_Arbeit.pdf        # AI usage disclosure
 ├─ run_me.command                      # One-click entry point (Mac)
 ├─ run_me_windows.bat                  # One-click entry point (Windows)
 ├─ main.R                              # Main logic: checks packages & launches Quarto
