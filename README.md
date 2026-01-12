@@ -11,6 +11,10 @@ This project analyzes the relationship between **demography and the labor market
 
 [![Summary PDF](https://img.shields.io/badge/Dokumentation-Executive--Summary-blue?style=flat-square&logo=adobeacrobatreader&logoColor=white)](./Executive_Summary_Frauen_Kinder_und_Arbeit.pdf)
 
+
+[![KI-Dokumentation](https://img.shields.io/badge/Dokumentation-KI--Dokumentation-green?style=flat-square&logo=openai&logoColor=white)](./KI_Dokumentation_Frauen_Kinder_Arbeit.pdf)
+
+
 ---
 
 ## 🚀 Quick Start (One-Click Execution)
@@ -57,18 +61,22 @@ quarto::quarto_serve("presentation.qmd")
 ## 📂 Repository Structure
 ```text
 Grund_Prak_2526/
-├─ README.md
-├─ run_me.command         # One-click entry point (Mac)
-├─ run_me_windows.bat     # One-click entry point (Windows)
-├─ main.R                 # Main logic: checks packages & launches Quarto
-├─ presentation.qmd       # Quarto entry file (Interactive Shiny)
-├─ customstyle.css        # Custom styling for the report
-├─ images/                # Static images used in the report
-├─ data/                  # Raw data
-├─ scripts/               # R scripts used for data generation
-└─ results/
-   ├─ figures/            # Cached .rds objects used by Quarto
-   └─ geo/                # Munich city map for Shiny
+├─ README.md                           
+├─ Executive_Summary_Frauen_Kinder_und_Arbeit.pdf  # Scientific summary (1 DIN A4) 
+├─ KI_Dokumentation_Frauen_Kinder_Arbeit.pdf        # AI usage disclosure (LMU compliant) 
+├─ run_me.command                      # One-click entry point (Mac)
+├─ run_me_windows.bat                  # One-click entry point (Windows)
+├─ main.R                              # Main logic: checks packages & launches Quarto
+├─ presentation.qmd                    # Final Report (v2.0) 
+├─ presentation_original_version.qmd   # Original presentation version (v1.0) 
+├─ customstyle.css                     # Custom styling for the report
+├─ Grund_Prak_2526.Rproj               # RStudio project file
+├─ images/                             # Static images used in the report
+├─ data/                               # Raw datasets
+├─ scripts/                            # R scripts used for data generation 
+└─ results/                            # Generated outputs
+   ├─ figures/                         # Pre-rendered .rds objects and plot files 
+   └─ geo/                             # Geographic data for Munich map visualizations
 ```
 ---
 
@@ -96,7 +104,5 @@ Quarto allows us to combine code, text, and visualizations in one document and t
 - R, RStudio  
 - Quarto  
 - Git & GitHub
-- KI: KI-Dokumentation: Eine detaillierte Offenlegung der verwendeten KI-Hilfsmittel findet sich hier. 
-[KI-Dokumentation](./KI_Dokumentation_Frauen_Kinder_Arbeit.pdf)
 
 ---
