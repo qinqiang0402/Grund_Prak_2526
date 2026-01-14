@@ -75,7 +75,6 @@ Grund_Prak_2526/
 ├─ data/                               # Raw datasets
 ├─ scripts/                            # R scripts used for data generation 
 └─ results/                            # Generated outputs
-   ├─ figures/                         # Pre-rendered .rds objects and plot files 
    └─ geo/                             # Geographic data for Munich map visualizations
 ```
 ---

@@ -28,52 +28,93 @@ library(leaflet)
 library(htmltools)
 library(htmlwidgets)
 
-# Load precomputed RDS objects
-table_data_01 <- readRDS("results/figures/table/table_data_01.rds")
-table_data_02 <- readRDS("results/figures/table/table_data_02.rds")
-table_data_03 <- readRDS("results/figures/table/table_data_03.rds")
-leaflet_sv_durchschnitt <- readRDS("results/figures/Frauenbeschaeftigung/leaflet_sv_durchschnitt.rds")
+# Load raw data
+ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
+be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
+ki_sheet <- read_excel("data/raw/export_ki.xlsx", sheet = "KINDERBETREUUNG")
+
+# Load R scripts
+#SV
+source("scripts/Frauenbeschaefitung/SV_Durchschnitte_Leaflet_new.R")
+#HMK
+source("scripts/Haushalte_mit_Kindern/HMK_Gesamt.R")
+#KI
+source("scripts/Kinderbetreuung/KI_dual_Trend_test.R")
+source("scripts/Kinderbetreuung/ki_korr_gesamt&Stadtteile_test.R")
+source("scripts/Kinderbetreuung/korr_jahr_rot_test.R")
+source("scripts/Kinderbetreuung/ki_map_2015_test.R")
+source("scripts/Kinderbetreuung/sv_map_2015_test.R")
+#m_effect
+source("scripts/Moderierender_Effekt/m_effect_correlation_group_new.R")
+source("scripts/Moderierender_Effekt/m_effect_district_group_2024_new.R")
+source("scripts/Moderierender_Effekt/m_effect_district_Kinderbetreuung_new.R")
+source("scripts/Moderierender_Effekt/m_effect_scatter_2024_new.R")
+source("scripts/Anhang/Anhang_moderierender_Effekt/Kinderbetreuung_2024_leaflet_new.R")
+source("scripts/Anhang/Anhang_moderierender_Effekt/m_effect_district_group_2024_leaflet_new.R")
+#Geburtenrate
+source("scripts/Anhang/Geburtenrate/br_korr_new.R")
+source("scripts/Anhang/Geburtenrate/line_br_emp_new.R")
+source("scripts/Anhang/Geburtenrate/line_br_new.R")
+#MEA
+source("scripts/Anhang/Mutter_Erstgeburt_Alter/MEA_Korr_nach_Jahr_new.R")
+source("scripts/Anhang/Mutter_Erstgeburt_Alter/MEA_Korr_nach_Stadtteilen_new.R")
+source("scripts/Anhang/Mutter_Erstgeburt_Alter/MEA_Linien_new.R")
+#tables
+source("scripts/tables/tables.R")
+tables_list <- generate_tables(ar_sheet, be_sheet, ki_sheet)
+table_data_01 <- tables_list$t1
+table_data_02 <- tables_list$t2
+table_data_03 <- tables_list$t3
+#___________________________________________________
 
 
-#_________________________________________________________________________________________________________
-# Haushalt mit Kindern (HMK) figures
+# Load Map
+munich_map_sf <- st_read("results/geo/bezirk_map.json", quiet = TRUE)
 
+# Generate the plots and store them in a list
+#SV
+leaflet_sv_durchschnitt <- generate_emp_deviation_map(ar_sheet, munich_map_sf)
+#HMK
+hmk_plots_list <- generate_hmk_plots(ar_sheet, be_sheet)
+#KI
+ki_dual_trend_test <- generate_ki_dual_trend(ar_sheet, be_sheet, ki_sheet)
+ki_corr_plots <- generate_ki_corr_plots(ar_sheet, be_sheet, ki_sheet)
+ki_korr_jahre_point_line_rot_test <- generate_ki_year_trend(ar_sheet, be_sheet, ki_sheet)
+ki_map_2015_test <- generate_ki_map(be_sheet, ki_sheet, munich_map_sf, target_year = 2015)
+sv_map_2015_test <- generate_emp_map(ar_sheet, munich_map_sf, target_year = 2015)
+#m_effect
+m_effekt_kor_group <- generate_moderation_plot(ar_sheet, be_sheet, ki_sheet)
+m_effekt_04_plot <- generate_target_group_map(ar_sheet, be_sheet, munich_map_sf)
+m_effekt_03_plot <- generate_childcare_map_2024(be_sheet, ki_sheet, munich_map_sf)
+m_effekt_2.5 <- generate_target_group_scatter(ar_sheet, be_sheet)
+m_effekt_03_leaflet <- generate_childcare_leaflet_2024(be_sheet, ki_sheet, munich_map_sf)
+m_effekt_04_leaflet <- generate_target_group_leaflet(ar_sheet, be_sheet, munich_map_sf)
+#Geburtenrate
+birthrate_plots <- generate_birthrate_correlation_plots(ar_sheet, be_sheet)
+geburtenrate_dual_trend <- generate_birthrate_trend(ar_sheet, be_sheet, "Stadt München")
+geburtenrate_trend_nach_stadtteile <- generate_birthrate_district_trend(be_sheet)
+#MEA
+mea_year_plots <- generate_mea_year_plots(ar_sheet, be_sheet)
+mea_district_plots <- generate_mea_district_plots(ar_sheet, be_sheet)
+mea_trend_plot <- generate_mea_trend_plot(be_sheet)
 
-hmk_korr_point_line_nach_stadtteile_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_stadtteile_color.rds")
-hmk_korr_gesamt_point_sw <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_gesamt_point_sw.rds")
-hmk_korr_point_line_nach_jahr_color <- readRDS("results/figures/Haushalt_mit_Kindern/hmk_korr_point_line_nach_jahr_color.rds")
-# Kinderbetreuung (KI) figures
-#______________________________________________________________________________
-ki_dual_trend <- readRDS("results/figures/Kinderbetreuung/ki_dual_trend.rds")
-ki_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_ki_2015.rds")
-sv_map_2015 <- readRDS("results/figures/Kinderbetreuung/map_sv_2015.rds")
-ki_point_korr_gesamt_sw <- readRDS("results/figures/Kinderbetreuung/ki_point_korr_gesamt_sw.rds")
-ki_korr_jahre_point_line_rot <- readRDS("results/figures/Kinderbetreuung/ki_point_line_rot.rds")
-ki_korr_stadtteile_point_line_sw <- readRDS("results/figures/Kinderbetreuung/ki_korr_stadtteile_point_line_sw.rds")
-
-#__________________________________________________________________________
-
-m_effekt_kor_group <- readRDS("results/figures/moderierender_Effekt/m_effekt_kor_group.rds")
-m_effekt_2.5 <- readRDS("results/figures/moderierender_Effekt/m_effekt_2.5.rds")
-m_effekt_03 <- readRDS("results/figures/moderierender_Effekt/m_effekt_03.rds")
-m_effekt_04 <- readRDS("results/figures/moderierender_Effekt/m_effekt_04.rds")
-m_effekt_04_plot <- readRDS("results/figures/moderierender_Effekt/m_effekt_04_plot.rds")
-m_effekt_03_plot <- readRDS("results/figures/moderierender_Effekt/m_effekt_03_plot.rds")
-#_____________________________________________________________________________
-geburtenrate_dual_trend <- readRDS("results/figures/Geburtenrate/geburtenrate_dual_trend.rds")
-geburtenrate_trend_nach_stadtteile <- readRDS("results/figures/Geburtenrate/geburtenrate_trend_nach_stadtteile.rds")
-geburtenrate_korr_nach_stadtteile <- readRDS("results/figures/Geburtenrate/geburtenrate_korr_nach_stadtteile.rds")
-geburtenrate_korr_trend_nach_jahr <- readRDS("results/figures/Geburtenrate/geburtenrate_korr_trend_nach_jahr.rds")
-
-#_______________________________________________________________________________
-mea_gesamt_sw <- readRDS("results/figures/MEA/mea_gesamt_sw.rds")
-mea_korr_nach_stadtteilen_point <- readRDS("results/figures/MEA/mea_korr_nach_stadtteilen_point.rds")
-mea_korr_nach_stadtteilen_point_line <- readRDS("results/figures/MEA/mea_korr_nach_stadtteilen_point_line.rds")
-mea_korr_jahr_point <- readRDS("results/figures/MEA/mea_korr_jahr_point.rds")
-mea_korr_jahr_point_line <- readRDS("results/figures/MEA/mea_korr_jahr_point_line.rds")
-#________________________________________________________________________________
-
-
+# Extract individual plots for convenience
+#KI
+ki_point_korr_gesamt_sw_test      <- ki_corr_plots$gesamt
+ki_korr_stadtteile_point_line_sw_test <- ki_corr_plots$stadtteile
+#HMK
+hmk_korr_gesamt_point_sw <- hmk_plots_list$gesamt
+hmk_korr_point_line_nach_jahr_color <- hmk_plots_list$jahr
+hmk_korr_point_line_nach_stadtteile_color <- hmk_plots_list$stadtteile
+#Geburtenrate
+geburtenrate_korr_nach_stadtteile  <- birthrate_plots$stadtteile
+geburtenrate_korr_trend_nach_jahr  <- birthrate_plots$trend_jahr
+#MEA
+mea_korr_jahr_point      <- mea_year_plots$point_plot
+mea_korr_jahr_point_line <- mea_year_plots$line_plot
+mea_gesamt_sw                        <- mea_district_plots$gesamt
+mea_korr_nach_stadtteilen_point      <- mea_district_plots$point_plot
+mea_korr_nach_stadtteilen_point_line <- mea_district_plots$line_plot
 
 
 
@@ -274,6 +315,8 @@ df_merged <- df_emp %>%
 
 ```
 
+
+
 ## 
 
 ![](images/clipboard-2869406759.png)
@@ -444,11 +487,7 @@ Weibliche Bevölkerung, die in einem Arbeitsverhältnis stehen und deren Einkomm
 ```{r}
 
 #| echo: false
-#| out-width: 100%
-#| out-height: 650px
-#| fig-align: center
-
-leaflet_sv_durchschnitt
+leafletOutput("map_frauen_static", height = "500px", width = "100%")
 
 
 ```
@@ -456,6 +495,18 @@ leaflet_sv_durchschnitt
 ::: {style="text-align:left; font-size:2.0rem; margin-top:12px;"}
 Der gesamtstädtische Durchschnitt liegt bei 62,6 %.
 :::
+
+```{r}
+#| context: server
+
+output$map_frauen_static <- renderLeaflet({
+  leaflet_sv_durchschnitt
+})
+``` 
+
+
+
+
 
 ```{r}
 #| context: server
@@ -1103,8 +1154,6 @@ $$
 $$
 :::
 
-------------------------------------------------------------------------
-
 ## Kinderbetreuung und Frauenbeschäftigung (2007–2024)
 
 ```{r}
@@ -1113,11 +1162,13 @@ $$
 #| fig-width: 9
 #| fig-height: 5
 #| fig-dpi: 300
-##| out.extra: 'style="margin-left:-60px;"'
 
-
-ki_dual_trend
+ki_dual_trend_test
 ```
+
+
+------------------------------------------------------------------------
+
 
 ## Korrelation (gesamt)
 
@@ -1133,7 +1184,7 @@ ki_dual_trend
 
 
 
-ki_point_korr_gesamt_sw
+ki_point_korr_gesamt_sw_test
 ```
 
 ## Korrelation (Stadtteile)
@@ -1150,7 +1201,7 @@ ki_point_korr_gesamt_sw
 
 
 
-ki_korr_stadtteile_point_line_sw
+ki_korr_stadtteile_point_line_sw_test
 ```
 
 ## Korrelation (Jahre)
@@ -1166,7 +1217,7 @@ ki_korr_stadtteile_point_line_sw
 
 
 
-ki_korr_jahre_point_line_rot
+ki_korr_jahre_point_line_rot_test
 ```
 
 ## Zusammenhang 2015
@@ -1181,8 +1232,8 @@ ki_korr_jahre_point_line_rot
 #| fig-dpi: 300
 #| fig-align: center
 
-sv_map_2015
-ki_map_2015
+sv_map_2015_test
+ki_map_2015_test
 ```
 
 ## Agenda {.agenda-slide}
@@ -1220,11 +1271,8 @@ hmk_korr_point_line_nach_jahr_color
     -   **Mittlere Betreuung:** mittleres Drittel der Stadtteile mit durchschnittlicher Kinderbetreuung
 
     -   **Niedrige Betreuung:** unteres Drittel der Stadtteile mit der niedrigsten Kinderbetreuung
-    
 
 ## Betreuungsbedingte Korrelation
-
-
 
 ```{r}
 
@@ -1236,8 +1284,6 @@ hmk_korr_point_line_nach_jahr_color
 m_effekt_kor_group
 
 ```
-
-
 
 ## Betreuungsbedingte Korrelation
 
@@ -2065,28 +2111,33 @@ tagList(
 ::: column
 ```{r}
 #| echo: false
-#| out.width: "100%"
-#| out.height: "400px"
-#| 
-#| 
-
-m_effekt_04
+leafletOutput("map_target_group", height = "400px", width = "100%")
 ```
 :::
 
 ::: column
 ```{r}
 #| echo: false
-#| out.width: "100%"
-#| out.height: "400px"
-
-
-
-
-m_effekt_03
+leafletOutput("map_childcare_rates", height = "400px", width = "100%")
 ```
 :::
 :::::
+
+```{r}
+#| context: server
+
+
+output$map_target_group <- renderLeaflet({
+  m_effekt_04_leaflet
+})
+
+
+output$map_childcare_rates <- renderLeaflet({
+  m_effekt_03_leaflet
+})
+
+
+```
 
 ## Anhang
 
@@ -2156,7 +2207,17 @@ geburtenrate_korr_trend_nach_jahr
 
 ### Durchschnittsalter Mütter erstgebärend
 
-![](images/clipboard-3427736359.png)
+```{r}
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 16
+#| fig-height: 9
+#| fig-dpi: 300
+
+mea_trend_plot
+
+```
 
 ------------------------------------------------------------------------
 
