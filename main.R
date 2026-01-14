@@ -17,11 +17,33 @@ if (!require("renv", quietly = TRUE)) {
   install.packages("renv", repos = "https://cloud.r-project.org")
 }
 
+# --- 🚑 CRITICAL FIX FOR MATRIX PACKAGE 🚑 ---
+# Matrix often causes binary incompatibility issues between R versions.
+# We force it to load correctly before restoring.
+if ("Matrix" %in% installed.packages()[,"Package"]) {
+  tryCatch({
+    library(Matrix)
+  }, error = function(e) {
+    message("⚠️ Detected broken Matrix installation. Re-installing Matrix...")
+    install.packages("Matrix", repos = "https://cloud.r-project.org")
+  })
+}
+# -----------------------------------------------
+
 # Restore the project library
-# This installs all packages listed in renv.lock with exact versions
 if (file.exists("renv.lock")) {
   message("Restoring packages from lockfile (this may take a few minutes)...")
-  renv::restore(prompt = FALSE)
+  
+  # Try to restore. If Matrix fails, we skip it and let R use the system version as fallback
+  tryCatch({
+    renv::restore(prompt = FALSE)
+  }, error = function(e) {
+    message("⚠️ renv restore encountered an error (likely Matrix ABI).")
+    message("Attempting to fix by updating dependencies...")
+    renv::install("Matrix") # Force install Matrix
+    renv::restore(prompt = FALSE) # Try again
+  })
+  
 } else {
   warning("renv.lock not found! Please make sure you have initialized renv.")
 }
@@ -64,7 +86,7 @@ target_file <- "presentation.qmd"
 
 if (file.exists(target_file)) {
   message("--- Starting Interactive Shiny Report ---")
-  # Use port 4678 (arbitrary but fixed) and auto-open browser
+  # REMOVED FIXED PORT to prevent "Address already in use" errors
   quarto::quarto_serve(target_file, browse = TRUE)
 } else {
   stop("Error: 'presentation.qmd' not found in the working directory.")
