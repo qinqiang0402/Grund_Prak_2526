@@ -65,7 +65,7 @@ target_file <- "presentation.qmd"
 if (file.exists(target_file)) {
   message("--- Starting Interactive Shiny Report ---")
   # Use port 4678 (arbitrary but fixed) and auto-open browser
-  quarto::quarto_serve(target_file, port = 4678, browse = TRUE)
+  quarto::quarto_serve(target_file, browse = TRUE)
 } else {
   stop("Error: 'presentation.qmd' not found in the working directory.")
 }

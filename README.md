@@ -44,13 +44,8 @@ If the scripts above fail due to environment path issues, follow these steps:
 
 1. Open `Grund_Prak_2526.Rproj` in RStudio.
 2. Open `main.R` and run all lines (this installs missing packages).
-3. In the R Console, type the following command and press Enter:
+3. This will trigger `renv::restore()` and launch the Quarto server.
 
-```
-quarto::quarto_serve("presentation.qmd")
-```    
-    
-4.  An interactive browser window will open automatically.
 
 > **⚠️ Important Note:**
 > A browser window will open displaying the interactive **Shiny** document.
@@ -79,16 +74,13 @@ Grund_Prak_2526/
 ```
 ---
 
-## 💡 Data & Plot Generation Note
-To ensure high performance and clean code, this project follows a modular structure:
+## 💡 Data & Plot Generation Strategy
 
-Logic: The original R code used to process data and create visualizations is located in the scripts/ folder.
+To ensure **full reproducibility** and code transparency, this project adopts a **dynamic generation workflow**:
 
-Storage: These scripts save the finalized plot objects as .rds files into results/figures/.
-
-Rendering: The main report (presentation.qmd) does not regenerate plots from scratch; instead, it imports the pre-rendered .rds objects for a faster and more stable user experience.
-
-
+* **Modular Logic**: Data processing and plotting logic are encapsulated as functions within the `scripts/` folder.
+* **Dynamic Rendering**: The main report (`presentation.qmd`) generates all tables, maps, and plots **on-the-fly** from raw datasets during runtime.
+* **Zero Caching**: To guarantee consistency and avoid environment conflicts, no intermediate `.rds` files are used or stored. Every visual is computed fresh from the source.
 
 ---
 
