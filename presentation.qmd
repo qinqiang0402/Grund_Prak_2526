@@ -32,6 +32,8 @@ library(htmlwidgets)
 ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
 be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
 ki_sheet <- read_excel("data/raw/export_ki.xlsx", sheet = "KINDERBETREUUNG")
+# Load Map
+munich_map_sf <- st_read("results/geo/bezirk_map.json", quiet = TRUE)
 
 # Load R scripts
 #SV
@@ -68,8 +70,7 @@ table_data_03 <- tables_list$t3
 #___________________________________________________
 
 
-# Load Map
-munich_map_sf <- st_read("results/geo/bezirk_map.json", quiet = TRUE)
+
 
 # Generate the plots and store them in a list
 #SV
@@ -122,13 +123,12 @@ mea_korr_nach_stadtteilen_point_line <- mea_district_plots$line_plot
 #  Data preparation for the Shiny map (ported from Shiny script)
 # =================================================================
 
-# 1. Geometrie der Münchner Stadtbezirke laden
-munich_map <- st_read("results/geo/bezirk_map.json", quiet = TRUE) |> st_transform(4326)
 
-# 2. Excel-Daten laden
-be_sheet <- read_excel("data/raw/export_be.xlsx", sheet = "BEVÖLKERUNG")
-ar_sheet <- read_excel("data/raw/export_ar.xlsx", sheet = "ARBEITSMARKT")
-ki_sheet <- read_excel("data/raw/export_ki.xlsx", sheet = "KINDERBETREUUNG") 
+ar_sheet <- ar_sheet %>% mutate(Jahr = as.integer(Jahr))
+be_sheet <- be_sheet %>% mutate(Jahr = as.integer(Jahr))
+ki_sheet <- ki_sheet %>% mutate(Jahr = as.integer(Jahr))
+
+munich_map <- munich_map_sf <- st_read("results/geo/bezirk_map.json", quiet = TRUE) |> st_transform(4326)
 
 # 3. Build long-format tables for each indicator (Variable)
 

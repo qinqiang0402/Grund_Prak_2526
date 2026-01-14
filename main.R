@@ -1,23 +1,39 @@
-# main.R
+# ============================================================
+# Script: main.R
+# Purpose: Entry point for reproducibility.
+#          1. Bootstraps 'renv' to ensure consistent package versions.
+#          2. Restores the project library from 'renv.lock'.
+#          3. Checks for Quarto CLI and launches the Shiny report.
+# ============================================================
 
-# 1. Define all required packages
-required_packages <- c(
-  "quarto", "shiny", "tidyverse", "readxl", 
-  "sf", "stringr", "forcats", "ggpubr", 
-  "leaflet", "htmltools", "htmlwidgets","kableExtra"
-)
+# ------------------------------------------------------------
+# 1. Environment Setup (renv)
+# ------------------------------------------------------------
+message("\n=== Step 1: Setting up Reproducible Environment ===")
 
-# 2. Check and install missing packages
-message("--- Checking dependencies ---")
-new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
-if(length(new_packages)) {
-  install.packages(new_packages, repos = "https://cloud.r-project.org")
+# Check if renv is installed, install if missing
+if (!require("renv", quietly = TRUE)) {
+  message("Installing 'renv' package...")
+  install.packages("renv", repos = "https://cloud.r-project.org")
 }
 
-# 3. Fix Quarto Path (Supports both Mac and Windows)
+# Restore the project library
+# This installs all packages listed in renv.lock with exact versions
+if (file.exists("renv.lock")) {
+  message("Restoring packages from lockfile (this may take a few minutes)...")
+  renv::restore(prompt = FALSE)
+} else {
+  warning("renv.lock not found! Please make sure you have initialized renv.")
+}
+
+# ------------------------------------------------------------
+# 2. Quarto Path Detection
+# ------------------------------------------------------------
+message("\n=== Step 2: Checking Quarto CLI ===")
+
 if (Sys.which("quarto") == "") {
   if (.Platform$OS.type == "unix") {
-    # macOS / Linux paths
+    # macOS / Linux common paths
     quarto_paths <- c("/usr/local/bin/quarto", "/opt/quarto/bin/quarto", "/Applications/quarto/bin/quarto")
   } else {
     # Windows common paths
@@ -36,13 +52,20 @@ if (Sys.which("quarto") == "") {
     message("ERROR: Quarto CLI not found!")
     stop("Please install Quarto from: https://quarto.org/docs/get-started/")
   }
+} else {
+  message("Quarto is available in PATH.")
 }
 
-# 4. Launch the Quarto Shiny Server
+# ------------------------------------------------------------
+# 3. Launch Application
+# ------------------------------------------------------------
+message("\n=== Step 3: Launching Interactive Report ===")
 target_file <- "presentation.qmd"
+
 if (file.exists(target_file)) {
   message("--- Starting Interactive Shiny Report ---")
-  quarto::quarto_serve(target_file)
+  # Use port 4678 (arbitrary but fixed) and auto-open browser
+  quarto::quarto_serve(target_file, port = 4678, browse = TRUE)
 } else {
-  stop("Error: presentation.qmd not found.")
+  stop("Error: 'presentation.qmd' not found in the working directory.")
 }
