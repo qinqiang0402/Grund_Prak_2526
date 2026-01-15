@@ -1,25 +1,28 @@
 # ============================================================
 # Script: main.R
 # Purpose: Entry point for reproducibility.
-#          1. Bootstraps 'renv' to ensure consistent package versions.
+#          1. Forcefully activates 'renv' (bypassing .Rprofile).
 #          2. Restores the project library from 'renv.lock'.
 #          3. Checks for Quarto CLI and launches the Shiny report.
 # ============================================================
 
 # ------------------------------------------------------------
-# 1. Environment Setup (renv)
+# 1. Force Environment Activation
 # ------------------------------------------------------------
+# This ensures local library is used even if .Rprofile is missing
+if (file.exists("renv/activate.R")) {
+  source("renv/activate.R")
+}
+
 message("\n=== Step 1: Setting up Reproducible Environment ===")
 
-# Check if renv is installed, install if missing
+# Check if renv is installed (bootstrapping)
 if (!require("renv", quietly = TRUE)) {
   message("Installing 'renv' package...")
   install.packages("renv", repos = "https://cloud.r-project.org")
 }
 
 # --- 🚑 CRITICAL FIX FOR MATRIX PACKAGE 🚑 ---
-# Matrix often causes binary incompatibility issues between R versions.
-# We force it to load correctly before restoring.
 if ("Matrix" %in% installed.packages()[,"Package"]) {
   tryCatch({
     library(Matrix)
@@ -33,17 +36,8 @@ if ("Matrix" %in% installed.packages()[,"Package"]) {
 # Restore the project library
 if (file.exists("renv.lock")) {
   message("Restoring packages from lockfile (this may take a few minutes)...")
-  
-  # Try to restore. If Matrix fails, we skip it and let R use the system version as fallback
-  tryCatch({
-    renv::restore(prompt = FALSE)
-  }, error = function(e) {
-    message("⚠️ renv restore encountered an error (likely Matrix ABI).")
-    message("Attempting to fix by updating dependencies...")
-    renv::install("Matrix") # Force install Matrix
-    renv::restore(prompt = FALSE) # Try again
-  })
-  
+  # Use library location specific to this project
+  renv::restore(prompt = FALSE)
 } else {
   warning("renv.lock not found! Please make sure you have initialized renv.")
 }
@@ -55,10 +49,8 @@ message("\n=== Step 2: Checking Quarto CLI ===")
 
 if (Sys.which("quarto") == "") {
   if (.Platform$OS.type == "unix") {
-    # macOS / Linux common paths
     quarto_paths <- c("/usr/local/bin/quarto", "/opt/quarto/bin/quarto", "/Applications/quarto/bin/quarto")
   } else {
-    # Windows common paths
     quarto_paths <- c(
       paste0(Sys.getenv("ProgramFiles"), "\\Quarto\\bin\\quarto.exe"),
       paste0(Sys.getenv("LocalAppData"), "\\Programs\\Quarto\\bin\\quarto.exe")
@@ -86,7 +78,6 @@ target_file <- "presentation.qmd"
 
 if (file.exists(target_file)) {
   message("--- Starting Interactive Shiny Report ---")
-  # REMOVED FIXED PORT to prevent "Address already in use" errors
   quarto::quarto_serve(target_file, browse = TRUE)
 } else {
   stop("Error: 'presentation.qmd' not found in the working directory.")
