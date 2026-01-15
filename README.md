@@ -43,8 +43,9 @@ Depending on your operating system, follow the steps below:
 If the scripts above fail due to environment path issues, follow these steps:
 
 1. Open `Grund_Prak_2526.Rproj` in RStudio.
-2. Open `main.R` and run all lines (this installs missing packages).
-3. This will trigger `renv::restore()` and launch the Quarto server.
+2. Open `main.R`.
+3. Click the **"Source"** button (top right corner of the script editor).
+   *(This will automatically restore the environment and launch the Quarto server.)*
 
 
 > **⚠️ Important Note:**
